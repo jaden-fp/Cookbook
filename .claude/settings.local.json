@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)[''''version'''']\\)\")",
+      "Bash(/Users/jadencox/Documents/Projects/Cookbook/frontend/src/index.css:*)",
+      "Bash(/Users/jadencox/Documents/Projects/Cookbook/frontend/index.html:*)",
+      "Bash(/Users/jadencox/Documents/Projects/Cookbook/frontend/src/main.tsx:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(chmod:*)"
+    ]
+  }
+}
