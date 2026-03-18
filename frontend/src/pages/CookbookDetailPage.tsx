@@ -260,7 +260,7 @@ export default function CookbookDetailPage() {
     );
   }
 
-  const { bg, dark } = getSwatch(cookbook.color, cookbook.id);
+  const { bg: _bg, dark: _dark } = getSwatch(cookbook.color, cookbook.id);
 
   return (
     <div className="max-w-6xl mx-auto px-6 lg:px-12 pt-10 pb-16">

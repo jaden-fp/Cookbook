@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import type { Recipe } from '../types';
-import StarDisplay from './StarDisplay';
 
 interface Props {
   recipe: Recipe;

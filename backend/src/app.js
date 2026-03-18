@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { ready } from './db.js';
 import recipesRouter from './routes/recipes.js';
 import cookbooksRouter from './routes/cookbooks.js';
 import searchRouter from './routes/search.js';
@@ -9,6 +10,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Ensure DB schema is initialized before handling any request
+app.use((_req, _res, next) => { ready.then(() => next()).catch(next); });
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
