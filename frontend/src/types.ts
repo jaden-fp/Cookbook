@@ -34,9 +34,23 @@ export interface SearchResult {
   displayUrl: string;
 }
 
+export interface PantryItem {
+  id: number;
+  name: string;
+  quantity: number;
+  unit: string;
+  needs_purchase: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Cookbook {
   id: number;
   name: string;
   recipe_count: number;
   created_at: string;
+  color?: string | null;
+  icon?: string | null;
+  preview_images?: string[];
+  pinned_images?: string[];
 }

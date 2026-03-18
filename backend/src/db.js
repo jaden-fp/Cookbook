@@ -1,49 +1,71 @@
-import Database from 'better-sqlite3';
-import path from 'path';
+import { createClient } from '@libsql/client';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { dirname, join } from 'path';
+import { mkdirSync } from 'fs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.join(__dirname, '..', 'data');
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+function localDbUrl() {
+  const dataDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
+  mkdirSync(dataDir, { recursive: true });
+  return `file:${join(dataDir, 'cookbook.db')}`;
 }
 
-const db = new Database(path.join(dataDir, 'cookbook.db'));
+const client = createClient({
+  url: process.env.TURSO_DB_URL ?? localDbUrl(),
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+await client.batch([
+  {
+    sql: `CREATE TABLE IF NOT EXISTS pantry_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      quantity REAL DEFAULT 0,
+      unit TEXT DEFAULT '',
+      needs_purchase INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`,
+  },
+  {
+    sql: `CREATE TABLE IF NOT EXISTS recipes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT,
+      image_url TEXT,
+      source_url TEXT,
+      prep_time TEXT,
+      cook_time TEXT,
+      yield TEXT,
+      ingredient_groups TEXT,
+      instructions TEXT,
+      equipment TEXT,
+      rating INTEGER,
+      review TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`,
+  },
+  {
+    sql: `CREATE TABLE IF NOT EXISTS cookbooks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`,
+  },
+  {
+    sql: `CREATE TABLE IF NOT EXISTS recipe_cookbooks (
+      recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
+      cookbook_id INTEGER REFERENCES cookbooks(id) ON DELETE CASCADE,
+      PRIMARY KEY (recipe_id, cookbook_id)
+    )`,
+  },
+], 'write');
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS recipes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    description TEXT,
-    image_url TEXT,
-    source_url TEXT,
-    prep_time TEXT,
-    cook_time TEXT,
-    yield TEXT,
-    ingredient_groups TEXT,
-    instructions TEXT,
-    equipment TEXT,
-    rating INTEGER,
-    review TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+for (const sql of [
+  'ALTER TABLE cookbooks ADD COLUMN color TEXT',
+  'ALTER TABLE cookbooks ADD COLUMN icon TEXT',
+  'ALTER TABLE cookbooks ADD COLUMN pinned_images TEXT',
+]) {
+  try { await client.execute(sql); } catch {}
+}
 
-  CREATE TABLE IF NOT EXISTS cookbooks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-
-  CREATE TABLE IF NOT EXISTS recipe_cookbooks (
-    recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
-    cookbook_id INTEGER REFERENCES cookbooks(id) ON DELETE CASCADE,
-    PRIMARY KEY (recipe_id, cookbook_id)
-  );
-`);
-
-export default db;
+export default client;

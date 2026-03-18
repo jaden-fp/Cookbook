@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getRecipe } from '../api';
-import type { Recipe } from '../types';
+import { getRecipe, getPantryItems, addPantryItem, updatePantryItem } from '../api';
+import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
 import BakedModal from '../components/BakedModal';
 import CookbookModal from '../components/CookbookModal';
 import { scaleAmount } from '../utils/scaleAmount';
 
 type Tab = 'ingredients' | 'instructions';
+type IngStatus = 'in-stock' | 'low' | 'missing';
+
+const STATUS_DOT: Record<IngStatus, string> = {
+  'in-stock': '#4CAF50',
+  'low': '#FFC107',
+  'missing': '#FF5252',
+};
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +25,13 @@ export default function RecipeDetailPage() {
   const [showBaked, setShowBaked] = useState(false);
   const [showCookbook, setShowCookbook] = useState(false);
 
+  // Pantry
+  const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
+  const [showPantryModal, setShowPantryModal] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [addingToList, setAddingToList] = useState<Set<string>>(new Set());
+  const [addingAll, setAddingAll] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     getRecipe(parseInt(id))
@@ -25,11 +39,86 @@ export default function RecipeDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    getPantryItems().then(setPantryItems).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    setBannerDismissed(false);
+  }, [id]);
+
   function adjustScale(delta: number) {
     setScale(s => Math.max(0.5, Math.min(10, parseFloat((s + delta).toFixed(2)))));
   }
 
   const scaleLabel = Number.isInteger(scale) ? `${scale}×` : `${scale}×`;
+
+  // Pantry matching
+  function matchPantry(name: string): PantryItem | null {
+    const n = name.toLowerCase().trim();
+    for (const item of pantryItems) {
+      const p = item.name.toLowerCase().trim();
+      if (n.includes(p) || p.includes(n)) return item;
+    }
+    const STOPWORDS = new Set([
+      'powder', 'sauce', 'extract', 'whole', 'dried', 'fresh', 'ground',
+      'chopped', 'sliced', 'minced', 'large', 'small', 'medium', 'room',
+      'temperature', 'packed', 'softened', 'melted', 'unsalted', 'salted',
+      'heavy', 'light', 'dark', 'semi', 'sweet', 'dutch', 'process',
+      'mix', 'mix,', 'type', 'style', 'purpose', 'free', 'fat',
+    ]);
+    const stem = (w: string) => w.replace(/ies$/, 'y').replace(/es$/, '').replace(/s$/, '');
+    const words = n.split(/[\s,-]+/).filter(w => w.length >= 3 && !STOPWORDS.has(w)).map(stem);
+    for (const item of pantryItems) {
+      const pwords = item.name.toLowerCase().split(/[\s,-]+/).filter(w => w.length >= 3 && !STOPWORDS.has(w)).map(stem);
+      if (words.length > 0 && pwords.length > 0 && words.some(w => pwords.some(pw => w === pw))) return item;
+    }
+    return null;
+  }
+
+  function getIngStatus(name: string): IngStatus {
+    if (!pantryItems.length) return 'missing';
+    const match = matchPantry(name);
+    if (!match) return 'missing';
+    if (match.needs_purchase === 1) return 'low';
+    return 'in-stock';
+  }
+
+  const allIngredients = recipe?.ingredient_groups.flatMap(g => g.ingredients) ?? [];
+  const hasMissingOrLow = pantryItems.length > 0 &&
+    allIngredients.some(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) !== 'in-stock');
+
+  async function addToShoppingList(ingName: string) {
+    if (addingToList.has(ingName)) return;
+    setAddingToList(prev => new Set(prev).add(ingName));
+    try {
+      const match = matchPantry(ingName);
+      if (match) {
+        if (match.needs_purchase !== 1) {
+          const updated = await updatePantryItem(match.id, { needs_purchase: 1 });
+          setPantryItems(prev => prev.map(p => p.id === updated.id ? updated : p));
+        }
+      } else {
+        const newItem = await addPantryItem({ name: ingName, quantity: 0, unit: '', needs_purchase: 1 });
+        setPantryItems(prev => [...prev, newItem]);
+      }
+    } finally {
+      setAddingToList(prev => { const s = new Set(prev); s.delete(ingName); return s; });
+    }
+  }
+
+  async function addAllMissing() {
+    if (addingAll) return;
+    setAddingAll(true);
+    try {
+      const missing = allIngredients.filter(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) !== 'in-stock');
+      for (const ing of missing) {
+        await addToShoppingList(ing.name);
+      }
+    } finally {
+      setAddingAll(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -47,8 +136,12 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <p style={{ color: 'var(--color-bark-muted)' }}>Recipe not found.</p>
-        <Link to="/recipes" className="text-sm mt-2 inline-block" style={{ color: 'var(--color-terra)' }}>
+        <p style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}>Recipe not found.</p>
+        <Link
+          to="/recipes"
+          className="text-sm mt-2 inline-block"
+          style={{ color: '#FF61B4', textDecoration: 'none' }}
+        >
           All Recipes
         </Link>
       </div>
@@ -57,10 +150,10 @@ export default function RecipeDetailPage() {
 
   return (
     <div>
-      {/* ── Hero ── */}
+      {/* Hero */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ height: '52vh', minHeight: 280, maxHeight: 540 }}
+        style={{ height: '45vh', minHeight: 280, maxHeight: 540, marginTop: '-68px' }}
       >
         {recipe.image_url ? (
           <img
@@ -72,34 +165,35 @@ export default function RecipeDetailPage() {
         ) : (
           <div
             className="w-full h-full"
-            style={{
-              background: 'linear-gradient(135deg, var(--color-bark) 0%, var(--color-bark-mid) 60%, #7A4020 100%)',
-            }}
+            style={{ background: 'linear-gradient(135deg, #FF61B4 0%, #48D1D1 100%)' }}
           />
         )}
-        <div className="hero-gradient absolute inset-0" />
 
-        {/* Title overlaid on hero */}
+        {/* Bottom gradient shadow */}
+        <div
+          className="absolute inset-x-0 bottom-0"
+          style={{ height: '60%', background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)' }}
+        />
+
         <div className="absolute inset-x-0 bottom-0 px-6 pb-7 max-w-3xl mx-auto">
-          {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 mb-3">
             <Link
               to="/recipes"
               className="text-xs font-medium transition-colors duration-200"
-              style={{ color: 'rgba(250,247,242,0.6)', fontFamily: 'var(--font-body)' }}
-              onMouseEnter={e => { e.currentTarget.style.color = 'rgba(250,247,242,0.9)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(250,247,242,0.6)'; }}
+              style={{ color: 'rgba(255,251,233,0.6)', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.9)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.6)'; }}
             >
               All Recipes
             </Link>
-            <span style={{ color: 'rgba(250,247,242,0.4)', fontSize: '0.75rem' }}>/</span>
+            <span style={{ color: 'rgba(255,251,233,0.4)', fontSize: '0.75rem' }}>/</span>
           </div>
           <h1
             className="text-white animate-fade-up"
             style={{
               fontFamily: 'var(--font-editorial)',
               fontSize: 'clamp(1.6rem, 4vw, 2.5rem)',
-              fontWeight: 700,
+              fontWeight: 800,
               lineHeight: 1.2,
               letterSpacing: '-0.01em',
               textShadow: '0 2px 16px rgba(0,0,0,0.4)',
@@ -110,225 +204,186 @@ export default function RecipeDetailPage() {
         </div>
       </div>
 
-      {/* ── Content ── */}
-      <div
-        className="max-w-3xl mx-auto px-6 pb-20"
-        style={{ marginTop: '-1px' }}
-      >
-        {/* White card section */}
+      {/* Content */}
+      <div className="max-w-3xl mx-auto px-6 pb-20" style={{ marginTop: '-1px' }}>
+
+        {/* White content card */}
         <div
           className="rounded-2xl p-6 sm:p-8 mb-6 shadow-warm-sm animate-fade-up"
-          style={{
-            background: 'white',
-            border: '1px solid var(--color-warm-border-light)',
-          }}
+          style={{ background: 'white', border: '1px solid #FFC3E8' }}
         >
           {/* Description */}
           {recipe.description && (
             <p
               className="mb-6 leading-relaxed"
               style={{
-                fontFamily: 'var(--font-body)',
-                color: 'var(--color-bark-mid)',
-                fontSize: '1rem',
-                lineHeight: 1.7,
+                fontFamily: 'var(--font-body)', color: '#512A18',
+                fontSize: '0.9375rem', lineHeight: 1.7,
               }}
             >
               {recipe.description}
             </p>
           )}
 
-          {/* Meta stats */}
+          {/* Meta pills */}
           {(recipe.prep_time || recipe.cook_time || recipe.yield) && (
-            <div
-              className="flex flex-wrap gap-0 rounded-xl overflow-hidden mb-6"
-              style={{ border: '1px solid var(--color-warm-border-light)' }}
-            >
+            <div className="flex gap-2 mb-6">
               {[
-                recipe.prep_time && { label: 'Prep Time', value: recipe.prep_time, icon: '⏱' },
-                recipe.cook_time && { label: 'Cook Time', value: recipe.cook_time, icon: '🔥' },
-                recipe.yield && { label: 'Yield', value: recipe.yield, icon: '🍽' },
+                recipe.prep_time && { label: 'Prep', value: recipe.prep_time },
+                recipe.cook_time && { label: 'Cook', value: recipe.cook_time },
+                recipe.yield && { label: 'Yield', value: recipe.yield },
               ]
                 .filter(Boolean)
-                .map((stat, i, arr) => stat && (
+                .map((stat, i) => stat && (
                   <div
                     key={i}
-                    className="flex-1 flex flex-col items-center justify-center py-4 px-3 min-w-[80px]"
-                    style={{
-                      borderRight: i < arr.length - 1 ? `1px solid var(--color-warm-border-light)` : 'none',
-                      background: i % 2 === 0 ? 'var(--color-cream)' : 'white',
-                    }}
+                    style={{ flex: 1, background: '#FFC3E8', borderRadius: '12px', padding: '10px 14px' }}
                   >
-                    <span className="text-xl mb-1">{stat.icon}</span>
-                    <span
-                      className="text-xs font-medium uppercase tracking-wide block mb-0.5"
-                      style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)' }}
-                    >
+                    <div style={{
+                      fontSize: '11px', color: 'rgba(81,42,24,0.55)', fontWeight: 600,
+                      textTransform: 'uppercase', letterSpacing: '0.06em',
+                      marginBottom: '2px', fontFamily: 'var(--font-body)',
+                    }}>
                       {stat.label}
-                    </span>
-                    <span
-                      className="text-sm font-medium"
-                      style={{ color: 'var(--color-bark)', fontFamily: 'var(--font-body)' }}
-                    >
+                    </div>
+                    <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#512A18', fontFamily: 'var(--font-body)' }}>
                       {stat.value}
-                    </span>
+                    </div>
                   </div>
                 ))
               }
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-2">
-            {recipe.source_url && (
-              <a
-                href={recipe.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
-                style={{
-                  border: '1.5px solid var(--color-warm-border)',
-                  color: 'var(--color-bark-mid)',
-                  fontFamily: 'var(--font-body)',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-bark)'; e.currentTarget.style.color = 'var(--color-bark)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-warm-border)'; e.currentTarget.style.color = 'var(--color-bark-mid)'; }}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                Visit Website
-              </a>
-            )}
-
-            <button
-              onClick={() => setShowBaked(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
-              style={
-                recipe.rating
-                  ? {
-                      background: 'var(--color-terra-muted)',
-                      border: '1.5px solid rgba(196,98,45,0.25)',
-                      color: 'var(--color-terra-dark)',
-                      fontFamily: 'var(--font-body)',
-                    }
-                  : {
-                      background: 'var(--color-terra)',
-                      color: 'white',
-                      fontFamily: 'var(--font-body)',
-                      boxShadow: '0 2px 8px rgba(196,98,45,0.30)',
-                    }
-              }
-              onMouseEnter={e => {
-                if (!recipe.rating) e.currentTarget.style.background = 'var(--color-terra-dark)';
-              }}
-              onMouseLeave={e => {
-                if (!recipe.rating) e.currentTarget.style.background = 'var(--color-terra)';
+          {/* Pantry banner */}
+          {hasMissingOrLow && !bannerDismissed && (
+            <div
+              className="flex items-center gap-3 rounded-xl mb-5"
+              style={{
+                background: '#FFF0F8',
+                borderLeft: '4px solid #FF61B4',
+                padding: '12px 14px',
               }}
             >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF61B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 01-8 0" />
+              </svg>
+              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#512A18' }}>
+                You may be missing some ingredients.{' '}
+                <button
+                  onClick={() => setShowPantryModal(true)}
+                  style={{ color: '#FF61B4', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}
+                >
+                  See what's needed →
+                </button>
+              </span>
+              <button
+                onClick={() => setBannerDismissed(true)}
+                className="w-6 h-6 flex items-center justify-center rounded-full text-base leading-none transition-colors shrink-0"
+                style={{ color: 'rgba(81,42,24,0.45)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#FFC3E8'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setShowBaked(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200"
+              style={
+                recipe.rating
+                  ? { background: '#FFF0F8', border: '1.5px solid #FFC3E8', color: '#C83E94', borderRadius: '8px', fontFamily: 'var(--font-body)' }
+                  : { background: '#FF61B4', color: 'white', borderRadius: '8px', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(255,97,180,0.30)' }
+              }
+              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#E0489E'; }}
+              onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = '#FF61B4'; }}
+            >
               {recipe.rating ? (
-                <>
-                  <span>Baked ✓</span>
-                  <StarDisplay rating={recipe.rating} size="sm" />
-                </>
+                <><span>✓ Baked</span><StarDisplay rating={recipe.rating} size="sm" /></>
               ) : (
-                <>
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                  </svg>
-                  Mark as Baked
-                </>
+                'Mark as Baked ✦'
               )}
             </button>
 
             <button
               onClick={() => setShowCookbook(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
-              style={{
-                border: '1.5px solid var(--color-warm-border)',
-                color: 'var(--color-bark-mid)',
-                fontFamily: 'var(--font-body)',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-forest)'; e.currentTarget.style.color = 'var(--color-forest)'; e.currentTarget.style.background = 'var(--color-forest-muted)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-warm-border)'; e.currentTarget.style.color = 'var(--color-bark-mid)'; e.currentTarget.style.background = 'transparent'; }}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200"
+              style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', borderRadius: '8px', fontFamily: 'var(--font-body)', background: 'white' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
             >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
               </svg>
-              + Cookbook
+              Add to Cookbook
             </button>
+
+            {recipe.source_url && (
+              <a
+                href={recipe.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold transition-all duration-200"
+                style={{ background: '#48D1D1', color: 'white', borderRadius: '8px', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#48D1D1'; }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Source
+              </a>
+            )}
           </div>
         </div>
 
-        {/* ── Scaler ── */}
-        <div
-          className="flex items-center gap-3 mb-6 animate-fade-up delay-1"
-        >
+        {/* Scaler */}
+        <div className="flex items-center gap-3 mb-6 animate-fade-up delay-1">
           <span
             className="text-xs font-medium uppercase tracking-wider"
-            style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)' }}
+            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
           >
             Scale
           </span>
           <div
             className="inline-flex items-center rounded-full overflow-hidden"
-            style={{
-              border: '1.5px solid var(--color-warm-border)',
-              background: 'white',
-              boxShadow: '0 1px 4px rgba(44,26,14,0.06)',
-            }}
+            style={{ border: '1.5px solid #FFC3E8', background: 'white', boxShadow: '0 1px 4px rgba(81,42,24,0.06)' }}
           >
             <button
               onClick={() => adjustScale(-0.5)}
               className="flex items-center justify-center transition-colors duration-150"
-              style={{
-                width: '2.25rem',
-                height: '2.25rem',
-                color: 'var(--color-bark-mid)',
-                fontSize: '1.1rem',
-                fontWeight: 300,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-cream-dark)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              style={{ width: '2.25rem', height: '2.25rem', color: '#512A18', fontSize: '1.1rem', fontWeight: 300, background: '#FFC3E8' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#FFB0DF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFC3E8'; }}
             >
               −
             </button>
             <span
-              className="text-sm font-medium text-center"
-              style={{
-                minWidth: '3rem',
-                color: 'var(--color-bark)',
-                fontFamily: 'var(--font-body)',
-                borderLeft: '1px solid var(--color-warm-border-light)',
-                borderRight: '1px solid var(--color-warm-border-light)',
-                padding: '0.4rem 0.25rem',
-              }}
+              className="text-sm font-bold text-center"
+              style={{ minWidth: '3rem', color: '#512A18', fontFamily: 'var(--font-body)', borderLeft: '1px solid #FFC3E8', borderRight: '1px solid #FFC3E8', padding: '0.4rem 0.25rem' }}
             >
               {scaleLabel}
             </span>
             <button
               onClick={() => adjustScale(0.5)}
               className="flex items-center justify-center transition-colors duration-150"
-              style={{
-                width: '2.25rem',
-                height: '2.25rem',
-                color: 'var(--color-bark-mid)',
-                fontSize: '1.1rem',
-                fontWeight: 300,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-cream-dark)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              style={{ width: '2.25rem', height: '2.25rem', color: '#512A18', fontSize: '1.1rem', fontWeight: 300, background: '#FFC3E8' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#FFB0DF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFC3E8'; }}
             >
               +
             </button>
           </div>
         </div>
 
-        {/* ── Tabs ── */}
-        <div
-          className="mb-6 animate-fade-up delay-2"
-          style={{ borderBottom: '1.5px solid var(--color-warm-border-light)' }}
-        >
+        {/* Tabs */}
+        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid #FFC3E8' }}>
           <div className="flex gap-0">
             {(['ingredients', 'instructions'] as Tab[]).map(t => (
               <button
@@ -337,8 +392,8 @@ export default function RecipeDetailPage() {
                 className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
                 style={{
                   fontFamily: 'var(--font-body)',
-                  color: tab === t ? 'var(--color-terra)' : 'var(--color-bark-muted)',
-                  borderBottom: tab === t ? '2px solid var(--color-terra)' : '2px solid transparent',
+                  color: tab === t ? '#FF61B4' : 'rgba(81,42,24,0.5)',
+                  borderBottom: tab === t ? '2px solid #FF61B4' : '2px solid transparent',
                 }}
               >
                 {t}
@@ -347,7 +402,7 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        {/* ── Ingredients tab ── */}
+        {/* Ingredients tab */}
         {tab === 'ingredients' && (
           <div className="space-y-7 animate-fade-up">
             {recipe.ingredient_groups.map((group, gi) => (
@@ -355,38 +410,46 @@ export default function RecipeDetailPage() {
                 {group.group_name && (
                   <div className="flex items-center gap-3 mb-3">
                     <span
-                      className="text-xs font-medium uppercase tracking-[0.15em]"
-                      style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)' }}
+                      className="text-xs font-bold uppercase tracking-[0.15em]"
+                      style={{ color: '#D29C64', fontFamily: 'var(--font-body)' }}
                     >
                       {group.group_name}
                     </span>
-                    <div className="flex-1 h-px" style={{ background: 'var(--color-warm-border-light)' }} />
+                    <div className="flex-1 h-px" style={{ background: '#FFC3E8' }} />
                   </div>
                 )}
                 <ul className="space-y-2">
-                  {group.ingredients.map((ing, ii) => (
-                    <li key={ii} className="flex items-baseline gap-3">
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-2" style={{ background: 'var(--color-terra)', opacity: 0.5 }} />
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--color-bark)' }}>
+                  {group.ingredients.map((ing, ii) => {
+                    const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
+                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : '#FF61B4';
+                    return (
+                      <li key={ii} className="flex items-baseline gap-3">
                         <span
-                          key={`${scale}-${gi}-${ii}`}
-                          className="font-semibold animate-amount"
-                          style={{ color: 'var(--color-bark)' }}
-                        >
-                          {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
-                        </span>{' '}
-                        {ing.name}
-                        {ing.notes && (
+                          className="w-1.5 h-1.5 rounded-full shrink-0 mt-2"
+                          style={{ background: dotColor }}
+                          title={pantryItems.length > 0 ? status : undefined}
+                        />
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: '#512A18' }}>
                           <span
-                            className="ml-1"
-                            style={{ color: 'var(--color-bark-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
+                            key={`${scale}-${gi}-${ii}`}
+                            className="font-semibold animate-amount"
+                            style={{ color: '#512A18' }}
                           >
-                            ({ing.notes})
-                          </span>
-                        )}
-                      </span>
-                    </li>
-                  ))}
+                            {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
+                          </span>{' '}
+                          {ing.name}
+                          {ing.notes && (
+                            <span
+                              className="ml-1"
+                              style={{ color: 'rgba(81,42,24,0.55)', fontStyle: 'italic', fontSize: '0.875rem' }}
+                            >
+                              ({ing.notes})
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -395,18 +458,15 @@ export default function RecipeDetailPage() {
             {recipe.equipment && recipe.equipment.length > 0 && (
               <div
                 className="rounded-2xl p-5 mt-6"
-                style={{
-                  background: 'var(--color-forest-muted)',
-                  border: '1px solid rgba(61,90,71,0.12)',
-                }}
+                style={{ background: '#FFF0F8', border: '1px solid #FFC3E8' }}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} style={{ color: 'var(--color-forest)' }}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(81,42,24,0.55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
                   </svg>
                   <h3
-                    className="text-xs font-medium uppercase tracking-[0.15em]"
-                    style={{ color: 'var(--color-forest)', fontFamily: 'var(--font-body)' }}
+                    className="text-xs font-semibold uppercase tracking-[0.12em]"
+                    style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
                   >
                     Equipment
                   </h3>
@@ -416,19 +476,31 @@ export default function RecipeDetailPage() {
                     <li
                       key={i}
                       className="flex items-center gap-2 text-sm"
-                      style={{ color: 'var(--color-forest)', fontFamily: 'var(--font-body)' }}
+                      style={{ color: '#512A18', fontFamily: 'var(--font-body)' }}
                     >
-                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--color-forest-light)' }} />
-                      {item}
+                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: '#FF61B4' }} />
+                      {item.charAt(0).toUpperCase() + item.slice(1)}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
+
+            {/* Pantry legend — only when pantry has data */}
+            {pantryItems.length > 0 && (
+              <div className="flex items-center gap-4 pt-2">
+                {([['in-stock', 'In stock'], ['low', 'Low / on list'], ['missing', 'Not in pantry']] as [IngStatus, string][]).map(([s, label]) => (
+                  <div key={s} className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: STATUS_DOT[s] }} />
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* ── Instructions tab ── */}
+        {/* Instructions tab */}
         {tab === 'instructions' && (
           <ol className="space-y-6 animate-fade-up">
             {recipe.instructions.map((step, i) => (
@@ -436,29 +508,17 @@ export default function RecipeDetailPage() {
                 <div className="shrink-0 flex flex-col items-center">
                   <span
                     className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                    style={{
-                      background: 'var(--color-terra)',
-                      fontFamily: 'var(--font-body)',
-                      boxShadow: '0 2px 8px rgba(196,98,45,0.30)',
-                    }}
+                    style={{ background: '#FF61B4', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(255,97,180,0.30)' }}
                   >
                     {i + 1}
                   </span>
                   {i < recipe.instructions.length - 1 && (
-                    <div
-                      className="flex-1 w-px mt-2"
-                      style={{ background: 'var(--color-warm-border-light)', minHeight: '1.5rem' }}
-                    />
+                    <div className="flex-1 w-px mt-2" style={{ background: '#FFC3E8', minHeight: '1.5rem' }} />
                   )}
                 </div>
                 <p
                   className="pb-2 leading-relaxed pt-1"
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    color: 'var(--color-bark-mid)',
-                    fontSize: '0.9375rem',
-                    lineHeight: 1.75,
-                  }}
+                  style={{ fontFamily: 'var(--font-body)', color: '#512A18', fontSize: '0.9375rem', lineHeight: 1.75 }}
                 >
                   {step}
                 </p>
@@ -468,11 +528,93 @@ export default function RecipeDetailPage() {
         )}
       </div>
 
+      {/* Existing modals */}
       {showBaked && (
         <BakedModal recipe={recipe} onClose={() => setShowBaked(false)} onSave={setRecipe} />
       )}
       {showCookbook && (
         <CookbookModal recipeId={recipe.id} onClose={() => setShowCookbook(false)} />
+      )}
+
+      {/* Pantry check modal */}
+      {showPantryModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+          style={{ background: 'rgba(81,42,24,0.4)' }}
+          onClick={e => e.target === e.currentTarget && setShowPantryModal(false)}
+        >
+          <div
+            className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
+            style={{ border: '1px solid #FFC3E8', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '82vh' }}
+          >
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid #FFC3E8' }}>
+              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: '#512A18' }}>
+                Ingredients Check
+              </h2>
+              <button
+                onClick={() => setShowPantryModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
+                style={{ color: 'rgba(81,42,24,0.55)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="overflow-y-auto flex-1 px-4 py-4">
+              <div className="space-y-1">
+                {allIngredients.map((ing, i) => {
+                  const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
+                  const icon = status === 'in-stock' ? '✅' : status === 'low' ? '⚠️' : '❌';
+                  const isAdding = addingToList.has(ing.name);
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                      style={{ background: status === 'missing' ? '#FFF8F8' : status === 'low' ? '#FFFDF0' : 'transparent' }}
+                    >
+                      <span className="text-base shrink-0">{icon}</span>
+                      <span
+                        style={{
+                          flex: 1, fontFamily: 'var(--font-body)',
+                          fontSize: '0.875rem', color: '#512A18',
+                        }}
+                      >
+                        {[ing.amount, ing.unit, ing.name].filter(Boolean).join(' ')}
+                      </span>
+                      {status !== 'in-stock' && (
+                        <button
+                          onClick={() => addToShoppingList(ing.name)}
+                          disabled={isAdding}
+                          className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all duration-200 disabled:opacity-40 shrink-0"
+                          style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', fontFamily: 'var(--font-body)', background: 'white', whiteSpace: 'nowrap' }}
+                          onMouseEnter={e => { if (!isAdding) e.currentTarget.style.background = '#FFF0F8'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
+                        >
+                          {isAdding ? '…' : '+ List'}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid #FFC3E8' }}>
+              <button
+                onClick={addAllMissing}
+                disabled={addingAll || allIngredients.every(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) === 'in-stock')}
+                className="w-full py-2.5 text-sm font-semibold text-white rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: '#FF61B4', fontFamily: 'var(--font-body)' }}
+                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#E0489E'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
+              >
+                {addingAll ? 'Adding…' : 'Add all missing to Shopping List'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

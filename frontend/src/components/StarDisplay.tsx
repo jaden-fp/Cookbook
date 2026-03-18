@@ -13,7 +13,7 @@ export default function StarDisplay({ rating, size = 'md' }: Props) {
           key={i}
           style={{
             fontSize,
-            color: i < rating ? 'var(--color-gold)' : 'var(--color-warm-border)',
+            color: i < rating ? '#FF61B4' : '#FFC3E8',
           }}
         >
           ★

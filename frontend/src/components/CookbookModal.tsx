@@ -55,31 +55,48 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
 
   return (
     <Modal title="Add to Cookbook" onClose={onClose}>
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Cookbook list */}
         {cookbooks.length > 0 ? (
-          <div
-            className="space-y-1 max-h-52 overflow-y-auto rounded-xl p-1"
-            style={{ background: 'var(--color-cream)' }}
-          >
+          <div className="space-y-1 max-h-56 overflow-y-auto">
             {cookbooks.map(cb => {
               const checked = selected.has(cb.id);
               return (
                 <label
                   key={cb.id}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-150"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150"
                   style={{
-                    background: checked ? 'var(--color-terra-muted)' : 'transparent',
+                    background: checked ? '#FFF0F8' : 'transparent',
+                    border: checked ? '1.5px solid #FF61B4' : '1.5px solid transparent',
                   }}
-                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = 'var(--color-cream-dark)'; }}
+                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = '#FFF0F8'; }}
                   onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
                 >
+                  <span
+                    className="flex-1 text-sm"
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      color: '#512A18',
+                      fontWeight: checked ? 600 : 400,
+                    }}
+                  >
+                    {cb.name}
+                  </span>
+
+                  <span
+                    className="text-xs"
+                    style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
+                  >
+                    {cb.recipe_count}
+                  </span>
+
                   {/* Custom checkbox */}
                   <div
-                    className="w-4 h-4 rounded flex items-center justify-center shrink-0 transition-all duration-150"
+                    className="flex items-center justify-center shrink-0 transition-all duration-150"
                     style={{
-                      border: checked ? 'none' : '1.5px solid var(--color-warm-border)',
-                      background: checked ? 'var(--color-terra)' : 'white',
+                      width: '18px', height: '18px', borderRadius: '5px',
+                      border: checked ? 'none' : '1.5px solid #FFC3E8',
+                      background: checked ? '#FF61B4' : 'white',
                     }}
                     onClick={() => toggle(cb.id)}
                   >
@@ -90,46 +107,27 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
                     )}
                   </div>
                   <input type="checkbox" className="sr-only" checked={checked} onChange={() => toggle(cb.id)} />
-                  <span
-                    className="flex-1 text-sm"
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      color: 'var(--color-bark)',
-                      fontWeight: checked ? 500 : 400,
-                    }}
-                  >
-                    {cb.name}
-                  </span>
-                  <span
-                    className="text-xs"
-                    style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)' }}
-                  >
-                    {cb.recipe_count}
-                  </span>
                 </label>
               );
             })}
           </div>
         ) : (
           <p
-            className="text-sm text-center py-2"
-            style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}
+            className="text-sm text-center py-3"
+            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
           >
             No cookbooks yet — create one below.
           </p>
         )}
 
+        {/* Divider */}
+        <div style={{ height: '1px', background: '#FFC3E8' }} />
+
         {/* Create new */}
-        <div
-          className="rounded-xl p-3"
-          style={{
-            background: 'var(--color-cream)',
-            border: '1.5px dashed var(--color-warm-border)',
-          }}
-        >
+        <div>
           <p
-            className="text-xs font-medium uppercase tracking-wider mb-2"
-            style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)' }}
+            className="text-xs font-semibold uppercase tracking-wider mb-2"
+            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
           >
             New Cookbook
           </p>
@@ -142,27 +140,33 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
               placeholder="Give it a name…"
               className="flex-1 rounded-lg text-sm transition-all duration-200"
               style={{
-                padding: '0.5rem 0.75rem',
-                border: '1.5px solid var(--color-warm-border)',
+                padding: '0.5625rem 0.75rem',
+                border: '1.5px solid #FFC3E8',
                 background: 'white',
-                color: 'var(--color-bark)',
+                color: '#512A18',
                 fontFamily: 'var(--font-body)',
                 outline: 'none',
               }}
-              onFocus={e => { e.target.style.borderColor = 'var(--color-terra)'; }}
-              onBlur={e => { e.target.style.borderColor = 'var(--color-warm-border)'; }}
+              onFocus={e => {
+                e.target.style.borderColor = '#FF61B4';
+                e.target.style.boxShadow = '0 0 0 3px rgba(255,97,180,0.10)';
+              }}
+              onBlur={e => {
+                e.target.style.borderColor = '#FFC3E8';
+                e.target.style.boxShadow = 'none';
+              }}
             />
             <button
               onClick={handleCreate}
               disabled={!newName.trim() || creating}
-              className="px-3 py-1.5 text-sm rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
+              className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 disabled:opacity-40"
               style={{
-                background: 'var(--color-terra-muted)',
-                color: 'var(--color-terra-dark)',
+                background: '#FF61B4',
+                color: 'white',
                 fontFamily: 'var(--font-body)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-terra)'; e.currentTarget.style.color = 'white'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-terra-muted)'; e.currentTarget.style.color = 'var(--color-terra-dark)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#E0489E'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
             >
               {creating ? '…' : '+ Add'}
             </button>
@@ -173,26 +177,26 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
         <div className="flex gap-2 justify-end pt-1">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm rounded-full transition-colors duration-200"
-            style={{ color: 'var(--color-bark-muted)', fontFamily: 'var(--font-body)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-cream-dark)'; e.currentTarget.style.color = 'var(--color-bark)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-bark-muted)'; }}
+            className="px-4 py-2 text-sm rounded-lg transition-colors duration-200"
+            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 text-sm font-medium text-white rounded-full transition-all duration-200 disabled:opacity-40"
+            className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all duration-200 disabled:opacity-40"
             style={{
-              background: 'var(--color-terra)',
+              background: '#FF61B4',
               fontFamily: 'var(--font-body)',
-              boxShadow: '0 2px 8px rgba(196,98,45,0.30)',
+              boxShadow: '0 2px 8px rgba(255,97,180,0.25)',
             }}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = 'var(--color-terra-dark)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-terra)'; }}
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#E0489E'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
           >
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? 'Saving…' : 'Done'}
           </button>
         </div>
       </div>

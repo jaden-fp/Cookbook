@@ -20,34 +20,36 @@ export default function Modal({ onClose, children, title }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-      style={{ background: 'rgba(44,26,14,0.45)' }}
+      style={{ background: 'rgba(81,42,24,0.4)' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full max-w-md rounded-[20px] bg-cream animate-scale-in"
+        className="w-full max-w-md rounded-2xl bg-white animate-scale-in"
         style={{
-          border: '1px solid var(--color-warm-border-light)',
-          boxShadow: '0 20px 60px rgba(44,26,14,0.20), 0 8px 20px rgba(44,26,14,0.10)',
+          border: '1px solid #FFC3E8',
+          boxShadow: '0 20px 60px rgba(81,42,24,0.15), 0 8px 20px rgba(81,42,24,0.08)',
         }}
       >
-        {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4"
-          style={{ borderBottom: '1px solid var(--color-warm-border-light)' }}
+          style={{ borderBottom: '1px solid #FFC3E8' }}
         >
           <h2
             style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '1.125rem',
-              fontWeight: 600,
-              color: 'var(--color-bark)',
+              fontFamily: 'var(--font-body)',
+              fontSize: '1.0625rem',
+              fontWeight: 700,
+              color: '#512A18',
             }}
           >
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-bark-muted hover:bg-cream-dark hover:text-bark transition-colors text-xl leading-none"
+            className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
+            style={{ color: 'rgba(81,42,24,0.55)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             ×
           </button>

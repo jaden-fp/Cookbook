@@ -76,26 +76,28 @@ router.post('/import', async (req, res) => {
 
     const sourceUrl = extracted.source_url || url;
 
-    const stmt = db.prepare(`
-      INSERT INTO recipes (title, description, image_url, source_url, prep_time, cook_time, yield, ingredient_groups, instructions, equipment)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    const result = await db.execute({
+      sql: `INSERT INTO recipes (title, description, image_url, source_url, prep_time, cook_time, yield, ingredient_groups, instructions, equipment)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        extracted.title || 'Untitled Recipe',
+        extracted.description || null,
+        extracted.image_url || null,
+        sourceUrl,
+        extracted.prep_time || null,
+        extracted.cook_time || null,
+        extracted.yield || null,
+        JSON.stringify(extracted.ingredient_groups || []),
+        JSON.stringify(extracted.instructions || []),
+        JSON.stringify(extracted.equipment || []),
+      ],
+    });
 
-    const result = stmt.run(
-      extracted.title || 'Untitled Recipe',
-      extracted.description || null,
-      extracted.image_url || null,
-      sourceUrl,
-      extracted.prep_time || null,
-      extracted.cook_time || null,
-      extracted.yield || null,
-      JSON.stringify(extracted.ingredient_groups || []),
-      JSON.stringify(extracted.instructions || []),
-      JSON.stringify(extracted.equipment || [])
-    );
-
-    const recipe = db.prepare('SELECT * FROM recipes WHERE id = ?').get(result.lastInsertRowid);
-    res.json(parseRecipe(recipe));
+    const { rows } = await db.execute({
+      sql: 'SELECT * FROM recipes WHERE id = ?',
+      args: [Number(result.lastInsertRowid)],
+    });
+    res.json(parseRecipe({ ...rows[0] }));
   } catch (err) {
     console.error('Import error:', err?.response?.data || err.message);
     res.status(500).json({ error: err?.response?.data?.error || err.message });
@@ -103,62 +105,57 @@ router.post('/import', async (req, res) => {
 });
 
 // GET /api/recipes
-router.get('/', (req, res) => {
-  const recipes = db.prepare('SELECT * FROM recipes ORDER BY created_at DESC').all();
-  res.json(recipes.map(parseRecipe));
+router.get('/', async (_req, res) => {
+  const { rows } = await db.execute('SELECT * FROM recipes ORDER BY created_at DESC');
+  res.json(rows.map(r => parseRecipe({ ...r })));
 });
 
 // GET /api/recipes/:id
-router.get('/:id', (req, res) => {
-  const recipe = db.prepare('SELECT * FROM recipes WHERE id = ?').get(req.params.id);
-  if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
-  res.json(parseRecipe(recipe));
+router.get('/:id', async (req, res) => {
+  const { rows } = await db.execute({ sql: 'SELECT * FROM recipes WHERE id = ?', args: [req.params.id] });
+  if (!rows[0]) return res.status(404).json({ error: 'Recipe not found' });
+  res.json(parseRecipe({ ...rows[0] }));
 });
 
 // PATCH /api/recipes/:id/rating
-router.patch('/:id/rating', (req, res) => {
+router.patch('/:id/rating', async (req, res) => {
   const { rating, review } = req.body;
   if (!rating || rating < 1 || rating > 5) {
     return res.status(400).json({ error: 'Rating must be 1–5' });
   }
-  db.prepare('UPDATE recipes SET rating = ?, review = ? WHERE id = ?').run(
-    rating,
-    review || null,
-    req.params.id
-  );
-  const recipe = db.prepare('SELECT * FROM recipes WHERE id = ?').get(req.params.id);
-  if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
-  res.json(parseRecipe(recipe));
+  await db.execute({
+    sql: 'UPDATE recipes SET rating = ?, review = ? WHERE id = ?',
+    args: [rating, review || null, req.params.id],
+  });
+  const { rows } = await db.execute({ sql: 'SELECT * FROM recipes WHERE id = ?', args: [req.params.id] });
+  if (!rows[0]) return res.status(404).json({ error: 'Recipe not found' });
+  res.json(parseRecipe({ ...rows[0] }));
 });
 
 // GET /api/recipes/:id/cookbooks
-router.get('/:id/cookbooks', (req, res) => {
-  const rows = db
-    .prepare(
-      `SELECT c.* FROM cookbooks c
-       JOIN recipe_cookbooks rc ON rc.cookbook_id = c.id
-       WHERE rc.recipe_id = ?`
-    )
-    .all(req.params.id);
-  res.json(rows);
+router.get('/:id/cookbooks', async (req, res) => {
+  const { rows } = await db.execute({
+    sql: `SELECT c.* FROM cookbooks c
+          JOIN recipe_cookbooks rc ON rc.cookbook_id = c.id
+          WHERE rc.recipe_id = ?`,
+    args: [req.params.id],
+  });
+  res.json(rows.map(r => ({ ...r })));
 });
 
 // PUT /api/recipes/:id/cookbooks  — replace cookbook assignments
-router.put('/:id/cookbooks', (req, res) => {
+router.put('/:id/cookbooks', async (req, res) => {
   const { cookbook_ids } = req.body;
   const recipeId = parseInt(req.params.id);
 
-  const del = db.prepare('DELETE FROM recipe_cookbooks WHERE recipe_id = ?');
-  const ins = db.prepare('INSERT OR IGNORE INTO recipe_cookbooks (recipe_id, cookbook_id) VALUES (?, ?)');
+  await db.batch([
+    { sql: 'DELETE FROM recipe_cookbooks WHERE recipe_id = ?', args: [recipeId] },
+    ...(cookbook_ids || []).map(cid => ({
+      sql: 'INSERT OR IGNORE INTO recipe_cookbooks (recipe_id, cookbook_id) VALUES (?, ?)',
+      args: [recipeId, cid],
+    })),
+  ], 'write');
 
-  const updateAll = db.transaction(() => {
-    del.run(recipeId);
-    for (const cid of cookbook_ids || []) {
-      ins.run(recipeId, cid);
-    }
-  });
-
-  updateAll();
   res.json({ ok: true });
 });
 
