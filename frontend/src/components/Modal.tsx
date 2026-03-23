@@ -20,7 +20,7 @@ export default function Modal({ onClose, children, title }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-      style={{ background: 'rgba(0,0,0,0.7)' }}
+      style={{ background: 'rgba(15,12,30,0.45)' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div

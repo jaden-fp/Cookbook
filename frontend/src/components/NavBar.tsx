@@ -5,41 +5,23 @@ export default function NavBar() {
   const isActive = (to: string) => pathname.startsWith(to);
 
   return (
-    <nav
-      className="sticky top-0 z-40"
+    <nav className="sticky top-0 z-40"
       style={{
-        background: 'rgba(13,13,13,0.92)',
+        background: 'rgba(246,245,255,0.88)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border)',
         height: '62px',
-      }}
-    >
+      }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
-
-        {/* Wordmark */}
-        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.4rem',
-            fontWeight: 600,
-            color: 'var(--text)',
-            letterSpacing: '-0.01em',
-            lineHeight: 1,
-          }}>
+        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '7px' }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1 }}>
             Cox Cookie Co.
           </span>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '0.875rem',
-            fontWeight: 400,
-            fontStyle: 'italic',
-            color: 'var(--accent)',
-          }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--accent)', letterSpacing: '0' }}>
             recipes
           </span>
         </Link>
 
-        {/* Nav links */}
         <div className="flex items-center gap-1">
           {[
             { to: '/cookbooks', label: 'Cookbooks' },
@@ -48,12 +30,10 @@ export default function NavBar() {
           ].map(({ to, label }) => {
             const active = isActive(to);
             return (
-              <Link
-                key={to}
-                to={to}
+              <Link key={to} to={to}
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   fontSize: '0.875rem',
                   color: active ? 'var(--accent)' : 'var(--text-muted)',
                   textDecoration: 'none',
@@ -61,20 +41,9 @@ export default function NavBar() {
                   borderRadius: '999px',
                   background: active ? 'var(--accent-dim)' : 'transparent',
                   transition: 'all 0.15s ease',
-                  letterSpacing: '0',
                 }}
-                onMouseEnter={e => {
-                  if (!active) {
-                    e.currentTarget.style.color = 'var(--text)';
-                    e.currentTarget.style.background = 'var(--surface)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!active) {
-                    e.currentTarget.style.color = 'var(--text-muted)';
-                    e.currentTarget.style.background = 'transparent';
-                  }
-                }}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--bg-subtle)'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; } }}
               >
                 {label}
               </Link>
