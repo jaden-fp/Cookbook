@@ -151,12 +151,12 @@ export default function CookbookCard({ cookbook, onUpdate }: Props) {
           top: '8px', right: '8px',
           width: '26px', height: '26px',
           borderRadius: '50%',
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(255,255,255,0.88)',
           backdropFilter: 'blur(6px)',
-          border: '1px solid rgba(255,255,255,0.15)',
+          border: '1px solid rgba(15,12,30,0.1)',
           cursor: 'pointer',
           zIndex: 10,
-          color: 'rgba(255,255,255,0.6)',
+          color: 'var(--text-muted)',
         }}
         title="Edit cover photos"
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = '#0D0D0D'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
