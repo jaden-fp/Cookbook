@@ -728,15 +728,15 @@ export default function RecipeDetailPage() {
                           disabled={isAdding}
                           className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all duration-200 disabled:opacity-40 shrink-0"
                           style={{
-                            border: '1.5px solid var(--accent)',
-                            color: 'var(--accent)',
+                            border: '1.5px solid var(--teal)',
+                            color: 'var(--teal)',
                             fontFamily: 'var(--font-body)',
-                            background: 'white',
+                            background: 'var(--surface)',
                             cursor: 'pointer',
                             whiteSpace: 'nowrap',
                           }}
-                          onMouseEnter={e => { if (!isAdding) e.currentTarget.style.background = 'rgba(196,114,42,0.07)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
+                          onMouseEnter={e => { if (!isAdding) e.currentTarget.style.background = 'var(--teal-lt)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)'; }}
                         >
                           {isAdding ? '…' : '+ List'}
                         </button>
