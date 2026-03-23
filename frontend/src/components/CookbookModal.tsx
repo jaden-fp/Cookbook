@@ -4,13 +4,13 @@ import { getCookbooks, createCookbook, getRecipeCookbooks, setRecipeCookbooks } 
 import type { Cookbook } from '../types';
 
 interface Props {
-  recipeId: number;
+  recipeId: string;
   onClose: () => void;
 }
 
 export default function CookbookModal({ recipeId, onClose }: Props) {
   const [cookbooks, setCookbooks] = useState<Cookbook[]>([]);
-  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [newName, setNewName] = useState('');
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -22,7 +22,7 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
     });
   }, [recipeId]);
 
-  function toggle(id: number) {
+  function toggle(id: string) {
     setSelected(prev => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);

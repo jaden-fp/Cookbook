@@ -24,14 +24,15 @@ export default function Modal({ onClose, children, title }: Props) {
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-white animate-scale-in"
+        className="w-full max-w-md rounded-2xl bg-white animate-scale-in flex flex-col"
         style={{
+          maxHeight: 'calc(100vh - 2rem)',
           border: '1px solid #FFC3E8',
           boxShadow: '0 20px 60px rgba(81,42,24,0.15), 0 8px 20px rgba(81,42,24,0.08)',
         }}
       >
         <div
-          className="flex items-center justify-between px-6 py-4"
+          className="flex items-center justify-between px-6 py-4 shrink-0"
           style={{ borderBottom: '1px solid #FFC3E8' }}
         >
           <h2
@@ -55,7 +56,7 @@ export default function Modal({ onClose, children, title }: Props) {
           </button>
         </div>
 
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

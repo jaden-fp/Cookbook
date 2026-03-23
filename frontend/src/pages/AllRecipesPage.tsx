@@ -4,9 +4,30 @@ import RecipeTile from '../components/RecipeTile';
 import { getRecipes } from '../api';
 import type { Recipe } from '../types';
 
+type SortOption = 'newest' | 'oldest' | 'az' | 'za' | 'rating';
+
+function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
+  const sorted = [...recipes];
+  switch (sort) {
+    case 'newest':
+      return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    case 'oldest':
+      return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    case 'az':
+      return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    case 'za':
+      return sorted.sort((a, b) => b.title.localeCompare(a.title));
+    case 'rating':
+      return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  }
+}
+
 export default function AllRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<SortOption>(
+    () => (localStorage.getItem('recipes-sort') as SortOption) ?? 'newest'
+  );
 
   useEffect(() => {
     getRecipes()
@@ -36,12 +57,40 @@ export default function AllRecipesPage() {
           </p>
         </div>
         {!loading && recipes.length > 0 && (
-          <p
-            className="text-sm pt-1"
-            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)', fontWeight: 500 }}
-          >
-            {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
-          </p>
+          <div className="flex items-center gap-3 pt-1">
+            <p
+              className="text-sm"
+              style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)', fontWeight: 500 }}
+            >
+              {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
+            </p>
+            <select
+              value={sort}
+              onChange={e => {
+                const val = e.target.value as SortOption;
+                setSort(val);
+                localStorage.setItem('recipes-sort', val);
+              }}
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.8125rem',
+                fontWeight: 500,
+                color: '#512A18',
+                background: 'white',
+                border: '1px solid rgba(81,42,24,0.18)',
+                borderRadius: '8px',
+                padding: '4px 10px',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
         )}
       </div>
 
@@ -86,7 +135,7 @@ export default function AllRecipesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-          {recipes.map((r, i) => (
+          {sortRecipes(recipes, sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
               <RecipeTile recipe={r} />
             </div>

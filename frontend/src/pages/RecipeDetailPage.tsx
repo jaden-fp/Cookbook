@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getRecipe, getPantryItems, addPantryItem, updatePantryItem } from '../api';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe } from '../api';
 import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
 import BakedModal from '../components/BakedModal';
@@ -18,8 +18,11 @@ const STATUS_DOT: Record<IngStatus, string> = {
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [tab, setTab] = useState<Tab>('ingredients');
   const [scale, setScale] = useState(1);
   const [showBaked, setShowBaked] = useState(false);
@@ -34,7 +37,7 @@ export default function RecipeDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    getRecipe(parseInt(id))
+    getRecipe(id)
       .then(setRecipe)
       .finally(() => setLoading(false));
   }, [id]);
@@ -120,6 +123,17 @@ export default function RecipeDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!id) return;
+    setDeleting(true);
+    try {
+      await deleteRecipe(id);
+      navigate('/recipes');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   if (loading) {
     return (
       <div>
@@ -174,6 +188,44 @@ export default function RecipeDetailPage() {
           className="absolute inset-x-0 bottom-0"
           style={{ height: '60%', background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)' }}
         />
+
+        {/* Trash icon — top-right of hero */}
+        <div className="absolute top-4 right-4">
+          {!confirmDelete ? (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              title="Delete recipe"
+              className="flex items-center justify-center rounded-full transition-all duration-200"
+              style={{ width: '2.25rem', height: '2.25rem', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', color: 'rgba(255,255,255,0.75)', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,22,134,0.75)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.35)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+              </svg>
+            </button>
+          ) : (
+            <div
+              className="flex items-center gap-2 rounded-full px-3 py-1.5"
+              style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}
+            >
+              <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Delete?</span>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#FF61B4', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: deleting ? 0.6 : 1 }}
+              >
+                {deleting ? '…' : 'Yes'}
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+              >
+                No
+              </button>
+            </div>
+          )}
+        </div>
 
         <div className="absolute inset-x-0 bottom-0 px-6 pb-7 max-w-3xl mx-auto">
           <div className="flex items-center gap-1.5 mb-3">
@@ -292,14 +344,15 @@ export default function RecipeDetailPage() {
           )}
 
           {/* Action buttons */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2">
+            {/* Primary */}
             <button
               onClick={() => setShowBaked(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all duration-200"
               style={
                 recipe.rating
-                  ? { background: '#FFF0F8', border: '1.5px solid #FFC3E8', color: '#C83E94', borderRadius: '8px', fontFamily: 'var(--font-body)' }
-                  : { background: '#FF61B4', color: 'white', borderRadius: '8px', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(255,97,180,0.30)' }
+                  ? { background: '#FFF0F8', border: '1.5px solid #FFC3E8', color: '#C83E94', borderRadius: '10px', fontFamily: 'var(--font-body)' }
+                  : { background: '#FF61B4', color: 'white', borderRadius: '10px', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(255,97,180,0.30)' }
               }
               onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#E0489E'; }}
               onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = '#FF61B4'; }}
@@ -311,35 +364,38 @@ export default function RecipeDetailPage() {
               )}
             </button>
 
-            <button
-              onClick={() => setShowCookbook(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200"
-              style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', borderRadius: '8px', fontFamily: 'var(--font-body)', background: 'white' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-              </svg>
-              Add to Cookbook
-            </button>
-
-            {recipe.source_url && (
-              <a
-                href={recipe.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold transition-all duration-200"
-                style={{ background: '#48D1D1', color: 'white', borderRadius: '8px', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#48D1D1'; }}
+            {/* Secondary row */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowCookbook(true)}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2 text-sm font-semibold transition-all duration-200"
+                style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', borderRadius: '10px', fontFamily: 'var(--font-body)', background: 'white' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                 </svg>
-                Source
-              </a>
-            )}
+                Add to Cookbook
+              </button>
+
+              {recipe.source_url && (
+                <a
+                  href={recipe.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold transition-all duration-200"
+                  style={{ background: '#48D1D1', color: 'white', borderRadius: '10px', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#48D1D1'; }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  Source
+                </a>
+              )}
+            </div>
           </div>
         </div>
 

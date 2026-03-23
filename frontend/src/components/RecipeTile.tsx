@@ -1,12 +1,20 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Recipe } from '../types';
+import CookbookModal from './CookbookModal';
 
 interface Props {
   recipe: Recipe;
 }
 
 export default function RecipeTile({ recipe }: Props) {
+  const [showCookbook, setShowCookbook] = useState(false);
+
   return (
+    <>
+    {showCookbook && (
+      <CookbookModal recipeId={recipe.id} onClose={() => setShowCookbook(false)} />
+    )}
     <Link
       to={`/recipes/${recipe.id}`}
       className="group relative block overflow-hidden transition-all duration-300"
@@ -50,6 +58,20 @@ export default function RecipeTile({ recipe }: Props) {
             </svg>
           </div>
         )}
+
+        {/* Quick add to cookbook */}
+        <button
+          onClick={e => { e.preventDefault(); e.stopPropagation(); setShowCookbook(true); }}
+          title="Add to cookbook"
+          className="absolute bottom-2 right-2 z-10 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+          style={{ width: '28px', height: '28px', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)', border: 'none', cursor: 'pointer', color: 'white' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#FF61B4'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.45)'; }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+        </button>
 
         {/* Rating badge */}
         {recipe.rating != null && (
@@ -97,5 +119,6 @@ export default function RecipeTile({ recipe }: Props) {
         </div>
       )}
     </Link>
+    </>
   );
 }

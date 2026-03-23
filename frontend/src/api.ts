@@ -22,14 +22,14 @@ export async function getRecipes(): Promise<Recipe[]> {
   return res.json();
 }
 
-export async function getRecipe(id: number): Promise<Recipe> {
+export async function getRecipe(id: string): Promise<Recipe> {
   const res = await fetch(`${BASE}/recipes/${id}`);
   if (!res.ok) throw new Error('Recipe not found');
   return res.json();
 }
 
 export async function rateRecipe(
-  id: number,
+  id: string,
   rating: number,
   review: string
 ): Promise<Recipe> {
@@ -41,20 +41,24 @@ export async function rateRecipe(
   return res.json();
 }
 
-export async function getRecipeCookbooks(id: number): Promise<Cookbook[]> {
+export async function getRecipeCookbooks(id: string): Promise<Cookbook[]> {
   const res = await fetch(`${BASE}/recipes/${id}/cookbooks`);
   return res.json();
 }
 
 export async function setRecipeCookbooks(
-  id: number,
-  cookbook_ids: number[]
+  id: string,
+  cookbook_ids: string[]
 ): Promise<void> {
   await fetch(`${BASE}/recipes/${id}/cookbooks`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cookbook_ids }),
   });
+}
+
+export async function deleteRecipe(id: string): Promise<void> {
+  await fetch(`${BASE}/recipes/${id}`, { method: 'DELETE' });
 }
 
 export async function getCookbooks(): Promise<Cookbook[]> {
@@ -76,7 +80,7 @@ export async function createCookbook(
 }
 
 export async function updateCookbook(
-  id: number,
+  id: string,
   updates: { color?: string; icon?: string; name?: string; pinned_images?: string[] }
 ): Promise<Cookbook> {
   const res = await fetch(`${BASE}/cookbooks/${id}`, {
@@ -91,12 +95,12 @@ export async function updateCookbook(
   return res.json();
 }
 
-export async function getCookbook(id: number): Promise<Cookbook> {
+export async function getCookbook(id: string): Promise<Cookbook> {
   const res = await fetch(`${BASE}/cookbooks/${id}`);
   return res.json();
 }
 
-export async function addRecipesToCookbook(cookbookId: number, recipeIds: number[]): Promise<void> {
+export async function addRecipesToCookbook(cookbookId: string, recipeIds: string[]): Promise<void> {
   const res = await fetch(`${BASE}/cookbooks/${cookbookId}/recipes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -108,7 +112,7 @@ export async function addRecipesToCookbook(cookbookId: number, recipeIds: number
   }
 }
 
-export async function getCookbookRecipes(id: number): Promise<Recipe[]> {
+export async function getCookbookRecipes(id: string): Promise<Recipe[]> {
   const res = await fetch(`${BASE}/cookbooks/${id}/recipes`);
   return res.json();
 }
@@ -137,7 +141,7 @@ export async function addPantryItem(data: {
 }
 
 export async function updatePantryItem(
-  id: number,
+  id: string,
   updates: { quantity?: number; unit?: string; needs_purchase?: number }
 ): Promise<PantryItem> {
   const res = await fetch(`${BASE}/pantry/${id}`, {
@@ -148,7 +152,7 @@ export async function updatePantryItem(
   return res.json();
 }
 
-export async function deletePantryItem(id: number): Promise<void> {
+export async function deletePantryItem(id: string): Promise<void> {
   await fetch(`${BASE}/pantry/${id}`, { method: 'DELETE' });
 }
 

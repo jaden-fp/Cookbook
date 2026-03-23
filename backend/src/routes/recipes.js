@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
-import db from '../db.js';
+import { db } from '../db.js';
 
 const router = Router();
 
@@ -74,30 +74,25 @@ router.post('/import', async (req, res) => {
       return res.status(422).json({ error: 'Could not extract recipe data from that URL' });
     }
 
-    const sourceUrl = extracted.source_url || url;
-
-    const result = await db.execute({
-      sql: `INSERT INTO recipes (title, description, image_url, source_url, prep_time, cook_time, yield, ingredient_groups, instructions, equipment)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [
-        extracted.title || 'Untitled Recipe',
-        extracted.description || null,
-        extracted.image_url || null,
-        sourceUrl,
-        extracted.prep_time || null,
-        extracted.cook_time || null,
-        extracted.yield || null,
-        JSON.stringify(extracted.ingredient_groups || []),
-        JSON.stringify(extracted.instructions || []),
-        JSON.stringify(extracted.equipment || []),
-      ],
+    const docRef = await db.collection('recipes').add({
+      title: extracted.title || 'Untitled Recipe',
+      description: extracted.description || null,
+      image_url: extracted.image_url || null,
+      source_url: extracted.source_url || url,
+      prep_time: extracted.prep_time || null,
+      cook_time: extracted.cook_time || null,
+      yield: extracted.yield || null,
+      ingredient_groups: extracted.ingredient_groups || [],
+      instructions: extracted.instructions || [],
+      equipment: extracted.equipment || [],
+      rating: null,
+      review: null,
+      cookbook_ids: [],
+      created_at: new Date().toISOString(),
     });
 
-    const { rows } = await db.execute({
-      sql: 'SELECT * FROM recipes WHERE id = ?',
-      args: [Number(result.lastInsertRowid)],
-    });
-    res.json(parseRecipe({ ...rows[0] }));
+    const doc = await docRef.get();
+    res.json({ id: doc.id, ...doc.data() });
   } catch (err) {
     console.error('Import error:', err?.response?.data || err.message);
     res.status(500).json({ error: err?.response?.data?.error || err.message });
@@ -106,15 +101,15 @@ router.post('/import', async (req, res) => {
 
 // GET /api/recipes
 router.get('/', async (_req, res) => {
-  const { rows } = await db.execute('SELECT * FROM recipes ORDER BY created_at DESC');
-  res.json(rows.map(r => parseRecipe({ ...r })));
+  const snapshot = await db.collection('recipes').orderBy('created_at', 'desc').get();
+  res.json(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 });
 
 // GET /api/recipes/:id
 router.get('/:id', async (req, res) => {
-  const { rows } = await db.execute({ sql: 'SELECT * FROM recipes WHERE id = ?', args: [req.params.id] });
-  if (!rows[0]) return res.status(404).json({ error: 'Recipe not found' });
-  res.json(parseRecipe({ ...rows[0] }));
+  const doc = await db.collection('recipes').doc(req.params.id).get();
+  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
+  res.json({ id: doc.id, ...doc.data() });
 });
 
 // PATCH /api/recipes/:id/rating
@@ -123,57 +118,36 @@ router.patch('/:id/rating', async (req, res) => {
   if (!rating || rating < 1 || rating > 5) {
     return res.status(400).json({ error: 'Rating must be 1–5' });
   }
-  await db.execute({
-    sql: 'UPDATE recipes SET rating = ?, review = ? WHERE id = ?',
-    args: [rating, review || null, req.params.id],
-  });
-  const { rows } = await db.execute({ sql: 'SELECT * FROM recipes WHERE id = ?', args: [req.params.id] });
-  if (!rows[0]) return res.status(404).json({ error: 'Recipe not found' });
-  res.json(parseRecipe({ ...rows[0] }));
+  const ref = db.collection('recipes').doc(req.params.id);
+  await ref.update({ rating, review: review || null });
+  const doc = await ref.get();
+  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
+  res.json({ id: doc.id, ...doc.data() });
 });
 
 // GET /api/recipes/:id/cookbooks
 router.get('/:id/cookbooks', async (req, res) => {
-  const { rows } = await db.execute({
-    sql: `SELECT c.* FROM cookbooks c
-          JOIN recipe_cookbooks rc ON rc.cookbook_id = c.id
-          WHERE rc.recipe_id = ?`,
-    args: [req.params.id],
-  });
-  res.json(rows.map(r => ({ ...r })));
+  const doc = await db.collection('recipes').doc(req.params.id).get();
+  if (!doc.exists) return res.json([]);
+  const cookbookIds = doc.data().cookbook_ids || [];
+  if (!cookbookIds.length) return res.json([]);
+  const cookbooks = await Promise.all(cookbookIds.map(id => db.collection('cookbooks').doc(id).get()));
+  res.json(cookbooks.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() })));
+});
+
+// DELETE /api/recipes/:id
+router.delete('/:id', async (req, res) => {
+  await db.collection('recipes').doc(req.params.id).delete();
+  res.json({ ok: true });
 });
 
 // PUT /api/recipes/:id/cookbooks  — replace cookbook assignments
 router.put('/:id/cookbooks', async (req, res) => {
   const { cookbook_ids } = req.body;
-  const recipeId = parseInt(req.params.id);
-
-  await db.batch([
-    { sql: 'DELETE FROM recipe_cookbooks WHERE recipe_id = ?', args: [recipeId] },
-    ...(cookbook_ids || []).map(cid => ({
-      sql: 'INSERT OR IGNORE INTO recipe_cookbooks (recipe_id, cookbook_id) VALUES (?, ?)',
-      args: [recipeId, cid],
-    })),
-  ], 'write');
-
+  await db.collection('recipes').doc(req.params.id).update({
+    cookbook_ids: cookbook_ids || [],
+  });
   res.json({ ok: true });
 });
-
-function parseRecipe(r) {
-  return {
-    ...r,
-    ingredient_groups: tryParse(r.ingredient_groups, []),
-    instructions: tryParse(r.instructions, []),
-    equipment: tryParse(r.equipment, []),
-  };
-}
-
-function tryParse(str, fallback) {
-  try {
-    return JSON.parse(str);
-  } catch {
-    return fallback;
-  }
-}
 
 export default router;

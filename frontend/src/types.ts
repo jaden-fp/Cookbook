@@ -11,7 +11,7 @@ export interface IngredientGroup {
 }
 
 export interface Recipe {
-  id: number;
+  id: string;
   title: string;
   description?: string | null;
   image_url?: string | null;
@@ -35,7 +35,7 @@ export interface SearchResult {
 }
 
 export interface PantryItem {
-  id: number;
+  id: string;
   name: string;
   quantity: number;
   unit: string;
@@ -45,7 +45,7 @@ export interface PantryItem {
 }
 
 export interface Cookbook {
-  id: number;
+  id: string;
   name: string;
   recipe_count: number;
   created_at: string;
