@@ -341,7 +341,7 @@ export default function PantryPage() {
             <div className="flex-1" style={{ minWidth: '160px', position: 'relative' }}>
               <label style={{
                 display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                color: 'var(--muted)', fontFamily: 'var(--font-body)',
+                color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
                 marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
               }}>
                 Ingredient
@@ -415,7 +415,7 @@ export default function PantryPage() {
                           ) : s.name}
                         </span>
                         {s.unit && (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', flexShrink: 0 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', flexShrink: 0 }}>
                             {s.unit}
                           </span>
                         )}
@@ -430,7 +430,7 @@ export default function PantryPage() {
             <div style={{ width: '80px' }}>
               <label style={{
                 display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                color: 'var(--muted)', fontFamily: 'var(--font-body)',
+                color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
                 marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
               }}>
                 Qty <span style={{ textTransform: 'none', fontWeight: 400, fontSize: '0.7rem' }}>(opt.)</span>
@@ -459,7 +459,7 @@ export default function PantryPage() {
               <div>
                 <label style={{
                   display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                  color: 'var(--muted)', fontFamily: 'var(--font-body)',
+                  color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
                   marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
                 }}>
                   Unit
@@ -558,7 +558,7 @@ export default function PantryPage() {
 
         {inStock.length === 0 ? (
           <div className="py-10 text-center rounded-2xl" style={{ border: '1.5px dashed var(--bone)' }}>
-            <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
               No ingredients in stock yet. Add some above!
             </p>
           </div>
@@ -581,7 +581,7 @@ export default function PantryPage() {
                     </p>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', marginTop: '1px' }}>
                       {item.quantity > 0
-                        ? <span style={{ color: 'var(--muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
+                        ? <span style={{ color: 'var(--text-muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
                         : <span style={{ color: '#FFC107', fontWeight: 500 }}>no quantity set</span>
                       }
                     </p>
@@ -685,7 +685,7 @@ export default function PantryPage() {
                       {item.name}
                     </p>
                     {item.unit && (
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--muted)', marginTop: '1px' }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '1px' }}>
                         {item.unit}
                       </p>
                     )}
@@ -722,7 +722,7 @@ export default function PantryPage() {
       {showQuickAdd && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'var(--muted)' }}
+          style={{ background: 'var(--text-muted)' }}
           onClick={e => e.target === e.currentTarget && setShowQuickAdd(false)}
         >
           <div
@@ -736,7 +736,7 @@ export default function PantryPage() {
               <button
                 onClick={() => setShowQuickAdd(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'var(--muted)' }}
+                style={{ color: 'var(--text-muted)' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
@@ -745,7 +745,7 @@ export default function PantryPage() {
             </div>
 
             <div className="overflow-y-auto flex-1 px-4 py-4">
-              <p className="text-sm mb-3" style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
+              <p className="text-sm mb-3" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
                 Select the ingredients you have on hand:
               </p>
               <div className="space-y-1">
@@ -781,7 +781,7 @@ export default function PantryPage() {
                       <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)', fontWeight: checked ? 600 : 400 }}>
                         {staple.name}
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
                         {alreadyHave ? 'already added' : staple.unit}
                       </span>
                     </div>
@@ -791,14 +791,14 @@ export default function PantryPage() {
             </div>
 
             <div className="px-6 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid var(--bone)' }}>
-              <span style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
+              <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
                 {quickSelected.size > 0 ? `${quickSelected.size} selected` : 'Select ingredients to add'}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowQuickAdd(false)}
                   className="px-4 py-2 text-sm rounded-lg transition-colors"
-                  style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}
+                  style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
@@ -824,7 +824,7 @@ export default function PantryPage() {
       {boughtItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'var(--muted)' }}
+          style={{ background: 'var(--text-muted)' }}
           onClick={e => e.target === e.currentTarget && setBoughtItem(null)}
         >
           <div
@@ -838,7 +838,7 @@ export default function PantryPage() {
               <button
                 onClick={() => setBoughtItem(null)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'var(--muted)' }}
+                style={{ color: 'var(--text-muted)' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
@@ -851,7 +851,7 @@ export default function PantryPage() {
                 <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem' }}>
                   {boughtItem.name}
                 </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--muted)', marginTop: '2px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                   How much did you buy? <span style={{ fontStyle: 'italic' }}>(leave blank if you're not sure)</span>
                 </p>
               </div>
@@ -892,7 +892,7 @@ export default function PantryPage() {
                 <button
                   onClick={() => setBoughtItem(null)}
                   className="px-4 py-2 text-sm rounded-lg transition-colors"
-                  style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}
+                  style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
