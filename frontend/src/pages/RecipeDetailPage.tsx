@@ -149,11 +149,11 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Recipe not found.</p>
+        <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>Recipe not found.</p>
         <Link
           to="/recipes"
           className="text-sm mt-2 inline-block"
-          style={{ color: 'var(--caramel)', textDecoration: 'none' }}
+          style={{ color: 'var(--accent)', textDecoration: 'none' }}
         >
           ← All Recipes
         </Link>
