@@ -12,7 +12,7 @@ type IngStatus = 'in-stock' | 'low' | 'missing';
 
 const STATUS_DOT: Record<IngStatus, string> = {
   'in-stock': '#6B9E6B',
-  'low': '#C4722A',
+  'low': '#00C4B4',
   'missing': '#B05050',
 };
 
