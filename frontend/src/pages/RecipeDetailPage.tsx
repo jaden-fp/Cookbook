@@ -683,8 +683,8 @@ export default function RecipeDetailPage() {
           onClick={e => e.target === e.currentTarget && setShowPantryModal(false)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
-            style={{ border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
+            className="w-full max-w-md rounded-2xl animate-scale-in flex flex-col"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
           >
             <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--surface-hover)' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
