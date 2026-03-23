@@ -20,37 +20,39 @@ export default function Modal({ onClose, children, title }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-      style={{ background: 'rgba(81,42,24,0.4)' }}
+      style={{ background: 'rgba(26,10,4,0.45)' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-white animate-scale-in flex flex-col"
+        className="w-full max-w-md animate-scale-in flex flex-col"
         style={{
           maxHeight: 'calc(100vh - 2rem)',
-          border: '1px solid #FFC3E8',
-          boxShadow: '0 20px 60px rgba(81,42,24,0.15), 0 8px 20px rgba(81,42,24,0.08)',
+          background: 'white',
+          borderRadius: 'var(--radius-xl)',
+          border: '1px solid var(--bone)',
+          boxShadow: 'var(--shadow-xl)',
         }}
       >
+        {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4 shrink-0"
-          style={{ borderBottom: '1px solid #FFC3E8' }}
+          style={{ borderBottom: '1px solid var(--cream-deep)' }}
         >
-          <h2
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '1.0625rem',
-              fontWeight: 700,
-              color: '#512A18',
-            }}
-          >
+          <h2 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '1.375rem',
+            fontWeight: 600,
+            color: 'var(--espresso)',
+            letterSpacing: '-0.01em',
+          }}>
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-            style={{ color: 'rgba(81,42,24,0.55)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150 text-lg leading-none"
+            style={{ color: 'var(--muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; e.currentTarget.style.color = 'var(--espresso)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)'; }}
           >
             ×
           </button>
