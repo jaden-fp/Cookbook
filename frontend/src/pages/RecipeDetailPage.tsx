@@ -557,7 +557,7 @@ export default function RecipeDetailPage() {
                 <ul className="space-y-2.5">
                   {group.ingredients.map((ing, ii) => {
                     const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
-                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--accent)';
+                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--purple)';
                     return (
                       <li key={ii} className="flex items-baseline gap-3">
                         <span
