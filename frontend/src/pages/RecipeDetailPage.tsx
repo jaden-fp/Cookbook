@@ -331,8 +331,8 @@ export default function RecipeDetailPage() {
             <div
               className="flex items-center gap-3 rounded-xl mb-5"
               style={{
-                background: 'rgba(196,114,42,0.06)',
-                borderLeft: '3px solid var(--caramel)',
+                background: 'var(--teal-lt)',
+                borderLeft: '3px solid var(--teal)',
                 padding: '12px 14px',
               }}
             >
