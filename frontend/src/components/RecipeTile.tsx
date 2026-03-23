@@ -61,11 +61,11 @@ export default function RecipeTile({ recipe }: Props) {
           {recipe.rating != null && (
             <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1"
               style={{
-                background: 'rgba(13,13,13,0.75)',
+                background: 'rgba(255,255,255,0.88)',
                 backdropFilter: 'blur(8px)',
                 borderRadius: '999px',
                 padding: '3px 8px',
-                border: '1px solid rgba(255,255,255,0.1)',
+                border: '1px solid rgba(15,12,30,0.08)',
               }}>
               <span style={{ fontSize: '10px', color: 'var(--accent)', fontFamily: 'var(--font-body)', fontWeight: 700 }}>
                 ★ {recipe.rating}
