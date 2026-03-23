@@ -280,7 +280,7 @@ export default function RecipeDetailPage() {
               className="mb-6 leading-relaxed"
               style={{
                 fontFamily: 'var(--font-body)',
-                color: 'var(--espresso)',
+                color: 'var(--text)',
                 fontSize: '0.9375rem',
                 lineHeight: 1.75,
                 opacity: 0.85,
