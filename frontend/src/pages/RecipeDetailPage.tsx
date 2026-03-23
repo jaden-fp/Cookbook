@@ -479,10 +479,10 @@ export default function RecipeDetailPage() {
               style={{
                 width: '2.25rem', height: '2.25rem',
                 color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
-                background: 'var(--surface-hover)', border: 'none', cursor: 'pointer',
+                background: 'var(--bg-subtle)', border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
             >
               −
             </button>
@@ -492,8 +492,8 @@ export default function RecipeDetailPage() {
                 minWidth: '3rem',
                 color: 'var(--text)',
                 fontFamily: 'var(--font-body)',
-                borderLeft: '1px solid var(--border-strong)',
-                borderRight: '1px solid var(--border-strong)',
+                borderLeft: '1px solid var(--border)',
+                borderRight: '1px solid var(--border)',
                 padding: '0.4rem 0.25rem',
               }}
             >
@@ -505,10 +505,10 @@ export default function RecipeDetailPage() {
               style={{
                 width: '2.25rem', height: '2.25rem',
                 color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
-                background: 'var(--surface-hover)', border: 'none', cursor: 'pointer',
+                background: 'var(--bg-subtle)', border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
             >
               +
             </button>
