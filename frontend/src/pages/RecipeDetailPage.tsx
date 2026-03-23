@@ -11,9 +11,9 @@ type Tab = 'ingredients' | 'instructions';
 type IngStatus = 'in-stock' | 'low' | 'missing';
 
 const STATUS_DOT: Record<IngStatus, string> = {
-  'in-stock': '#4CAF50',
-  'low': '#FFC107',
-  'missing': '#FF5252',
+  'in-stock': '#6B9E6B',
+  'low': '#C4722A',
+  'missing': '#B05050',
 };
 
 export default function RecipeDetailPage() {
@@ -54,9 +54,8 @@ export default function RecipeDetailPage() {
     setScale(s => Math.max(0.5, Math.min(10, parseFloat((s + delta).toFixed(2)))));
   }
 
-  const scaleLabel = Number.isInteger(scale) ? `${scale}×` : `${scale}×`;
+  const scaleLabel = `${scale}×`;
 
-  // Pantry matching
   function matchPantry(name: string): PantryItem | null {
     const n = name.toLowerCase().trim();
     for (const item of pantryItems) {
@@ -150,13 +149,13 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <p style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}>Recipe not found.</p>
+        <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Recipe not found.</p>
         <Link
           to="/recipes"
           className="text-sm mt-2 inline-block"
-          style={{ color: '#FF61B4', textDecoration: 'none' }}
+          style={{ color: 'var(--caramel)', textDecoration: 'none' }}
         >
-          All Recipes
+          ← All Recipes
         </Link>
       </div>
     );
@@ -167,7 +166,7 @@ export default function RecipeDetailPage() {
       {/* Hero */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ height: '45vh', minHeight: 280, maxHeight: 540, marginTop: '-68px' }}
+        style={{ height: '48vh', minHeight: 300, maxHeight: 560 }}
       >
         {recipe.image_url ? (
           <img
@@ -179,47 +178,53 @@ export default function RecipeDetailPage() {
         ) : (
           <div
             className="w-full h-full"
-            style={{ background: 'linear-gradient(135deg, #FF61B4 0%, #48D1D1 100%)' }}
+            style={{ background: 'linear-gradient(135deg, var(--sand) 0%, var(--bone) 50%, var(--cream-deep) 100%)' }}
           />
         )}
 
-        {/* Bottom gradient shadow */}
+        {/* Bottom gradient */}
         <div
           className="absolute inset-x-0 bottom-0"
-          style={{ height: '60%', background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)' }}
+          style={{ height: '65%', background: 'linear-gradient(to top, rgba(26,10,4,0.72) 0%, rgba(26,10,4,0.2) 55%, transparent 100%)' }}
         />
 
-        {/* Trash icon — top-right of hero */}
-        <div className="absolute top-4 right-4">
+        {/* Delete — top-right */}
+        <div className="absolute top-4 right-4 z-10">
           {!confirmDelete ? (
             <button
               onClick={() => setConfirmDelete(true)}
               title="Delete recipe"
               className="flex items-center justify-center rounded-full transition-all duration-200"
-              style={{ width: '2.25rem', height: '2.25rem', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', color: 'rgba(255,255,255,0.75)', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,22,134,0.75)'; e.currentTarget.style.color = 'white'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.35)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; }}
+              style={{
+                width: '2.25rem', height: '2.25rem',
+                background: 'rgba(26,10,4,0.35)',
+                backdropFilter: 'blur(6px)',
+                color: 'rgba(255,255,255,0.7)',
+                border: 'none', cursor: 'pointer',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(176,80,80,0.8)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(26,10,4,0.35)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
               </svg>
             </button>
           ) : (
             <div
               className="flex items-center gap-2 rounded-full px-3 py-1.5"
-              style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}
+              style={{ background: 'rgba(26,10,4,0.6)', backdropFilter: 'blur(6px)' }}
             >
               <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Delete?</span>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#FF61B4', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: deleting ? 0.6 : 1 }}
+                style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#E8997A', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: deleting ? 0.6 : 1 }}
               >
                 {deleting ? '…' : 'Yes'}
               </button>
               <button
                 onClick={() => setConfirmDelete(false)}
-                style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'rgba(255,255,255,0.55)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
               >
                 No
               </button>
@@ -227,28 +232,29 @@ export default function RecipeDetailPage() {
           )}
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-7 max-w-3xl mx-auto">
+        {/* Breadcrumb + Title */}
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-8 max-w-3xl mx-auto">
           <div className="flex items-center gap-1.5 mb-3">
             <Link
               to="/recipes"
               className="text-xs font-medium transition-colors duration-200"
-              style={{ color: 'rgba(255,251,233,0.6)', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
+              style={{ color: 'rgba(255,251,233,0.55)', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
               onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.9)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.6)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.55)'; }}
             >
               All Recipes
             </Link>
-            <span style={{ color: 'rgba(255,251,233,0.4)', fontSize: '0.75rem' }}>/</span>
+            <span style={{ color: 'rgba(255,251,233,0.35)', fontSize: '0.75rem' }}>/</span>
           </div>
           <h1
             className="text-white animate-fade-up"
             style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: 'clamp(1.6rem, 4vw, 2.5rem)',
-              fontWeight: 800,
-              lineHeight: 1.2,
-              letterSpacing: '-0.01em',
-              textShadow: '0 2px 16px rgba(0,0,0,0.4)',
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(1.75rem, 4.5vw, 2.75rem)',
+              fontWeight: 600,
+              lineHeight: 1.15,
+              letterSpacing: '-0.02em',
+              textShadow: '0 2px 20px rgba(0,0,0,0.35)',
             }}
           >
             {recipe.title}
@@ -257,20 +263,27 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-6 pb-20" style={{ marginTop: '-1px' }}>
+      <div className="max-w-3xl mx-auto px-6 pb-20 pt-8">
 
-        {/* White content card */}
+        {/* Info card */}
         <div
-          className="rounded-2xl p-6 sm:p-8 mb-6 shadow-warm-sm animate-fade-up"
-          style={{ background: 'white', border: '1px solid #FFC3E8' }}
+          className="rounded-2xl p-6 sm:p-8 mb-6 animate-fade-up"
+          style={{
+            background: 'white',
+            border: '1px solid var(--bone)',
+            boxShadow: 'var(--shadow-sm)',
+          }}
         >
           {/* Description */}
           {recipe.description && (
             <p
               className="mb-6 leading-relaxed"
               style={{
-                fontFamily: 'var(--font-body)', color: '#512A18',
-                fontSize: '0.9375rem', lineHeight: 1.7,
+                fontFamily: 'var(--font-body)',
+                color: 'var(--espresso)',
+                fontSize: '0.9375rem',
+                lineHeight: 1.75,
+                opacity: 0.85,
               }}
             >
               {recipe.description}
@@ -289,16 +302,22 @@ export default function RecipeDetailPage() {
                 .map((stat, i) => stat && (
                   <div
                     key={i}
-                    style={{ flex: 1, background: '#FFC3E8', borderRadius: '12px', padding: '10px 14px' }}
+                    style={{
+                      flex: 1,
+                      background: 'var(--cream)',
+                      border: '1px solid var(--bone)',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '10px 14px',
+                    }}
                   >
                     <div style={{
-                      fontSize: '11px', color: 'rgba(81,42,24,0.55)', fontWeight: 600,
-                      textTransform: 'uppercase', letterSpacing: '0.06em',
-                      marginBottom: '2px', fontFamily: 'var(--font-body)',
+                      fontSize: '10px', color: 'var(--muted)', fontWeight: 600,
+                      textTransform: 'uppercase', letterSpacing: '0.1em',
+                      marginBottom: '3px', fontFamily: 'var(--font-body)',
                     }}>
                       {stat.label}
                     </div>
-                    <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#512A18', fontFamily: 'var(--font-body)' }}>
+                    <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--espresso)', fontFamily: 'var(--font-body)' }}>
                       {stat.value}
                     </div>
                   </div>
@@ -312,21 +331,21 @@ export default function RecipeDetailPage() {
             <div
               className="flex items-center gap-3 rounded-xl mb-5"
               style={{
-                background: '#FFF0F8',
-                borderLeft: '4px solid #FF61B4',
+                background: 'rgba(196,114,42,0.06)',
+                borderLeft: '3px solid var(--caramel)',
                 padding: '12px 14px',
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF61B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
-              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#512A18' }}>
+              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--espresso)' }}>
                 You may be missing some ingredients.{' '}
                 <button
                   onClick={() => setShowPantryModal(true)}
-                  style={{ color: '#FF61B4', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}
+                  style={{ color: 'var(--caramel)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}
                 >
                   See what's needed →
                 </button>
@@ -334,8 +353,8 @@ export default function RecipeDetailPage() {
               <button
                 onClick={() => setBannerDismissed(true)}
                 className="w-6 h-6 flex items-center justify-center rounded-full text-base leading-none transition-colors shrink-0"
-                style={{ color: 'rgba(81,42,24,0.45)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFC3E8'; }}
+                style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -348,19 +367,34 @@ export default function RecipeDetailPage() {
             {/* Primary */}
             <button
               onClick={() => setShowBaked(true)}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all duration-200"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
               style={
                 recipe.rating
-                  ? { background: '#FFF0F8', border: '1.5px solid #FFC3E8', color: '#C83E94', borderRadius: '10px', fontFamily: 'var(--font-body)' }
-                  : { background: '#FF61B4', color: 'white', borderRadius: '10px', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(255,97,180,0.30)' }
+                  ? {
+                      background: 'rgba(196,114,42,0.07)',
+                      border: '1.5px solid var(--caramel)',
+                      color: 'var(--caramel)',
+                      borderRadius: 'var(--radius-md)',
+                      fontFamily: 'var(--font-body)',
+                      cursor: 'pointer',
+                    }
+                  : {
+                      background: 'var(--caramel)',
+                      color: 'white',
+                      borderRadius: 'var(--radius-md)',
+                      fontFamily: 'var(--font-body)',
+                      boxShadow: '0 2px 12px rgba(196,114,42,0.30)',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }
               }
-              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#E0489E'; }}
-              onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = '#FF61B4'; }}
+              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#A85E22'; }}
+              onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = 'var(--caramel)'; }}
             >
               {recipe.rating ? (
                 <><span>✓ Baked</span><StarDisplay rating={recipe.rating} size="sm" /></>
               ) : (
-                'Mark as Baked ✦'
+                'Mark as Baked'
               )}
             </button>
 
@@ -368,12 +402,27 @@ export default function RecipeDetailPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowCookbook(true)}
-                className="flex-1 inline-flex items-center justify-center gap-2 py-2 text-sm font-semibold transition-all duration-200"
-                style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', borderRadius: '10px', fontFamily: 'var(--font-body)', background: 'white' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all duration-200"
+                style={{
+                  border: '1.5px solid var(--bone)',
+                  color: 'var(--espresso)',
+                  borderRadius: 'var(--radius-md)',
+                  fontFamily: 'var(--font-body)',
+                  background: 'white',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'var(--caramel)';
+                  e.currentTarget.style.color = 'var(--caramel)';
+                  e.currentTarget.style.background = 'rgba(196,114,42,0.04)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'var(--bone)';
+                  e.currentTarget.style.color = 'var(--espresso)';
+                  e.currentTarget.style.background = 'white';
+                }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                 </svg>
                 Add to Cookbook
@@ -384,10 +433,23 @@ export default function RecipeDetailPage() {
                   href={recipe.source_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold transition-all duration-200"
-                  style={{ background: '#48D1D1', color: 'white', borderRadius: '10px', fontFamily: 'var(--font-body)', textDecoration: 'none' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#48D1D1'; }}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+                  style={{
+                    border: '1.5px solid var(--bone)',
+                    color: 'var(--muted)',
+                    borderRadius: 'var(--radius-md)',
+                    fontFamily: 'var(--font-body)',
+                    textDecoration: 'none',
+                    background: 'white',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--sand)';
+                    e.currentTarget.style.color = 'var(--espresso)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--bone)';
+                    e.currentTarget.style.color = 'var(--muted)';
+                  }}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -399,39 +461,54 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        {/* Scaler */}
-        <div className="flex items-center gap-3 mb-6 animate-fade-up delay-1">
+        {/* Scale control */}
+        <div className="flex items-center gap-3 mb-7 animate-fade-up delay-1">
           <span
-            className="text-xs font-medium uppercase tracking-wider"
-            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
+            className="text-xs font-semibold uppercase tracking-wider"
+            style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.1em' }}
           >
             Scale
           </span>
           <div
             className="inline-flex items-center rounded-full overflow-hidden"
-            style={{ border: '1.5px solid #FFC3E8', background: 'white', boxShadow: '0 1px 4px rgba(81,42,24,0.06)' }}
+            style={{ border: '1.5px solid var(--bone)', background: 'white' }}
           >
             <button
               onClick={() => adjustScale(-0.5)}
               className="flex items-center justify-center transition-colors duration-150"
-              style={{ width: '2.25rem', height: '2.25rem', color: '#512A18', fontSize: '1.1rem', fontWeight: 300, background: '#FFC3E8' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#FFB0DF'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFC3E8'; }}
+              style={{
+                width: '2.25rem', height: '2.25rem',
+                color: 'var(--espresso)', fontSize: '1.1rem', fontWeight: 300,
+                background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
             >
               −
             </button>
             <span
-              className="text-sm font-bold text-center"
-              style={{ minWidth: '3rem', color: '#512A18', fontFamily: 'var(--font-body)', borderLeft: '1px solid #FFC3E8', borderRight: '1px solid #FFC3E8', padding: '0.4rem 0.25rem' }}
+              className="text-sm font-semibold text-center"
+              style={{
+                minWidth: '3rem',
+                color: 'var(--espresso)',
+                fontFamily: 'var(--font-body)',
+                borderLeft: '1px solid var(--bone)',
+                borderRight: '1px solid var(--bone)',
+                padding: '0.4rem 0.25rem',
+              }}
             >
               {scaleLabel}
             </span>
             <button
               onClick={() => adjustScale(0.5)}
               className="flex items-center justify-center transition-colors duration-150"
-              style={{ width: '2.25rem', height: '2.25rem', color: '#512A18', fontSize: '1.1rem', fontWeight: 300, background: '#FFC3E8' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#FFB0DF'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFC3E8'; }}
+              style={{
+                width: '2.25rem', height: '2.25rem',
+                color: 'var(--espresso)', fontSize: '1.1rem', fontWeight: 300,
+                background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
             >
               +
             </button>
@@ -439,7 +516,7 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid #FFC3E8' }}>
+        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--bone)' }}>
           <div className="flex gap-0">
             {(['ingredients', 'instructions'] as Tab[]).map(t => (
               <button
@@ -448,8 +525,12 @@ export default function RecipeDetailPage() {
                 className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
                 style={{
                   fontFamily: 'var(--font-body)',
-                  color: tab === t ? '#FF61B4' : 'rgba(81,42,24,0.5)',
-                  borderBottom: tab === t ? '2px solid #FF61B4' : '2px solid transparent',
+                  color: tab === t ? 'var(--caramel)' : 'var(--muted)',
+                  borderBottom: tab === t ? '2px solid var(--caramel)' : '2px solid transparent',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: tab === t ? '2px solid var(--caramel)' : '2px solid transparent',
+                  cursor: 'pointer',
                 }}
               >
                 {t}
@@ -466,18 +547,18 @@ export default function RecipeDetailPage() {
                 {group.group_name && (
                   <div className="flex items-center gap-3 mb-3">
                     <span
-                      className="text-xs font-bold uppercase tracking-[0.15em]"
-                      style={{ color: '#D29C64', fontFamily: 'var(--font-body)' }}
+                      className="text-xs font-semibold uppercase tracking-[0.12em]"
+                      style={{ color: 'var(--caramel)', fontFamily: 'var(--font-body)' }}
                     >
                       {group.group_name}
                     </span>
-                    <div className="flex-1 h-px" style={{ background: '#FFC3E8' }} />
+                    <div className="flex-1 h-px" style={{ background: 'var(--bone)' }} />
                   </div>
                 )}
-                <ul className="space-y-2">
+                <ul className="space-y-2.5">
                   {group.ingredients.map((ing, ii) => {
                     const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
-                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : '#FF61B4';
+                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--caramel)';
                     return (
                       <li key={ii} className="flex items-baseline gap-3">
                         <span
@@ -485,11 +566,10 @@ export default function RecipeDetailPage() {
                           style={{ background: dotColor }}
                           title={pantryItems.length > 0 ? status : undefined}
                         />
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: '#512A18' }}>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--espresso)' }}>
                           <span
                             key={`${scale}-${gi}-${ii}`}
                             className="font-semibold animate-amount"
-                            style={{ color: '#512A18' }}
                           >
                             {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
                           </span>{' '}
@@ -497,7 +577,7 @@ export default function RecipeDetailPage() {
                           {ing.notes && (
                             <span
                               className="ml-1"
-                              style={{ color: 'rgba(81,42,24,0.55)', fontStyle: 'italic', fontSize: '0.875rem' }}
+                              style={{ color: 'var(--muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
                             >
                               ({ing.notes})
                             </span>
@@ -513,16 +593,16 @@ export default function RecipeDetailPage() {
             {/* Equipment */}
             {recipe.equipment && recipe.equipment.length > 0 && (
               <div
-                className="rounded-2xl p-5 mt-6"
-                style={{ background: '#FFF0F8', border: '1px solid #FFC3E8' }}
+                className="rounded-2xl p-5 mt-4"
+                style={{ background: 'var(--cream)', border: '1px solid var(--bone)' }}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(81,42,24,0.55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
                   </svg>
                   <h3
-                    className="text-xs font-semibold uppercase tracking-[0.12em]"
-                    style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
+                    className="text-xs font-semibold uppercase tracking-[0.1em]"
+                    style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}
                   >
                     Equipment
                   </h3>
@@ -532,9 +612,9 @@ export default function RecipeDetailPage() {
                     <li
                       key={i}
                       className="flex items-center gap-2 text-sm"
-                      style={{ color: '#512A18', fontFamily: 'var(--font-body)' }}
+                      style={{ color: 'var(--espresso)', fontFamily: 'var(--font-body)' }}
                     >
-                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: '#FF61B4' }} />
+                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--caramel)' }} />
                       {item.charAt(0).toUpperCase() + item.slice(1)}
                     </li>
                   ))}
@@ -542,13 +622,13 @@ export default function RecipeDetailPage() {
               </div>
             )}
 
-            {/* Pantry legend — only when pantry has data */}
+            {/* Pantry legend */}
             {pantryItems.length > 0 && (
               <div className="flex items-center gap-4 pt-2">
                 {([['in-stock', 'In stock'], ['low', 'Low / on list'], ['missing', 'Not in pantry']] as [IngStatus, string][]).map(([s, label]) => (
                   <div key={s} className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: STATUS_DOT[s] }} />
-                    <span style={{ fontSize: '0.75rem', color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}>{label}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>{label}</span>
                   </div>
                 ))}
               </div>
@@ -563,18 +643,22 @@ export default function RecipeDetailPage() {
               <li key={i} className="flex gap-5">
                 <div className="shrink-0 flex flex-col items-center">
                   <span
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                    style={{ background: '#FF61B4', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(255,97,180,0.30)' }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
+                    style={{
+                      background: 'var(--caramel)',
+                      fontFamily: 'var(--font-body)',
+                      boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
+                    }}
                   >
                     {i + 1}
                   </span>
                   {i < recipe.instructions.length - 1 && (
-                    <div className="flex-1 w-px mt-2" style={{ background: '#FFC3E8', minHeight: '1.5rem' }} />
+                    <div className="flex-1 w-px mt-2" style={{ background: 'var(--bone)', minHeight: '1.5rem' }} />
                   )}
                 </div>
                 <p
                   className="pb-2 leading-relaxed pt-1"
-                  style={{ fontFamily: 'var(--font-body)', color: '#512A18', fontSize: '0.9375rem', lineHeight: 1.75 }}
+                  style={{ fontFamily: 'var(--font-body)', color: 'var(--espresso)', fontSize: '0.9375rem', lineHeight: 1.8 }}
                 >
                   {step}
                 </p>
@@ -584,7 +668,7 @@ export default function RecipeDetailPage() {
         )}
       </div>
 
-      {/* Existing modals */}
+      {/* Modals */}
       {showBaked && (
         <BakedModal recipe={recipe} onClose={() => setShowBaked(false)} onSave={setRecipe} />
       )}
@@ -596,22 +680,22 @@ export default function RecipeDetailPage() {
       {showPantryModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'rgba(81,42,24,0.4)' }}
+          style={{ background: 'rgba(26,10,4,0.45)' }}
           onClick={e => e.target === e.currentTarget && setShowPantryModal(false)}
         >
           <div
             className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
-            style={{ border: '1px solid #FFC3E8', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '82vh' }}
+            style={{ border: '1px solid var(--bone)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
           >
-            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid #FFC3E8' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: '#512A18' }}>
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--cream-deep)' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--espresso)', letterSpacing: '-0.01em' }}>
                 Ingredients Check
               </h2>
               <button
                 onClick={() => setShowPantryModal(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'rgba(81,42,24,0.55)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -622,20 +706,20 @@ export default function RecipeDetailPage() {
               <div className="space-y-1">
                 {allIngredients.map((ing, i) => {
                   const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
-                  const icon = status === 'in-stock' ? '✅' : status === 'low' ? '⚠️' : '❌';
+                  const icon = status === 'in-stock' ? '✓' : status === 'low' ? '~' : '−';
+                  const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--caramel)' : '#B05050';
                   const isAdding = addingToList.has(ing.name);
                   return (
                     <div
                       key={i}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
-                      style={{ background: status === 'missing' ? '#FFF8F8' : status === 'low' ? '#FFFDF0' : 'transparent' }}
+                      style={{
+                        background: status === 'missing' ? 'rgba(176,80,80,0.05)' : status === 'low' ? 'rgba(196,114,42,0.05)' : 'transparent',
+                      }}
                     >
-                      <span className="text-base shrink-0">{icon}</span>
+                      <span className="text-sm font-bold shrink-0 w-4 text-center" style={{ color: iconColor }}>{icon}</span>
                       <span
-                        style={{
-                          flex: 1, fontFamily: 'var(--font-body)',
-                          fontSize: '0.875rem', color: '#512A18',
-                        }}
+                        style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--espresso)' }}
                       >
                         {[ing.amount, ing.unit, ing.name].filter(Boolean).join(' ')}
                       </span>
@@ -644,8 +728,15 @@ export default function RecipeDetailPage() {
                           onClick={() => addToShoppingList(ing.name)}
                           disabled={isAdding}
                           className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all duration-200 disabled:opacity-40 shrink-0"
-                          style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', fontFamily: 'var(--font-body)', background: 'white', whiteSpace: 'nowrap' }}
-                          onMouseEnter={e => { if (!isAdding) e.currentTarget.style.background = '#FFF0F8'; }}
+                          style={{
+                            border: '1.5px solid var(--caramel)',
+                            color: 'var(--caramel)',
+                            fontFamily: 'var(--font-body)',
+                            background: 'white',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                          onMouseEnter={e => { if (!isAdding) e.currentTarget.style.background = 'rgba(196,114,42,0.07)'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
                         >
                           {isAdding ? '…' : '+ List'}
@@ -657,14 +748,21 @@ export default function RecipeDetailPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid #FFC3E8' }}>
+            <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid var(--cream-deep)' }}>
               <button
                 onClick={addAllMissing}
                 disabled={addingAll || allIngredients.every(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) === 'in-stock')}
-                className="w-full py-2.5 text-sm font-semibold text-white rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: '#FF61B4', fontFamily: 'var(--font-body)' }}
-                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#E0489E'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
+                className="w-full py-2.5 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{
+                  background: 'var(--caramel)',
+                  fontFamily: 'var(--font-body)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
+                }}
+                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#A85E22'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
               >
                 {addingAll ? 'Adding…' : 'Add all missing to Shopping List'}
               </button>
