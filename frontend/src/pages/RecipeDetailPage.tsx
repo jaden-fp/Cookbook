@@ -185,7 +185,7 @@ export default function RecipeDetailPage() {
         {/* Bottom gradient */}
         <div
           className="absolute inset-x-0 bottom-0"
-          style={{ height: '65%', background: 'linear-gradient(to top, rgba(26,10,4,0.72) 0%, rgba(26,10,4,0.2) 55%, transparent 100%)' }}
+          style={{ height: '65%', background: 'linear-gradient(to top, rgba(15,12,30,0.72) 0%, rgba(15,12,30,0.2) 55%, transparent 100%)' }}
         />
 
         {/* Delete — top-right */}
