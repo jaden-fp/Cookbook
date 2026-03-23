@@ -758,9 +758,9 @@ export default function RecipeDetailPage() {
                   borderRadius: 'var(--radius-sm)',
                   border: 'none',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
+                  boxShadow: '0 2px 8px var(--accent-glow)',
                 }}
-                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#A85E22'; }}
+                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#D0155A'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
               >
                 {addingAll ? 'Adding…' : 'Add all missing to Shopping List'}
