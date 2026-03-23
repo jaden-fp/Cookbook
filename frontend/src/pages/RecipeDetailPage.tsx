@@ -353,8 +353,8 @@ export default function RecipeDetailPage() {
               <button
                 onClick={() => setBannerDismissed(true)}
                 className="w-6 h-6 flex items-center justify-center rounded-full text-base leading-none transition-colors shrink-0"
-                style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
