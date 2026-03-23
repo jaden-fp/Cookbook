@@ -42,7 +42,7 @@ export default function StarPicker({ value, onChange }: Props) {
       <p
         className="text-sm transition-all duration-200"
         style={{
-          fontFamily: 'var(--font-editorial)',
+          fontFamily: 'var(--font-display)',
           fontStyle: 'italic',
           color: active ? 'var(--espresso)' : 'var(--muted)',
           minHeight: '1.25rem',
