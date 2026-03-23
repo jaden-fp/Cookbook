@@ -507,7 +507,7 @@ export default function PantryPage() {
                 style={{
                   background: 'var(--accent)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)',
-                  boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
+                  boxShadow: '0 2px 8px var(--accent-glow)',
                   height: '44px', whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#A85E22'; }}
