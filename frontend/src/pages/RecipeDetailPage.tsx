@@ -408,18 +408,18 @@ export default function RecipeDetailPage() {
                   color: 'var(--text)',
                   borderRadius: 'var(--radius-md)',
                   fontFamily: 'var(--font-body)',
-                  background: 'white',
+                  background: 'var(--surface)',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'var(--accent)';
                   e.currentTarget.style.color = 'var(--accent)';
-                  e.currentTarget.style.background = 'rgba(196,114,42,0.04)';
+                  e.currentTarget.style.background = 'var(--accent-dim)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = 'var(--border-strong)';
                   e.currentTarget.style.color = 'var(--text)';
-                  e.currentTarget.style.background = 'white';
+                  e.currentTarget.style.background = 'var(--surface)';
                 }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
