@@ -436,7 +436,7 @@ export default function RecipeDetailPage() {
                   className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold transition-all duration-200"
                   style={{
                     border: '1.5px solid var(--bone)',
-                    color: 'var(--muted)',
+                    color: 'var(--text-muted)',
                     borderRadius: 'var(--radius-md)',
                     fontFamily: 'var(--font-body)',
                     textDecoration: 'none',
@@ -448,7 +448,7 @@ export default function RecipeDetailPage() {
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.borderColor = 'var(--bone)';
-                    e.currentTarget.style.color = 'var(--muted)';
+                    e.currentTarget.style.color = 'var(--text-muted)';
                   }}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -465,7 +465,7 @@ export default function RecipeDetailPage() {
         <div className="flex items-center gap-3 mb-7 animate-fade-up delay-1">
           <span
             className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.1em' }}
+            style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.1em' }}
           >
             Scale
           </span>
@@ -525,7 +525,7 @@ export default function RecipeDetailPage() {
                 className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
                 style={{
                   fontFamily: 'var(--font-body)',
-                  color: tab === t ? 'var(--caramel)' : 'var(--muted)',
+                  color: tab === t ? 'var(--caramel)' : 'var(--text-muted)',
                   background: 'none',
                   border: 'none',
                   borderBottom: tab === t ? '2px solid var(--caramel)' : '2px solid transparent',
@@ -576,7 +576,7 @@ export default function RecipeDetailPage() {
                           {ing.notes && (
                             <span
                               className="ml-1"
-                              style={{ color: 'var(--muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
+                              style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
                             >
                               ({ing.notes})
                             </span>
@@ -596,12 +596,12 @@ export default function RecipeDetailPage() {
                 style={{ background: 'var(--cream)', border: '1px solid var(--bone)' }}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
                   </svg>
                   <h3
                     className="text-xs font-semibold uppercase tracking-[0.1em]"
-                    style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}
+                    style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
                   >
                     Equipment
                   </h3>
@@ -627,7 +627,7 @@ export default function RecipeDetailPage() {
                 {([['in-stock', 'In stock'], ['low', 'Low / on list'], ['missing', 'Not in pantry']] as [IngStatus, string][]).map(([s, label]) => (
                   <div key={s} className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: STATUS_DOT[s] }} />
-                    <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>{label}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>{label}</span>
                   </div>
                 ))}
               </div>
@@ -693,7 +693,7 @@ export default function RecipeDetailPage() {
               <button
                 onClick={() => setShowPantryModal(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
