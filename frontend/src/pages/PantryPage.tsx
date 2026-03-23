@@ -363,7 +363,7 @@ export default function PantryPage() {
                   color: 'var(--text)', padding: '0.5625rem 0.875rem',
                   outline: 'none', background: 'white',
                 }}
-                onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--accent)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--accent)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                 onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = 'var(--border-strong)'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
@@ -449,7 +449,7 @@ export default function PantryPage() {
                   color: 'var(--text)', padding: '0.5625rem 0.75rem',
                   outline: 'none', background: 'white',
                 }}
-                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                 onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
@@ -491,7 +491,7 @@ export default function PantryPage() {
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', width: '88px', height: '44px',
                   }}
-                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                   onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
                 />
               )}
@@ -871,7 +871,7 @@ export default function PantryPage() {
                     color: 'var(--text)', padding: '0.5625rem 0.875rem',
                     outline: 'none', background: 'white',
                   }}
-                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                   onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
                 />
                 <select
