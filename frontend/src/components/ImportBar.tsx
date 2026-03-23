@@ -57,10 +57,10 @@ export default function ImportBar({ onSuccess }: Props) {
       <form onSubmit={handleUrlImport} className="relative flex items-stretch overflow-hidden"
         style={{
           borderRadius: '999px',
-          border: focused ? '1.5px solid var(--caramel)' : '1.5px solid var(--bone)',
-          boxShadow: focused ? '0 0 0 3px rgba(196,114,42,0.12)' : 'var(--shadow-sm)',
+          border: focused ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
+          boxShadow: focused ? `0 0 0 3px var(--accent-dim), var(--shadow-md)` : 'var(--shadow-sm)',
           transition: 'border-color 0.2s, box-shadow 0.2s',
-          background: 'white',
+          background: 'var(--surface)',
         }}
       >
         <input
@@ -76,7 +76,7 @@ export default function ImportBar({ onSuccess }: Props) {
             fontFamily: 'var(--font-body)',
             fontSize: '0.9375rem',
             fontWeight: 400,
-            color: 'var(--espresso)',
+            color: 'var(--text)',
             padding: '0.75rem 1.25rem',
           }}
           onFocus={() => setFocused(true)}
@@ -85,21 +85,22 @@ export default function ImportBar({ onSuccess }: Props) {
         <button
           type="submit"
           disabled={importing || !url.trim()}
-          className="text-white transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          className="transition-all duration-200 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           style={{
-            background: 'var(--caramel)',
+            background: 'var(--accent)',
+            color: '#0D0D0D',
             fontFamily: 'var(--font-body)',
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '0.875rem',
             padding: '0 1.5rem',
             borderRadius: '999px',
             margin: '4px',
             border: 'none',
             cursor: 'pointer',
-            letterSpacing: '-0.01em',
+            letterSpacing: '0',
           }}
-          onMouseEnter={e => { if (!importing && url.trim()) e.currentTarget.style.background = '#A85E22'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
+          onMouseEnter={e => { if (!importing && url.trim()) e.currentTarget.style.background = '#F0C85A'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
         >
           {importing ? (
             <>
@@ -112,15 +113,15 @@ export default function ImportBar({ onSuccess }: Props) {
 
       {importing && (
         <div className="mt-3 flex items-center gap-2 justify-center" key={importMsgIdx}>
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0" style={{ background: 'var(--caramel)' }} />
-          <p className="text-sm animate-msg" style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
+          <p className="text-sm animate-msg" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             {IMPORT_MESSAGES[importMsgIdx]}
           </p>
         </div>
       )}
 
       {importError && !importing && (
-        <p className="mt-2.5 text-sm text-center" style={{ color: '#B94040', fontFamily: 'var(--font-body)' }}>
+        <p className="mt-2.5 text-sm text-center" style={{ color: 'var(--danger)', fontFamily: 'var(--font-body)' }}>
           {importError}
         </p>
       )}

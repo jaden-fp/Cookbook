@@ -9,7 +9,7 @@ import PantryPage from './pages/PantryPage';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen" style={{ background: 'var(--cream)' }}>
+      <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
         <NavBar />
         <Routes>
           <Route path="/" element={<Navigate to="/cookbooks" replace />} />

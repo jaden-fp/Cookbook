@@ -20,29 +20,28 @@ export default function Modal({ onClose, children, title }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-      style={{ background: 'rgba(26,10,4,0.45)' }}
+      style={{ background: 'rgba(0,0,0,0.7)' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div
         className="w-full max-w-md animate-scale-in flex flex-col"
         style={{
           maxHeight: 'calc(100vh - 2rem)',
-          background: 'white',
+          background: 'var(--surface)',
           borderRadius: 'var(--radius-xl)',
-          border: '1px solid var(--bone)',
+          border: '1px solid var(--border-strong)',
           boxShadow: 'var(--shadow-xl)',
         }}
       >
-        {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4 shrink-0"
-          style={{ borderBottom: '1px solid var(--cream-deep)' }}
+          style={{ borderBottom: '1px solid var(--border)' }}
         >
           <h2 style={{
             fontFamily: 'var(--font-display)',
             fontSize: '1.375rem',
             fontWeight: 600,
-            color: 'var(--espresso)',
+            color: 'var(--text)',
             letterSpacing: '-0.01em',
           }}>
             {title}
@@ -50,14 +49,13 @@ export default function Modal({ onClose, children, title }: Props) {
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150 text-lg leading-none"
-            style={{ color: 'var(--muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; e.currentTarget.style.color = 'var(--espresso)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)'; }}
+            style={{ color: 'var(--text-muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
           >
             ×
           </button>
         </div>
-
         <div className="p-6 overflow-y-auto">{children}</div>
       </div>
     </div>

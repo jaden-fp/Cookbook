@@ -8,41 +8,33 @@ export default function NavBar() {
     <nav
       className="sticky top-0 z-40"
       style={{
-        background: 'var(--cream)',
-        borderBottom: '1px solid var(--bone)',
-        height: '64px',
+        background: 'rgba(13,13,13,0.92)',
+        backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid var(--border)',
+        height: '62px',
       }}
     >
-      <div
-        className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between"
-      >
+      <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
+
         {/* Wordmark */}
-        <Link
-          to="/cookbooks"
-          style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '6px' }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.5rem',
-              fontWeight: 600,
-              color: 'var(--espresso)',
-              letterSpacing: '-0.01em',
-              lineHeight: 1,
-            }}
-          >
+        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          <span style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '1.4rem',
+            fontWeight: 600,
+            color: 'var(--text)',
+            letterSpacing: '-0.01em',
+            lineHeight: 1,
+          }}>
             Cox Cookie Co.
           </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '0.875rem',
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: 'var(--caramel)',
-              letterSpacing: '0.01em',
-            }}
-          >
+          <span style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '0.875rem',
+            fontWeight: 400,
+            fontStyle: 'italic',
+            color: 'var(--accent)',
+          }}>
             recipes
           </span>
         </Link>
@@ -61,25 +53,25 @@ export default function NavBar() {
                 to={to}
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontWeight: active ? 600 : 400,
+                  fontWeight: 500,
                   fontSize: '0.875rem',
-                  color: active ? 'var(--espresso)' : 'var(--muted)',
+                  color: active ? 'var(--accent)' : 'var(--text-muted)',
                   textDecoration: 'none',
                   padding: '6px 14px',
                   borderRadius: '999px',
-                  background: active ? 'var(--cream-deep)' : 'transparent',
-                  transition: 'all 0.18s ease',
-                  letterSpacing: '-0.01em',
+                  background: active ? 'var(--accent-dim)' : 'transparent',
+                  transition: 'all 0.15s ease',
+                  letterSpacing: '0',
                 }}
                 onMouseEnter={e => {
                   if (!active) {
-                    e.currentTarget.style.color = 'var(--espresso)';
-                    e.currentTarget.style.background = 'var(--cream-deep)';
+                    e.currentTarget.style.color = 'var(--text)';
+                    e.currentTarget.style.background = 'var(--surface)';
                   }
                 }}
                 onMouseLeave={e => {
                   if (!active) {
-                    e.currentTarget.style.color = 'var(--muted)';
+                    e.currentTarget.style.color = 'var(--text-muted)';
                     e.currentTarget.style.background = 'transparent';
                   }
                 }}
