@@ -646,7 +646,7 @@ export default function RecipeDetailPage() {
                     style={{
                       background: 'var(--accent)',
                       fontFamily: 'var(--font-body)',
-                      boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
+                      boxShadow: '0 2px 8px var(--accent-glow)',
                     }}
                   >
                     {i + 1}
