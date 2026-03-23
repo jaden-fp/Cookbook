@@ -371,25 +371,25 @@ export default function RecipeDetailPage() {
               style={
                 recipe.rating
                   ? {
-                      background: 'rgba(196,114,42,0.07)',
-                      border: '1.5px solid var(--caramel)',
-                      color: 'var(--caramel)',
+                      background: 'var(--accent-dim)',
+                      border: '1.5px solid var(--accent)',
+                      color: 'var(--accent)',
                       borderRadius: 'var(--radius-md)',
                       fontFamily: 'var(--font-body)',
                       cursor: 'pointer',
                     }
                   : {
-                      background: 'var(--caramel)',
+                      background: 'var(--accent)',
                       color: 'white',
                       borderRadius: 'var(--radius-md)',
                       fontFamily: 'var(--font-body)',
-                      boxShadow: '0 2px 12px rgba(196,114,42,0.30)',
+                      boxShadow: '0 2px 12px var(--accent-glow)',
                       border: 'none',
                       cursor: 'pointer',
                     }
               }
-              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#A85E22'; }}
-              onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = 'var(--caramel)'; }}
+              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#D0155A'; }}
+              onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = 'var(--accent)'; }}
             >
               {recipe.rating ? (
                 <><span>✓ Baked</span><StarDisplay rating={recipe.rating} size="sm" /></>
