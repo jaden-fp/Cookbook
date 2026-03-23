@@ -197,13 +197,13 @@ export default function RecipeDetailPage() {
               className="flex items-center justify-center rounded-full transition-all duration-200"
               style={{
                 width: '2.25rem', height: '2.25rem',
-                background: 'rgba(26,10,4,0.35)',
+                background: 'rgba(0,0,0,0.3)',
                 backdropFilter: 'blur(6px)',
                 color: 'rgba(255,255,255,0.7)',
                 border: 'none', cursor: 'pointer',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(176,80,80,0.8)'; e.currentTarget.style.color = 'white'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(26,10,4,0.35)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
