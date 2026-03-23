@@ -317,7 +317,7 @@ export default function RecipeDetailPage() {
                     }}>
                       {stat.label}
                     </div>
-                    <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--espresso)', fontFamily: 'var(--font-body)' }}>
+                    <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
                       {stat.value}
                     </div>
                   </div>
