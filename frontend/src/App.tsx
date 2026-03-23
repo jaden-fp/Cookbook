@@ -9,10 +9,8 @@ import PantryPage from './pages/PantryPage';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen">
+      <div className="min-h-screen" style={{ background: 'var(--cream)' }}>
         <NavBar />
-        {/* Extra top padding to clear the overflowing logo */}
-        <div style={{ paddingTop: '68px' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/cookbooks" replace />} />
           <Route path="/cookbooks" element={<CookbooksPage />} />
@@ -21,7 +19,6 @@ export default function App() {
           <Route path="/recipes/:id" element={<RecipeDetailPage />} />
           <Route path="/pantry" element={<PantryPage />} />
         </Routes>
-        </div>
       </div>
     </BrowserRouter>
   );
