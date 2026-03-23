@@ -713,7 +713,7 @@ export default function RecipeDetailPage() {
                       key={i}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
                       style={{
-                        background: status === 'missing' ? 'rgba(176,80,80,0.05)' : status === 'low' ? 'rgba(196,114,42,0.05)' : 'transparent',
+                        background: status === 'missing' ? 'rgba(224,62,62,0.05)' : status === 'low' ? 'var(--teal-lt)' : 'transparent',
                       }}
                     >
                       <span className="text-sm font-bold shrink-0 w-4 text-center" style={{ color: iconColor }}>{icon}</span>
