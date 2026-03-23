@@ -46,8 +46,8 @@ export default function RecipeTile({ recipe }: Props) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #222 100%)' }}>
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              style={{ background: 'linear-gradient(135deg, var(--purple-lt) 0%, var(--teal-lt) 100%)' }}>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(15,12,30,0.15)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3v18M3 7a4 4 0 008 0V3M7 21v-7M21 3v4a3 3 0 01-3 3v11" />
               </svg>
             </div>
