@@ -706,7 +706,7 @@ export default function RecipeDetailPage() {
                 {allIngredients.map((ing, i) => {
                   const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
                   const icon = status === 'in-stock' ? '✓' : status === 'low' ? '~' : '−';
-                  const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--accent)' : '#B05050';
+                  const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--teal)' : '#E03E3E';
                   const isAdding = addingToList.has(ing.name);
                   return (
                     <div
