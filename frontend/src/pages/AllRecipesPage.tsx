@@ -39,23 +39,23 @@ export default function AllRecipesPage() {
           fontWeight: 600,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          color: 'var(--caramel)',
+          color: 'var(--accent)',
           marginBottom: '6px',
         }}>
           The Collection
         </p>
         <h1 style={{
           fontFamily: 'var(--font-display)',
-          fontWeight: 600,
+          fontWeight: 700,
           fontSize: 'clamp(2.25rem, 5vw, 3.25rem)',
-          color: 'var(--espresso)',
+          color: 'var(--text)',
           letterSpacing: '-0.02em',
           lineHeight: 1.1,
           marginBottom: '10px',
         }}>
           All Recipes
         </h1>
-        <div style={{ width: '40px', height: '2px', background: 'var(--caramel)', borderRadius: '2px' }} />
+        <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
       {/* Import bar */}
@@ -65,9 +65,9 @@ export default function AllRecipesPage() {
 
       {/* Divider + sort row */}
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
-        style={{ borderTop: '1px solid var(--bone)', paddingTop: '20px' }}
+        style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
       >
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 400 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
           {loading ? '' : `${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`}
         </p>
 
@@ -83,9 +83,9 @@ export default function AllRecipesPage() {
               fontFamily: 'var(--font-body)',
               fontSize: '0.8125rem',
               fontWeight: 500,
-              color: 'var(--espresso)',
-              background: 'white',
-              border: '1px solid var(--bone)',
+              color: 'var(--text)',
+              background: 'var(--surface)',
+              border: '1px solid var(--border-strong)',
               borderRadius: 'var(--radius-sm)',
               padding: '5px 10px',
               cursor: 'pointer',
@@ -105,7 +105,7 @@ export default function AllRecipesPage() {
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
           {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="overflow-hidden" style={{ borderRadius: 'var(--radius-lg)', background: 'white', border: '1px solid var(--bone)' }}>
+            <div key={i} className="overflow-hidden" style={{ borderRadius: 'var(--radius-lg)', background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <div className="skeleton" style={{ height: '190px' }} />
               <div style={{ padding: '12px 14px 10px' }} className="space-y-2">
                 <div className="skeleton h-4 rounded w-4/5" />
@@ -119,14 +119,13 @@ export default function AllRecipesPage() {
           <p style={{
             fontFamily: 'var(--font-display)',
             fontSize: '1.5rem',
-            fontWeight: 500,
-            fontStyle: 'italic',
-            color: 'var(--muted)',
+            fontWeight: 600,
+            color: 'var(--text-muted)',
             marginBottom: '6px',
           }}>
             No recipes yet
           </p>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--muted)' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
             Paste a recipe URL above to get started
           </p>
         </div>
