@@ -212,7 +212,7 @@ export default function RecipeDetailPage() {
           ) : (
             <div
               className="flex items-center gap-2 rounded-full px-3 py-1.5"
-              style={{ background: 'rgba(26,10,4,0.6)', backdropFilter: 'blur(6px)' }}
+              style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)' }}
             >
               <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Delete?</span>
               <button
