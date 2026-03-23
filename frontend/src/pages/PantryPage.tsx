@@ -696,9 +696,9 @@ export default function PantryPage() {
                   <button
                     onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
                     className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white transition-all duration-200"
-                    style={{ background: 'var(--sand)', fontFamily: 'var(--font-body)' }}
+                    style={{ background: 'var(--bg-subtle)', fontFamily: 'var(--font-body)' }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--sand)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
                   >
                     Mark as Bought
                   </button>
@@ -902,9 +902,9 @@ export default function PantryPage() {
                   onClick={handleBoughtConfirm}
                   disabled={buyingSaving}
                   className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all disabled:opacity-40"
-                  style={{ background: 'var(--sand)', fontFamily: 'var(--font-body)' }}
+                  style={{ background: 'var(--bg-subtle)', fontFamily: 'var(--font-body)' }}
                   onMouseEnter={e => { if (!buyingSaving) e.currentTarget.style.background = '#38BABA'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--sand)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
                 >
                   {buyingSaving ? 'Saving…' : boughtQty ? 'Confirm' : 'Mark as In Stock'}
                 </button>
