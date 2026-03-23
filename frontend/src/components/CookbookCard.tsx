@@ -8,7 +8,7 @@ interface Props {
   onUpdate: (updated: Cookbook) => void;
 }
 
-const CARD_COLORS = ['#2A1F3D', '#1D2E2A', '#2E1F1A', '#1A2030', '#2A2415', '#1F2A2A'];
+const CARD_COLORS = ['#FFD6E7', '#D6EEFF', '#E8D6FF', '#D6FFF4', '#FFE8D6', '#F0D6FF'];
 function idToColor(id: string) {
   const n = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   return CARD_COLORS[n % CARD_COLORS.length];
