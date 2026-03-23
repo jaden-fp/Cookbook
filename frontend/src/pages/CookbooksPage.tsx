@@ -45,8 +45,8 @@ export default function CookbooksPage() {
       onClick={() => setShowCreate(true)}
       className="flex flex-col items-center justify-center transition-all duration-200"
       style={{
-        border: '1.5px dashed var(--bone)',
-        color: 'var(--muted)',
+        border: '1.5px dashed var(--border-strong)',
+        color: 'var(--text-muted)',
         borderRadius: 'var(--radius-lg)',
         aspectRatio: '1 / 1',
         width: '100%',
@@ -54,13 +54,13 @@ export default function CookbooksPage() {
         cursor: 'pointer',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'var(--caramel)';
-        e.currentTarget.style.color = 'var(--caramel)';
-        e.currentTarget.style.background = 'rgba(196,114,42,0.04)';
+        e.currentTarget.style.borderColor = 'var(--accent)';
+        e.currentTarget.style.color = 'var(--accent)';
+        e.currentTarget.style.background = 'var(--accent-dim)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'var(--bone)';
-        e.currentTarget.style.color = 'var(--muted)';
+        e.currentTarget.style.borderColor = 'var(--border-strong)';
+        e.currentTarget.style.color = 'var(--text-muted)';
         e.currentTarget.style.background = 'transparent';
       }}
     >
@@ -84,23 +84,23 @@ export default function CookbooksPage() {
           fontWeight: 600,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          color: 'var(--caramel)',
+          color: 'var(--accent)',
           marginBottom: '6px',
         }}>
           Your Library
         </p>
         <h1 style={{
           fontFamily: 'var(--font-display)',
-          fontWeight: 600,
+          fontWeight: 700,
           fontSize: 'clamp(2.25rem, 5vw, 3.25rem)',
-          color: 'var(--espresso)',
+          color: 'var(--text)',
           letterSpacing: '-0.02em',
           lineHeight: 1.1,
           marginBottom: '10px',
         }}>
           Cookbooks
         </h1>
-        <div style={{ width: '40px', height: '2px', background: 'var(--caramel)', borderRadius: '2px' }} />
+        <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
       {/* Import bar */}
@@ -110,16 +110,16 @@ export default function CookbooksPage() {
 
       {/* Divider + meta row */}
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
-        style={{ borderTop: '1px solid var(--bone)', paddingTop: '20px' }}
+        style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
       >
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 400 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
           {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
         </p>
         <Link
           to="/recipes"
-          style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'var(--caramel)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; }}
+          style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
         >
           View all recipes →
         </Link>
@@ -134,17 +134,17 @@ export default function CookbooksPage() {
         </div>
       ) : cookbooks.length === 0 ? (
         <div className="text-center py-24 animate-fade-up">
-          <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 500, fontStyle: 'italic', color: 'var(--muted)', marginBottom: '6px' }}>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
             No cookbooks yet
           </p>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--muted)', marginBottom: '20px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
             Create a cookbook to organise your saved recipes.
           </p>
           <button
             onClick={() => setShowCreate(true)}
             className="inline-flex items-center gap-2 transition-all duration-200"
             style={{
-              background: 'var(--caramel)',
+              background: 'var(--accent)',
               color: 'white',
               border: 'none',
               borderRadius: '999px',
@@ -155,8 +155,8 @@ export default function CookbooksPage() {
               cursor: 'pointer',
               letterSpacing: '-0.01em',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#A85E22'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#D0155A'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
           >
             + Create Cookbook
           </button>
@@ -176,28 +176,28 @@ export default function CookbooksPage() {
       {showCreate && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'rgba(26,10,4,0.45)' }}
+          style={{ background: 'rgba(15,12,30,0.45)' }}
           onClick={e => e.target === e.currentTarget && setShowCreate(false)}
         >
           <div
             className="w-full max-w-xs animate-scale-in"
             style={{
-              background: 'white',
+              background: 'var(--surface)',
               borderRadius: 'var(--radius-xl)',
-              border: '1px solid var(--bone)',
+              border: '1px solid var(--border-strong)',
               boxShadow: 'var(--shadow-xl)',
             }}
           >
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--cream-deep)' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.375rem', color: 'var(--espresso)', letterSpacing: '-0.01em' }}>
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.375rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
                 New Cookbook
               </h2>
               <button
                 onClick={() => setShowCreate(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150 text-lg leading-none"
-                style={{ color: 'var(--muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                style={{ color: 'var(--text-muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
               >
                 ×
               </button>
@@ -212,26 +212,26 @@ export default function CookbooksPage() {
                 placeholder="e.g. Weeknight Dinners"
                 className="w-full transition-all duration-200"
                 style={{
-                  border: '1.5px solid var(--bone)',
+                  border: '1.5px solid var(--border-strong)',
                   borderRadius: 'var(--radius-sm)',
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.9375rem',
-                  color: 'var(--espresso)',
+                  color: 'var(--text)',
                   padding: '0.625rem 0.875rem',
                   outline: 'none',
-                  background: 'var(--cream)',
+                  background: 'var(--bg-subtle)',
                 }}
-                onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.12)'; }}
-                onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
+                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
               />
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowCreate(false)}
                   className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
-                  style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                  style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                 >
                   Cancel
                 </button>
@@ -240,14 +240,14 @@ export default function CookbooksPage() {
                   disabled={!createName.trim() || creating}
                   className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
                   style={{
-                    background: 'var(--caramel)',
+                    background: 'var(--accent)',
                     fontFamily: 'var(--font-body)',
                     borderRadius: 'var(--radius-sm)',
                     border: 'none',
                     cursor: 'pointer',
                   }}
-                  onMouseEnter={e => { if (createName.trim() && !creating) e.currentTarget.style.background = '#A85E22'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
+                  onMouseEnter={e => { if (createName.trim() && !creating) e.currentTarget.style.background = '#D0155A'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
                 >
                   {creating ? 'Creating…' : 'Create'}
                 </button>
