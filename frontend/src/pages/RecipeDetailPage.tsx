@@ -178,7 +178,7 @@ export default function RecipeDetailPage() {
         ) : (
           <div
             className="w-full h-full"
-            style={{ background: 'linear-gradient(135deg, var(--sand) 0%, var(--bone) 50%, var(--cream-deep) 100%)' }}
+            style={{ background: 'linear-gradient(135deg, var(--purple-lt) 0%, var(--teal-lt) 50%, var(--pink-lt) 100%)' }}
           />
         )}
 
