@@ -361,7 +361,7 @@ export default function PantryPage() {
                   border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                   color: 'var(--text)', padding: '0.5625rem 0.875rem',
-                  outline: 'none', background: 'white',
+                  outline: 'none', background: 'var(--surface)',
                 }}
                 onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--accent)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                 onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = 'var(--border-strong)'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
@@ -375,7 +375,7 @@ export default function PantryPage() {
                     left: 0,
                     right: 0,
                     zIndex: 50,
-                    background: 'white',
+                    background: 'var(--surface)',
                     border: '1.5px solid var(--border-strong)',
                     borderRadius: '10px',
                     boxShadow: '0 8px 24px rgba(15,12,30,0.08)',
@@ -447,7 +447,7 @@ export default function PantryPage() {
                   border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                   color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                  outline: 'none', background: 'white',
+                  outline: 'none', background: 'var(--surface)',
                 }}
                 onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                 onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
@@ -471,7 +471,7 @@ export default function PantryPage() {
                     border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                    outline: 'none', background: 'white', height: '44px',
+                    outline: 'none', background: 'var(--surface)', height: '44px',
                   }}
                 >
                   {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
@@ -489,7 +489,7 @@ export default function PantryPage() {
                     border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                    outline: 'none', background: 'white', width: '88px', height: '44px',
+                    outline: 'none', background: 'var(--surface)', width: '88px', height: '44px',
                   }}
                   onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                   onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
@@ -569,7 +569,7 @@ export default function PantryPage() {
                 key={item.id}
                 className="rounded-xl p-4 transition-all duration-200"
                 style={{
-                  background: 'white',
+                  background: 'var(--surface)',
                   border: '1px solid var(--border-strong)',
                   boxShadow: '0 1px 4px rgba(81,42,24,0.06)',
                 }}
@@ -591,7 +591,7 @@ export default function PantryPage() {
                     {/* Qty stepper */}
                     <div
                       className="inline-flex items-center rounded-full overflow-hidden"
-                      style={{ border: '1.5px solid var(--border-strong)', background: 'white' }}
+                      style={{ border: '1.5px solid var(--border-strong)', background: 'var(--surface)' }}
                     >
                       <button
                         onClick={() => handleAdjustQty(item, -1)}
@@ -627,7 +627,7 @@ export default function PantryPage() {
                     <button
                       onClick={() => handleNeedToBuy(item)}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
-                      style={{ border: '1.5px solid var(--accent)', color: 'var(--accent)', fontFamily: 'var(--font-body)', background: 'white' }}
+                      style={{ border: '1.5px solid var(--accent)', color: 'var(--accent)', fontFamily: 'var(--font-body)', background: 'var(--surface)' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
                     >
@@ -869,7 +869,7 @@ export default function PantryPage() {
                     flex: 1, border: '1.5px solid var(--border-strong)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.875rem',
-                    outline: 'none', background: 'white',
+                    outline: 'none', background: 'var(--surface)',
                   }}
                   onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
                   onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
@@ -881,7 +881,7 @@ export default function PantryPage() {
                     border: '1.5px solid var(--border-strong)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                    outline: 'none', background: 'white',
+                    outline: 'none', background: 'var(--surface)',
                   }}
                 >
                   {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
