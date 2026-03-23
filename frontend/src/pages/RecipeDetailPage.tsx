@@ -526,7 +526,6 @@ export default function RecipeDetailPage() {
                 style={{
                   fontFamily: 'var(--font-body)',
                   color: tab === t ? 'var(--caramel)' : 'var(--muted)',
-                  borderBottom: tab === t ? '2px solid var(--caramel)' : '2px solid transparent',
                   background: 'none',
                   border: 'none',
                   borderBottom: tab === t ? '2px solid var(--caramel)' : '2px solid transparent',

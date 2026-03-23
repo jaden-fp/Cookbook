@@ -360,7 +360,7 @@ export default function PantryPage() {
                 style={{
                   border: '1.5px solid var(--bone)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: var(--espresso), padding: '0.5625rem 0.875rem',
+                  color: 'var(--espresso)', padding: '0.5625rem 0.875rem',
                   outline: 'none', background: 'white',
                 }}
                 onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--caramel)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
@@ -446,7 +446,7 @@ export default function PantryPage() {
                 style={{
                   border: '1.5px solid var(--bone)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: var(--espresso), padding: '0.5625rem 0.75rem',
+                  color: 'var(--espresso)', padding: '0.5625rem 0.75rem',
                   outline: 'none', background: 'white',
                 }}
                 onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
@@ -470,7 +470,7 @@ export default function PantryPage() {
                   style={{
                     border: '1.5px solid var(--bone)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: var(--espresso), padding: '0.5625rem 0.75rem',
+                    color: 'var(--espresso)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', height: '44px',
                   }}
                 >
@@ -488,7 +488,7 @@ export default function PantryPage() {
                   style={{
                     border: '1.5px solid var(--bone)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: var(--espresso), padding: '0.5625rem 0.75rem',
+                    color: 'var(--espresso)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', width: '88px', height: '44px',
                   }}
                   onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
@@ -543,7 +543,7 @@ export default function PantryPage() {
       {/* In Stock */}
       <section className="mb-10">
         <div className="flex items-center gap-2 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: var(--espresso) }}>
+          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: 'var(--espresso)' }}>
             In Stock
           </h2>
           {inStock.length > 0 && (
@@ -576,7 +576,7 @@ export default function PantryPage() {
               >
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: var(--espresso), fontSize: '0.9375rem' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--espresso)', fontSize: '0.9375rem' }}>
                       {item.name}
                     </p>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', marginTop: '1px' }}>
@@ -596,7 +596,7 @@ export default function PantryPage() {
                       <button
                         onClick={() => handleAdjustQty(item, -1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: var(--espresso), fontSize: '1rem', background: 'var(--cream-deep)' }}
+                        style={{ width: '2rem', height: '2rem', color: 'var(--espresso)', fontSize: '1rem', background: 'var(--cream-deep)' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       >
@@ -605,7 +605,7 @@ export default function PantryPage() {
                       <span
                         className="text-sm font-bold text-center"
                         style={{
-                          minWidth: '2.5rem', color: var(--espresso), fontFamily: 'var(--font-body)',
+                          minWidth: '2.5rem', color: 'var(--espresso)', fontFamily: 'var(--font-body)',
                           borderLeft: '1px solid var(--bone)', borderRight: '1px solid var(--bone)',
                           padding: '0.25rem',
                         }}
@@ -615,7 +615,7 @@ export default function PantryPage() {
                       <button
                         onClick={() => handleAdjustQty(item, 1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: var(--espresso), fontSize: '1rem', background: 'var(--cream-deep)' }}
+                        style={{ width: '2rem', height: '2rem', color: 'var(--espresso)', fontSize: '1rem', background: 'var(--cream-deep)' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       >
@@ -656,7 +656,7 @@ export default function PantryPage() {
       {shoppingList.length > 0 && (
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: var(--espresso) }}>
+            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: 'var(--espresso)' }}>
               Shopping List
             </h2>
             <span
@@ -681,7 +681,7 @@ export default function PantryPage() {
                     <path d="M16 10a4 4 0 01-8 0" />
                   </svg>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: var(--espresso), fontSize: '0.9375rem' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--espresso)', fontSize: '0.9375rem' }}>
                       {item.name}
                     </p>
                     {item.unit && (
@@ -696,9 +696,9 @@ export default function PantryPage() {
                   <button
                     onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
                     className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white transition-all duration-200"
-                    style={{ background: '#48D1D1', fontFamily: 'var(--font-body)' }}
+                    style={{ background: 'var(--sand)', fontFamily: 'var(--font-body)' }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#48D1D1'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--sand)'; }}
                   >
                     Mark as Bought
                   </button>
@@ -730,7 +730,7 @@ export default function PantryPage() {
             style={{ border: '1px solid var(--bone)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '80vh' }}
           >
             <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--bone)' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: var(--espresso) }}>
+              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: 'var(--espresso)' }}>
                 Quick Add Common Ingredients
               </h2>
               <button
@@ -778,7 +778,7 @@ export default function PantryPage() {
                           </svg>
                         )}
                       </div>
-                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: var(--espresso), fontWeight: checked ? 600 : 400 }}>
+                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--espresso)', fontWeight: checked ? 600 : 400 }}>
                         {staple.name}
                       </span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
@@ -832,7 +832,7 @@ export default function PantryPage() {
             style={{ border: '1px solid var(--bone)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)' }}
           >
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bone)' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: var(--espresso) }}>
+              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: 'var(--espresso)' }}>
                 Mark as Bought
               </h2>
               <button
@@ -848,7 +848,7 @@ export default function PantryPage() {
 
             <div className="px-6 py-5 space-y-4">
               <div>
-                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: var(--espresso), fontSize: '0.9375rem' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--espresso)', fontSize: '0.9375rem' }}>
                   {boughtItem.name}
                 </p>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--muted)', marginTop: '2px' }}>
@@ -868,7 +868,7 @@ export default function PantryPage() {
                   style={{
                     flex: 1, border: '1.5px solid var(--bone)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: var(--espresso), padding: '0.5625rem 0.875rem',
+                    color: 'var(--espresso)', padding: '0.5625rem 0.875rem',
                     outline: 'none', background: 'white',
                   }}
                   onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
@@ -880,7 +880,7 @@ export default function PantryPage() {
                   style={{
                     border: '1.5px solid var(--bone)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: var(--espresso), padding: '0.5625rem 0.75rem',
+                    color: 'var(--espresso)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white',
                   }}
                 >
@@ -902,9 +902,9 @@ export default function PantryPage() {
                   onClick={handleBoughtConfirm}
                   disabled={buyingSaving}
                   className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all disabled:opacity-40"
-                  style={{ background: '#48D1D1', fontFamily: 'var(--font-body)' }}
+                  style={{ background: 'var(--sand)', fontFamily: 'var(--font-body)' }}
                   onMouseEnter={e => { if (!buyingSaving) e.currentTarget.style.background = '#38BABA'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#48D1D1'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--sand)'; }}
                 >
                   {buyingSaving ? 'Saving…' : boughtQty ? 'Confirm' : 'Mark as In Stock'}
                 </button>
