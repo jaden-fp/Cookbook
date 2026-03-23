@@ -528,7 +528,7 @@ export default function RecipeDetailPage() {
                   color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
                   background: 'none',
                   border: 'none',
-                  borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
+                  borderBottom: tab === t ? '2.5px solid var(--accent)' : '2.5px solid transparent',
                   cursor: 'pointer',
                 }}
               >
