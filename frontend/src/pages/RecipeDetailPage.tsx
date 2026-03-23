@@ -412,8 +412,8 @@ export default function RecipeDetailPage() {
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--caramel)';
-                  e.currentTarget.style.color = 'var(--caramel)';
+                  e.currentTarget.style.borderColor = 'var(--accent)';
+                  e.currentTarget.style.color = 'var(--accent)';
                   e.currentTarget.style.background = 'rgba(196,114,42,0.04)';
                 }}
                 onMouseLeave={e => {
@@ -525,10 +525,10 @@ export default function RecipeDetailPage() {
                 className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
                 style={{
                   fontFamily: 'var(--font-body)',
-                  color: tab === t ? 'var(--caramel)' : 'var(--text-muted)',
+                  color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
                   background: 'none',
                   border: 'none',
-                  borderBottom: tab === t ? '2px solid var(--caramel)' : '2px solid transparent',
+                  borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
                   cursor: 'pointer',
                 }}
               >
@@ -547,7 +547,7 @@ export default function RecipeDetailPage() {
                   <div className="flex items-center gap-3 mb-3">
                     <span
                       className="text-xs font-semibold uppercase tracking-[0.12em]"
-                      style={{ color: 'var(--caramel)', fontFamily: 'var(--font-body)' }}
+                      style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
                     >
                       {group.group_name}
                     </span>
@@ -557,7 +557,7 @@ export default function RecipeDetailPage() {
                 <ul className="space-y-2.5">
                   {group.ingredients.map((ing, ii) => {
                     const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
-                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--caramel)';
+                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--accent)';
                     return (
                       <li key={ii} className="flex items-baseline gap-3">
                         <span
@@ -613,7 +613,7 @@ export default function RecipeDetailPage() {
                       className="flex items-center gap-2 text-sm"
                       style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}
                     >
-                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--caramel)' }} />
+                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
                       {item.charAt(0).toUpperCase() + item.slice(1)}
                     </li>
                   ))}
@@ -644,7 +644,7 @@ export default function RecipeDetailPage() {
                   <span
                     className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
                     style={{
-                      background: 'var(--caramel)',
+                      background: 'var(--accent)',
                       fontFamily: 'var(--font-body)',
                       boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
                     }}
@@ -706,7 +706,7 @@ export default function RecipeDetailPage() {
                 {allIngredients.map((ing, i) => {
                   const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
                   const icon = status === 'in-stock' ? '✓' : status === 'low' ? '~' : '−';
-                  const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--caramel)' : '#B05050';
+                  const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--accent)' : '#B05050';
                   const isAdding = addingToList.has(ing.name);
                   return (
                     <div
@@ -728,8 +728,8 @@ export default function RecipeDetailPage() {
                           disabled={isAdding}
                           className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all duration-200 disabled:opacity-40 shrink-0"
                           style={{
-                            border: '1.5px solid var(--caramel)',
-                            color: 'var(--caramel)',
+                            border: '1.5px solid var(--accent)',
+                            color: 'var(--accent)',
                             fontFamily: 'var(--font-body)',
                             background: 'white',
                             cursor: 'pointer',
@@ -753,7 +753,7 @@ export default function RecipeDetailPage() {
                 disabled={addingAll || allIngredients.every(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) === 'in-stock')}
                 className="w-full py-2.5 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{
-                  background: 'var(--caramel)',
+                  background: 'var(--accent)',
                   fontFamily: 'var(--font-body)',
                   borderRadius: 'var(--radius-sm)',
                   border: 'none',
@@ -761,7 +761,7 @@ export default function RecipeDetailPage() {
                   boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
                 }}
                 onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#A85E22'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
               >
                 {addingAll ? 'Adding…' : 'Add all missing to Shopping List'}
               </button>
