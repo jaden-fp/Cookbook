@@ -479,10 +479,10 @@ export default function RecipeDetailPage() {
               style={{
                 width: '2.25rem', height: '2.25rem',
                 color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
-                background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
+                background: 'var(--surface-hover)', border: 'none', cursor: 'pointer',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
             >
               −
             </button>
@@ -505,10 +505,10 @@ export default function RecipeDetailPage() {
               style={{
                 width: '2.25rem', height: '2.25rem',
                 color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
-                background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
+                background: 'var(--surface-hover)', border: 'none', cursor: 'pointer',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
             >
               +
             </button>
@@ -686,7 +686,7 @@ export default function RecipeDetailPage() {
             className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
             style={{ border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
           >
-            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--cream-deep)' }}>
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--surface-hover)' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
                 Ingredients Check
               </h2>
@@ -694,7 +694,7 @@ export default function RecipeDetailPage() {
                 onClick={() => setShowPantryModal(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
                 style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -747,7 +747,7 @@ export default function RecipeDetailPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid var(--cream-deep)' }}>
+            <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid var(--surface-hover)' }}>
               <button
                 onClick={addAllMissing}
                 disabled={addingAll || allIngredients.every(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) === 'in-stock')}
