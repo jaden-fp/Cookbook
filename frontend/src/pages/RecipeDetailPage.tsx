@@ -440,7 +440,7 @@ export default function RecipeDetailPage() {
                     borderRadius: 'var(--radius-md)',
                     fontFamily: 'var(--font-body)',
                     textDecoration: 'none',
-                    background: 'white',
+                    background: 'var(--surface)',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.borderColor = 'var(--text-secondary)';
