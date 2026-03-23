@@ -311,7 +311,7 @@ export default function RecipeDetailPage() {
                     }}
                   >
                     <div style={{
-                      fontSize: '10px', color: 'var(--muted)', fontWeight: 600,
+                      fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600,
                       textTransform: 'uppercase', letterSpacing: '0.1em',
                       marginBottom: '3px', fontFamily: 'var(--font-body)',
                     }}>
