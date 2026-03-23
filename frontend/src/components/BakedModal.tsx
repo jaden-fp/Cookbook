@@ -39,7 +39,7 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
         <div>
           <label
             className="block text-xs font-semibold mb-2 uppercase tracking-wider"
-            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
+            style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.08em' }}
           >
             Notes (optional)
           </label>
@@ -48,22 +48,23 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
             onChange={e => setReview(e.target.value)}
             rows={3}
             placeholder="What did you think? Any tweaks for next time?"
-            className="w-full rounded-xl text-sm resize-none transition-all duration-200"
+            className="w-full text-sm resize-none transition-all duration-200"
             style={{
               padding: '0.75rem 1rem',
-              border: '1.5px solid #FFC3E8',
-              background: 'white',
-              color: '#512A18',
+              border: '1.5px solid var(--bone)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--cream)',
+              color: 'var(--espresso)',
               fontFamily: 'var(--font-body)',
               outline: 'none',
               lineHeight: 1.6,
             }}
             onFocus={e => {
-              e.target.style.borderColor = '#FF61B4';
-              e.target.style.boxShadow = '0 0 0 3px rgba(255,97,180,0.10)';
+              e.target.style.borderColor = 'var(--caramel)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)';
             }}
             onBlur={e => {
-              e.target.style.borderColor = '#FFC3E8';
+              e.target.style.borderColor = 'var(--bone)';
               e.target.style.boxShadow = 'none';
             }}
           />
@@ -73,9 +74,9 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
         <div className="flex gap-2 justify-end pt-1">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm rounded-lg transition-colors duration-200"
-            style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+            className="px-4 py-2 text-sm transition-colors duration-200"
+            style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Cancel
@@ -83,14 +84,17 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
           <button
             onClick={handleSave}
             disabled={!rating || saving}
-            className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: '#FF61B4',
+              background: 'var(--caramel)',
               fontFamily: 'var(--font-body)',
-              boxShadow: '0 2px 8px rgba(255,97,180,0.25)',
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
             }}
-            onMouseEnter={e => { if (!saving && rating) e.currentTarget.style.background = '#E0489E'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
+            onMouseEnter={e => { if (!saving && rating) e.currentTarget.style.background = '#A85E22'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
           >
             {saving ? 'Saving…' : 'Save'}
           </button>
