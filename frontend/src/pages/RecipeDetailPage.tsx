@@ -341,11 +341,11 @@ export default function RecipeDetailPage() {
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
-              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--espresso)' }}>
+              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)' }}>
                 You may be missing some ingredients.{' '}
                 <button
                   onClick={() => setShowPantryModal(true)}
-                  style={{ color: 'var(--caramel)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}
+                  style={{ color: 'var(--teal)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}
                 >
                   See what's needed →
                 </button>
