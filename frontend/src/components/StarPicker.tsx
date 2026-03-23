@@ -27,9 +27,9 @@ export default function StarPicker({ value, onChange }: Props) {
               className="transition-all duration-150"
               style={{
                 fontSize: '2.5rem',
-                color: filled ? 'var(--color-gold)' : 'var(--color-warm-border)',
+                color: filled ? 'var(--caramel)' : 'var(--bone)',
                 transform: hovered === star ? 'scale(1.15)' : 'scale(1)',
-                filter: filled ? 'drop-shadow(0 2px 6px rgba(212,168,67,0.45))' : 'none',
+                filter: filled ? 'drop-shadow(0 2px 6px rgba(196,114,42,0.45))' : 'none',
                 lineHeight: 1,
                 padding: '2px',
               }}
