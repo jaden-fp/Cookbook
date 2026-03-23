@@ -593,7 +593,7 @@ export default function RecipeDetailPage() {
             {recipe.equipment && recipe.equipment.length > 0 && (
               <div
                 className="rounded-2xl p-5 mt-4"
-                style={{ background: 'var(--cream)', border: '1px solid var(--border-strong)' }}
+                style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)' }}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
