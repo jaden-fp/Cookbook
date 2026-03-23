@@ -471,7 +471,7 @@ export default function RecipeDetailPage() {
           </span>
           <div
             className="inline-flex items-center rounded-full overflow-hidden"
-            style={{ border: '1.5px solid var(--border-strong)', background: 'white' }}
+            style={{ border: '1.5px solid var(--border-strong)', background: 'var(--surface)' }}
           >
             <button
               onClick={() => adjustScale(-0.5)}
