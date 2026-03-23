@@ -378,7 +378,7 @@ export default function PantryPage() {
                     background: 'white',
                     border: '1.5px solid var(--border-strong)',
                     borderRadius: '10px',
-                    boxShadow: '0 8px 24px rgba(26,10,4,0.10)',
+                    boxShadow: '0 8px 24px rgba(15,12,30,0.08)',
                     overflow: 'hidden',
                   }}
                 >
