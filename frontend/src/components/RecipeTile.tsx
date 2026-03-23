@@ -26,7 +26,7 @@ export default function RecipeTile({ recipe }: Props) {
         }}
         onMouseEnter={e => {
           e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px var(--border-strong)';
+          e.currentTarget.style.boxShadow = '0 16px 40px rgba(240,40,106,0.12), 0 4px 16px rgba(15,12,30,0.08), 0 0 0 1px var(--border-strong)';
           e.currentTarget.style.borderColor = 'var(--border-strong)';
         }}
         onMouseLeave={e => {
