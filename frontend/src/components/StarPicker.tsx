@@ -44,7 +44,7 @@ export default function StarPicker({ value, onChange }: Props) {
         style={{
           fontFamily: 'var(--font-editorial)',
           fontStyle: 'italic',
-          color: active ? 'var(--color-terra)' : 'var(--color-bark-muted)',
+          color: active ? 'var(--espresso)' : 'var(--muted)',
           minHeight: '1.25rem',
         }}
       >
