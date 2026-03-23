@@ -395,7 +395,7 @@ export default function PantryPage() {
                           background: i === highlightIdx ? 'var(--cream-deep)' : 'white',
                           fontFamily: 'var(--font-body)',
                           fontSize: '0.875rem',
-                          color: var(--espresso),
+                          color: 'var(--espresso)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
