@@ -404,7 +404,7 @@ export default function RecipeDetailPage() {
                 onClick={() => setShowCookbook(true)}
                 className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all duration-200"
                 style={{
-                  border: '1.5px solid var(--bone)',
+                  border: '1.5px solid var(--border-strong)',
                   color: 'var(--text)',
                   borderRadius: 'var(--radius-md)',
                   fontFamily: 'var(--font-body)',
@@ -417,7 +417,7 @@ export default function RecipeDetailPage() {
                   e.currentTarget.style.background = 'rgba(196,114,42,0.04)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--bone)';
+                  e.currentTarget.style.borderColor = 'var(--border-strong)';
                   e.currentTarget.style.color = 'var(--text)';
                   e.currentTarget.style.background = 'white';
                 }}
@@ -435,7 +435,7 @@ export default function RecipeDetailPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold transition-all duration-200"
                   style={{
-                    border: '1.5px solid var(--bone)',
+                    border: '1.5px solid var(--border-strong)',
                     color: 'var(--text-muted)',
                     borderRadius: 'var(--radius-md)',
                     fontFamily: 'var(--font-body)',
@@ -447,7 +447,7 @@ export default function RecipeDetailPage() {
                     e.currentTarget.style.color = 'var(--text)';
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'var(--bone)';
+                    e.currentTarget.style.borderColor = 'var(--border-strong)';
                     e.currentTarget.style.color = 'var(--text-muted)';
                   }}
                 >
@@ -471,7 +471,7 @@ export default function RecipeDetailPage() {
           </span>
           <div
             className="inline-flex items-center rounded-full overflow-hidden"
-            style={{ border: '1.5px solid var(--bone)', background: 'white' }}
+            style={{ border: '1.5px solid var(--border-strong)', background: 'white' }}
           >
             <button
               onClick={() => adjustScale(-0.5)}
@@ -481,7 +481,7 @@ export default function RecipeDetailPage() {
                 color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
                 background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
             >
               −
@@ -492,8 +492,8 @@ export default function RecipeDetailPage() {
                 minWidth: '3rem',
                 color: 'var(--text)',
                 fontFamily: 'var(--font-body)',
-                borderLeft: '1px solid var(--bone)',
-                borderRight: '1px solid var(--bone)',
+                borderLeft: '1px solid var(--border-strong)',
+                borderRight: '1px solid var(--border-strong)',
                 padding: '0.4rem 0.25rem',
               }}
             >
@@ -507,7 +507,7 @@ export default function RecipeDetailPage() {
                 color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
                 background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
             >
               +
@@ -516,7 +516,7 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--bone)' }}>
+        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
           <div className="flex gap-0">
             {(['ingredients', 'instructions'] as Tab[]).map(t => (
               <button
@@ -551,7 +551,7 @@ export default function RecipeDetailPage() {
                     >
                       {group.group_name}
                     </span>
-                    <div className="flex-1 h-px" style={{ background: 'var(--bone)' }} />
+                    <div className="flex-1 h-px" style={{ background: 'var(--border-strong)' }} />
                   </div>
                 )}
                 <ul className="space-y-2.5">
@@ -593,7 +593,7 @@ export default function RecipeDetailPage() {
             {recipe.equipment && recipe.equipment.length > 0 && (
               <div
                 className="rounded-2xl p-5 mt-4"
-                style={{ background: 'var(--cream)', border: '1px solid var(--bone)' }}
+                style={{ background: 'var(--cream)', border: '1px solid var(--border-strong)' }}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -652,7 +652,7 @@ export default function RecipeDetailPage() {
                     {i + 1}
                   </span>
                   {i < recipe.instructions.length - 1 && (
-                    <div className="flex-1 w-px mt-2" style={{ background: 'var(--bone)', minHeight: '1.5rem' }} />
+                    <div className="flex-1 w-px mt-2" style={{ background: 'var(--border-strong)', minHeight: '1.5rem' }} />
                   )}
                 </div>
                 <p
@@ -684,7 +684,7 @@ export default function RecipeDetailPage() {
         >
           <div
             className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
-            style={{ border: '1px solid var(--bone)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
+            style={{ border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
           >
             <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--cream-deep)' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
