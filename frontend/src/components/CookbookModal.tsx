@@ -65,23 +65,23 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
                   key={cb.id}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150"
                   style={{
-                    background: checked ? 'rgba(196,114,42,0.07)' : 'transparent',
-                    border: checked ? '1.5px solid var(--caramel)' : '1.5px solid transparent',
+                    background: checked ? 'var(--accent-dim)' : 'transparent',
+                    border: checked ? '1.5px solid var(--accent)' : '1.5px solid transparent',
                     borderRadius: 'var(--radius-md)',
                   }}
-                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = 'var(--bg-subtle)'; }}
                   onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <span className="flex-1 text-sm" style={{ fontFamily: 'var(--font-body)', color: 'var(--espresso)', fontWeight: checked ? 600 : 400 }}>
+                  <span className="flex-1 text-sm" style={{ fontFamily: 'var(--font-body)', color: 'var(--text)', fontWeight: checked ? 600 : 400 }}>
                     {cb.name}
                   </span>
-                  <span className="text-xs" style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>{cb.recipe_count}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>{cb.recipe_count}</span>
                   <div
                     className="flex items-center justify-center shrink-0 transition-all duration-150"
                     style={{
                       width: '18px', height: '18px', borderRadius: '5px',
-                      border: checked ? 'none' : '1.5px solid var(--bone)',
-                      background: checked ? 'var(--caramel)' : 'white',
+                      border: checked ? 'none' : '1.5px solid var(--border-strong)',
+                      background: checked ? 'var(--accent)' : 'var(--surface)',
                     }}
                     onClick={() => toggle(cb.id)}
                   >
@@ -97,16 +97,16 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
             })}
           </div>
         ) : (
-          <p className="text-sm text-center py-3" style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+          <p className="text-sm text-center py-3" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             No cookbooks yet — create one below.
           </p>
         )}
 
-        <div style={{ height: '1px', background: 'var(--cream-deep)' }} />
+        <div style={{ height: '1px', background: 'var(--border)' }} />
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider mb-2"
-            style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.08em' }}>
+            style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.08em' }}>
             New Cookbook
           </p>
           <div className="flex gap-2">
@@ -119,23 +119,23 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
               className="flex-1 text-sm transition-all duration-200"
               style={{
                 padding: '0.5625rem 0.75rem',
-                border: '1.5px solid var(--bone)',
+                border: '1.5px solid var(--border-strong)',
                 borderRadius: 'var(--radius-sm)',
-                background: 'var(--cream)',
-                color: 'var(--espresso)',
+                background: 'var(--bg-subtle)',
+                color: 'var(--text)',
                 fontFamily: 'var(--font-body)',
                 outline: 'none',
               }}
-              onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
-              onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
+              onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+              onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
             />
             <button
               onClick={handleCreate}
               disabled={!newName.trim() || creating}
               className="px-3 py-1.5 text-sm font-semibold transition-all duration-200 disabled:opacity-40"
-              style={{ background: 'var(--caramel)', color: 'white', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-body)', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#A85E22'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
+              style={{ background: 'var(--accent)', color: 'white', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-body)', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#D0155A'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
             >
               {creating ? '…' : '+ Add'}
             </button>
@@ -146,9 +146,9 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm transition-colors duration-200"
-            style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
           >
             Cancel
           </button>
@@ -157,15 +157,15 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
             disabled={saving}
             className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
             style={{
-              background: 'var(--caramel)',
+              background: 'var(--accent)',
               fontFamily: 'var(--font-body)',
               borderRadius: 'var(--radius-sm)',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
+              boxShadow: '0 2px 8px var(--accent-glow)',
             }}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#A85E22'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#D0155A'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
           >
             {saving ? 'Saving…' : 'Done'}
           </button>
