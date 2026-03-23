@@ -358,13 +358,13 @@ export default function PantryPage() {
                 autoComplete="off"
                 className="w-full transition-all duration-200"
                 style={{
-                  border: '1.5px solid var(--bone)', borderRadius: '10px',
+                  border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                   color: 'var(--text)', padding: '0.5625rem 0.875rem',
                   outline: 'none', background: 'white',
                 }}
                 onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--accent)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
-                onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = 'var(--bone)'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
+                onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = 'var(--border-strong)'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <div
@@ -376,7 +376,7 @@ export default function PantryPage() {
                     right: 0,
                     zIndex: 50,
                     background: 'white',
-                    border: '1.5px solid var(--bone)',
+                    border: '1.5px solid var(--border-strong)',
                     borderRadius: '10px',
                     boxShadow: '0 8px 24px rgba(26,10,4,0.10)',
                     overflow: 'hidden',
@@ -444,13 +444,13 @@ export default function PantryPage() {
                 placeholder="?"
                 className="w-full transition-all duration-200"
                 style={{
-                  border: '1.5px solid var(--bone)', borderRadius: '10px',
+                  border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                   color: 'var(--text)', padding: '0.5625rem 0.75rem',
                   outline: 'none', background: 'white',
                 }}
                 onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
-                onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
 
@@ -468,7 +468,7 @@ export default function PantryPage() {
                   value={newUnit}
                   onChange={e => setNewUnit(e.target.value)}
                   style={{
-                    border: '1.5px solid var(--bone)', borderRadius: '10px',
+                    border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', height: '44px',
@@ -486,13 +486,13 @@ export default function PantryPage() {
                   placeholder="unit"
                   autoFocus
                   style={{
-                    border: '1.5px solid var(--bone)', borderRadius: '10px',
+                    border: '1.5px solid var(--border-strong)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', width: '88px', height: '44px',
                   }}
                   onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
-                  onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
                 />
               )}
             </div>
@@ -538,7 +538,7 @@ export default function PantryPage() {
         </div>
       </div>
 
-      <div style={{ borderBottom: '1px solid var(--bone)', marginBottom: '24px' }} />
+      <div style={{ borderBottom: '1px solid var(--border-strong)', marginBottom: '24px' }} />
 
       {/* In Stock */}
       <section className="mb-10">
@@ -557,7 +557,7 @@ export default function PantryPage() {
         </div>
 
         {inStock.length === 0 ? (
-          <div className="py-10 text-center rounded-2xl" style={{ border: '1.5px dashed var(--bone)' }}>
+          <div className="py-10 text-center rounded-2xl" style={{ border: '1.5px dashed var(--border-strong)' }}>
             <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
               No ingredients in stock yet. Add some above!
             </p>
@@ -570,7 +570,7 @@ export default function PantryPage() {
                 className="rounded-xl p-4 transition-all duration-200"
                 style={{
                   background: 'white',
-                  border: '1px solid var(--bone)',
+                  border: '1px solid var(--border-strong)',
                   boxShadow: '0 1px 4px rgba(81,42,24,0.06)',
                 }}
               >
@@ -591,13 +591,13 @@ export default function PantryPage() {
                     {/* Qty stepper */}
                     <div
                       className="inline-flex items-center rounded-full overflow-hidden"
-                      style={{ border: '1.5px solid var(--bone)', background: 'white' }}
+                      style={{ border: '1.5px solid var(--border-strong)', background: 'white' }}
                     >
                       <button
                         onClick={() => handleAdjustQty(item, -1)}
                         className="flex items-center justify-center transition-colors duration-150"
                         style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--cream-deep)' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       >
                         −
@@ -606,7 +606,7 @@ export default function PantryPage() {
                         className="text-sm font-bold text-center"
                         style={{
                           minWidth: '2.5rem', color: 'var(--text)', fontFamily: 'var(--font-body)',
-                          borderLeft: '1px solid var(--bone)', borderRight: '1px solid var(--bone)',
+                          borderLeft: '1px solid var(--border-strong)', borderRight: '1px solid var(--border-strong)',
                           padding: '0.25rem',
                         }}
                       >
@@ -616,7 +616,7 @@ export default function PantryPage() {
                         onClick={() => handleAdjustQty(item, 1)}
                         className="flex items-center justify-center transition-colors duration-150"
                         style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--cream-deep)' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       >
                         +
@@ -672,7 +672,7 @@ export default function PantryPage() {
               <div
                 key={item.id}
                 className="rounded-xl p-4 flex items-center justify-between gap-4"
-                style={{ background: 'var(--cream-deep)', border: '1px solid var(--bone)' }}
+                style={{ background: 'var(--cream-deep)', border: '1px solid var(--border-strong)' }}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -727,9 +727,9 @@ export default function PantryPage() {
         >
           <div
             className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
-            style={{ border: '1px solid var(--bone)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '80vh' }}
+            style={{ border: '1px solid var(--border-strong)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '80vh' }}
           >
-            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--bone)' }}>
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--border-strong)' }}>
               <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: 'var(--text)' }}>
                 Quick Add Common Ingredients
               </h2>
@@ -758,7 +758,7 @@ export default function PantryPage() {
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150"
                       style={{
                         background: checked ? 'var(--cream-deep)' : 'transparent',
-                        border: checked ? '1.5px solid var(--bone)' : '1.5px solid transparent',
+                        border: checked ? '1.5px solid var(--border-strong)' : '1.5px solid transparent',
                         opacity: alreadyHave ? 0.45 : 1,
                         cursor: alreadyHave ? 'default' : 'pointer',
                       }}
@@ -768,7 +768,7 @@ export default function PantryPage() {
                         className="flex items-center justify-center shrink-0"
                         style={{
                           width: '18px', height: '18px', borderRadius: '5px',
-                          border: checked ? 'none' : '1.5px solid var(--bone)',
+                          border: checked ? 'none' : '1.5px solid var(--border-strong)',
                           background: checked ? 'var(--accent)' : 'white',
                         }}
                       >
@@ -790,7 +790,7 @@ export default function PantryPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid var(--bone)' }}>
+            <div className="px-6 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid var(--border-strong)' }}>
               <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
                 {quickSelected.size > 0 ? `${quickSelected.size} selected` : 'Select ingredients to add'}
               </span>
@@ -829,9 +829,9 @@ export default function PantryPage() {
         >
           <div
             className="w-full max-w-xs bg-white rounded-2xl animate-scale-in"
-            style={{ border: '1px solid var(--bone)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)' }}
+            style={{ border: '1px solid var(--border-strong)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)' }}
           >
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bone)' }}>
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border-strong)' }}>
               <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: 'var(--text)' }}>
                 Mark as Bought
               </h2>
@@ -866,19 +866,19 @@ export default function PantryPage() {
                   placeholder="0"
                   autoFocus
                   style={{
-                    flex: 1, border: '1.5px solid var(--bone)', borderRadius: '8px',
+                    flex: 1, border: '1.5px solid var(--border-strong)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.875rem',
                     outline: 'none', background: 'white',
                   }}
                   onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
-                  onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
                 />
                 <select
                   value={boughtUnit}
                   onChange={e => setBoughtUnit(e.target.value)}
                   style={{
-                    border: '1.5px solid var(--bone)', borderRadius: '8px',
+                    border: '1.5px solid var(--border-strong)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                     color: 'var(--text)', padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white',
