@@ -306,16 +306,30 @@ export default function PantryPage() {
     <div className="max-w-3xl mx-auto px-6 pt-10 pb-20">
 
       {/* Header */}
-      <div className="mb-6 animate-fade-up">
+      <div className="mb-8 animate-fade-up">
+        <p style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: 'var(--caramel)',
+          marginBottom: '6px',
+        }}>
+          Your Kitchen
+        </p>
         <h1 style={{
-          fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: '1.625rem',
-          color: '#512A18', letterSpacing: '-0.02em', lineHeight: 1.2,
+          fontFamily: 'var(--font-display)',
+          fontWeight: 600,
+          fontSize: 'clamp(2.25rem, 5vw, 3.25rem)',
+          color: 'var(--espresso)',
+          letterSpacing: '-0.02em',
+          lineHeight: 1.1,
+          marginBottom: '10px',
         }}>
           My Pantry
         </h1>
-        <p style={{ color: 'rgba(81,42,24,0.55)', fontSize: '0.875rem', fontFamily: 'var(--font-body)', marginTop: '4px' }}>
-          Track what you have and what you need
-        </p>
+        <div style={{ width: '40px', height: '2px', background: 'var(--caramel)', borderRadius: '2px' }} />
       </div>
 
       {/* Add ingredient form */}
@@ -327,7 +341,7 @@ export default function PantryPage() {
             <div className="flex-1" style={{ minWidth: '160px', position: 'relative' }}>
               <label style={{
                 display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)',
+                color: 'var(--muted)', fontFamily: 'var(--font-body)',
                 marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
               }}>
                 Ingredient
@@ -344,13 +358,13 @@ export default function PantryPage() {
                 autoComplete="off"
                 className="w-full transition-all duration-200"
                 style={{
-                  border: '1.5px solid #FFC3E8', borderRadius: '10px',
+                  border: '1.5px solid var(--bone)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: '#512A18', padding: '0.5625rem 0.875rem',
+                  color: var(--espresso), padding: '0.5625rem 0.875rem',
                   outline: 'none', background: 'white',
                 }}
-                onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = '#FF61B4'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(255,97,180,0.10)'; }}
-                onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = '#FFC3E8'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
+                onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--caramel)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = 'var(--bone)'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <div
@@ -362,9 +376,9 @@ export default function PantryPage() {
                     right: 0,
                     zIndex: 50,
                     background: 'white',
-                    border: '1.5px solid #FFC3E8',
+                    border: '1.5px solid var(--bone)',
                     borderRadius: '10px',
-                    boxShadow: '0 8px 24px rgba(81,42,24,0.12)',
+                    boxShadow: '0 8px 24px rgba(26,10,4,0.10)',
                     overflow: 'hidden',
                   }}
                 >
@@ -378,30 +392,30 @@ export default function PantryPage() {
                         style={{
                           padding: '0.5rem 0.875rem',
                           cursor: 'pointer',
-                          background: i === highlightIdx ? '#FFF0F8' : 'white',
+                          background: i === highlightIdx ? 'var(--cream-deep)' : 'white',
                           fontFamily: 'var(--font-body)',
                           fontSize: '0.875rem',
-                          color: '#512A18',
+                          color: var(--espresso),
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           gap: '8px',
-                          borderBottom: i < filteredSuggestions.length - 1 ? '1px solid #FFF0F8' : 'none',
+                          borderBottom: i < filteredSuggestions.length - 1 ? '1px solid var(--cream-deep)' : 'none',
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#FFF0F8'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i === highlightIdx ? '#FFF0F8' : 'white'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--cream-deep)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i === highlightIdx ? 'var(--cream-deep)' : 'white'; }}
                       >
                         <span>
                           {idx >= 0 ? (
                             <>
                               {s.name.slice(0, idx)}
-                              <strong style={{ color: '#FF61B4' }}>{s.name.slice(idx, idx + q.length)}</strong>
+                              <strong style={{ color: 'var(--caramel)' }}>{s.name.slice(idx, idx + q.length)}</strong>
                               {s.name.slice(idx + q.length)}
                             </>
                           ) : s.name}
                         </span>
                         {s.unit && (
-                          <span style={{ fontSize: '0.75rem', color: 'rgba(81,42,24,0.4)', flexShrink: 0 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', flexShrink: 0 }}>
                             {s.unit}
                           </span>
                         )}
@@ -416,7 +430,7 @@ export default function PantryPage() {
             <div style={{ width: '80px' }}>
               <label style={{
                 display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)',
+                color: 'var(--muted)', fontFamily: 'var(--font-body)',
                 marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
               }}>
                 Qty <span style={{ textTransform: 'none', fontWeight: 400, fontSize: '0.7rem' }}>(opt.)</span>
@@ -430,13 +444,13 @@ export default function PantryPage() {
                 placeholder="?"
                 className="w-full transition-all duration-200"
                 style={{
-                  border: '1.5px solid #FFC3E8', borderRadius: '10px',
+                  border: '1.5px solid var(--bone)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: '#512A18', padding: '0.5625rem 0.75rem',
+                  color: var(--espresso), padding: '0.5625rem 0.75rem',
                   outline: 'none', background: 'white',
                 }}
-                onFocus={e => { e.target.style.borderColor = '#FF61B4'; e.target.style.boxShadow = '0 0 0 3px rgba(255,97,180,0.10)'; }}
-                onBlur={e => { e.target.style.borderColor = '#FFC3E8'; e.target.style.boxShadow = 'none'; }}
+                onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
 
@@ -445,7 +459,7 @@ export default function PantryPage() {
               <div>
                 <label style={{
                   display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                  color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)',
+                  color: 'var(--muted)', fontFamily: 'var(--font-body)',
                   marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
                 }}>
                   Unit
@@ -454,9 +468,9 @@ export default function PantryPage() {
                   value={newUnit}
                   onChange={e => setNewUnit(e.target.value)}
                   style={{
-                    border: '1.5px solid #FFC3E8', borderRadius: '10px',
+                    border: '1.5px solid var(--bone)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: '#512A18', padding: '0.5625rem 0.75rem',
+                    color: var(--espresso), padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', height: '44px',
                   }}
                 >
@@ -472,13 +486,13 @@ export default function PantryPage() {
                   placeholder="unit"
                   autoFocus
                   style={{
-                    border: '1.5px solid #FFC3E8', borderRadius: '10px',
+                    border: '1.5px solid var(--bone)', borderRadius: '10px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: '#512A18', padding: '0.5625rem 0.75rem',
+                    color: var(--espresso), padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white', width: '88px', height: '44px',
                   }}
-                  onFocus={e => { e.target.style.borderColor = '#FF61B4'; e.target.style.boxShadow = '0 0 0 3px rgba(255,97,180,0.10)'; }}
-                  onBlur={e => { e.target.style.borderColor = '#FFC3E8'; e.target.style.boxShadow = 'none'; }}
+                  onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
                 />
               )}
             </div>
@@ -491,13 +505,13 @@ export default function PantryPage() {
                 disabled={!newName.trim() || saving}
                 className="px-5 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{
-                  background: '#FF61B4', borderRadius: '10px',
+                  background: 'var(--caramel)', borderRadius: '10px',
                   fontFamily: 'var(--font-body)',
-                  boxShadow: '0 2px 8px rgba(255,97,180,0.25)',
+                  boxShadow: '0 2px 8px rgba(196,114,42,0.25)',
                   height: '44px', whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#E0489E'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
+                onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#A85E22'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
               >
                 {saving ? 'Adding…' : '+ Add to Pantry'}
               </button>
@@ -515,27 +529,27 @@ export default function PantryPage() {
           <button
             onClick={() => { setShowQuickAdd(true); setQuickSelected(new Set()); }}
             className="text-sm transition-colors duration-200"
-            style={{ color: '#FF61B4', fontFamily: 'var(--font-body)', fontWeight: 500 }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#E0489E'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#FF61B4'; }}
+            style={{ color: 'var(--caramel)', fontFamily: 'var(--font-body)', fontWeight: 500 }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#A85E22'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--caramel)'; }}
           >
             ✦ Quick add common baking ingredients
           </button>
         </div>
       </div>
 
-      <div style={{ borderBottom: '1px solid #FFC3E8', marginBottom: '24px' }} />
+      <div style={{ borderBottom: '1px solid var(--bone)', marginBottom: '24px' }} />
 
       {/* In Stock */}
       <section className="mb-10">
         <div className="flex items-center gap-2 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: '#512A18' }}>
+          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: var(--espresso) }}>
             In Stock
           </h2>
           {inStock.length > 0 && (
             <span
               className="text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: '#FFF0F8', color: '#FF61B4', fontFamily: 'var(--font-body)' }}
+              style={{ background: 'var(--cream-deep)', color: 'var(--caramel)', fontFamily: 'var(--font-body)' }}
             >
               {inStock.length}
             </span>
@@ -543,8 +557,8 @@ export default function PantryPage() {
         </div>
 
         {inStock.length === 0 ? (
-          <div className="py-10 text-center rounded-2xl" style={{ border: '1.5px dashed #FFC3E8' }}>
-            <p style={{ color: 'rgba(81,42,24,0.45)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
+          <div className="py-10 text-center rounded-2xl" style={{ border: '1.5px dashed var(--bone)' }}>
+            <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
               No ingredients in stock yet. Add some above!
             </p>
           </div>
@@ -556,18 +570,18 @@ export default function PantryPage() {
                 className="rounded-xl p-4 transition-all duration-200"
                 style={{
                   background: 'white',
-                  border: '1px solid #FFC3E8',
+                  border: '1px solid var(--bone)',
                   boxShadow: '0 1px 4px rgba(81,42,24,0.06)',
                 }}
               >
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: '#512A18', fontSize: '0.9375rem' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: var(--espresso), fontSize: '0.9375rem' }}>
                       {item.name}
                     </p>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', marginTop: '1px' }}>
                       {item.quantity > 0
-                        ? <span style={{ color: 'rgba(81,42,24,0.55)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
+                        ? <span style={{ color: 'var(--muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
                         : <span style={{ color: '#FFC107', fontWeight: 500 }}>no quantity set</span>
                       }
                     </p>
@@ -577,22 +591,22 @@ export default function PantryPage() {
                     {/* Qty stepper */}
                     <div
                       className="inline-flex items-center rounded-full overflow-hidden"
-                      style={{ border: '1.5px solid #FFC3E8', background: 'white' }}
+                      style={{ border: '1.5px solid var(--bone)', background: 'white' }}
                     >
                       <button
                         onClick={() => handleAdjustQty(item, -1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: '#512A18', fontSize: '1rem', background: '#FFF0F8' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#FFC3E8'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                        style={{ width: '2rem', height: '2rem', color: var(--espresso), fontSize: '1rem', background: 'var(--cream-deep)' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       >
                         −
                       </button>
                       <span
                         className="text-sm font-bold text-center"
                         style={{
-                          minWidth: '2.5rem', color: '#512A18', fontFamily: 'var(--font-body)',
-                          borderLeft: '1px solid #FFC3E8', borderRight: '1px solid #FFC3E8',
+                          minWidth: '2.5rem', color: var(--espresso), fontFamily: 'var(--font-body)',
+                          borderLeft: '1px solid var(--bone)', borderRight: '1px solid var(--bone)',
                           padding: '0.25rem',
                         }}
                       >
@@ -601,9 +615,9 @@ export default function PantryPage() {
                       <button
                         onClick={() => handleAdjustQty(item, 1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: '#512A18', fontSize: '1rem', background: '#FFF0F8' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#FFC3E8'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                        style={{ width: '2rem', height: '2rem', color: var(--espresso), fontSize: '1rem', background: 'var(--cream-deep)' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       >
                         +
                       </button>
@@ -613,8 +627,8 @@ export default function PantryPage() {
                     <button
                       onClick={() => handleNeedToBuy(item)}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
-                      style={{ border: '1.5px solid #FF61B4', color: '#FF61B4', fontFamily: 'var(--font-body)', background: 'white' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                      style={{ border: '1.5px solid var(--caramel)', color: 'var(--caramel)', fontFamily: 'var(--font-body)', background: 'white' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
                     >
                       Need to Buy
@@ -625,7 +639,7 @@ export default function PantryPage() {
                       onClick={() => handleDelete(item)}
                       className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
                       style={{ color: 'rgba(81,42,24,0.3)' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; e.currentTarget.style.color = '#FF61B4'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; e.currentTarget.style.color = 'var(--caramel)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
                     >
                       ×
@@ -642,12 +656,12 @@ export default function PantryPage() {
       {shoppingList.length > 0 && (
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: '#512A18' }}>
+            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: var(--espresso) }}>
               Shopping List
             </h2>
             <span
               className="text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: '#FF61B4', color: 'white', fontFamily: 'var(--font-body)' }}
+              style={{ background: 'var(--caramel)', color: 'white', fontFamily: 'var(--font-body)' }}
             >
               {shoppingList.length}
             </span>
@@ -658,20 +672,20 @@ export default function PantryPage() {
               <div
                 key={item.id}
                 className="rounded-xl p-4 flex items-center justify-between gap-4"
-                style={{ background: '#FFF0F8', border: '1px solid #FFC3E8' }}
+                style={{ background: 'var(--cream-deep)', border: '1px solid var(--bone)' }}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF61B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                     <line x1="3" y1="6" x2="21" y2="6" />
                     <path d="M16 10a4 4 0 01-8 0" />
                   </svg>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: '#512A18', fontSize: '0.9375rem' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: var(--espresso), fontSize: '0.9375rem' }}>
                       {item.name}
                     </p>
                     {item.unit && (
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(81,42,24,0.55)', marginTop: '1px' }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--muted)', marginTop: '1px' }}>
                         {item.unit}
                       </p>
                     )}
@@ -692,7 +706,7 @@ export default function PantryPage() {
                     onClick={() => handleDelete(item)}
                     className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
                     style={{ color: 'rgba(81,42,24,0.3)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,97,180,0.1)'; e.currentTarget.style.color = '#FF61B4'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(196,114,42,0.1)'; e.currentTarget.style.color = 'var(--caramel)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
                   >
                     ×
@@ -708,22 +722,22 @@ export default function PantryPage() {
       {showQuickAdd && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'rgba(81,42,24,0.4)' }}
+          style={{ background: 'var(--muted)' }}
           onClick={e => e.target === e.currentTarget && setShowQuickAdd(false)}
         >
           <div
             className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
-            style={{ border: '1px solid #FFC3E8', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '80vh' }}
+            style={{ border: '1px solid var(--bone)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '80vh' }}
           >
-            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid #FFC3E8' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: '#512A18' }}>
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--bone)' }}>
+              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: var(--espresso) }}>
                 Quick Add Common Ingredients
               </h2>
               <button
                 onClick={() => setShowQuickAdd(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'rgba(81,42,24,0.55)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                style={{ color: 'var(--muted)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -731,7 +745,7 @@ export default function PantryPage() {
             </div>
 
             <div className="overflow-y-auto flex-1 px-4 py-4">
-              <p className="text-sm mb-3" style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}>
+              <p className="text-sm mb-3" style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
                 Select the ingredients you have on hand:
               </p>
               <div className="space-y-1">
@@ -743,8 +757,8 @@ export default function PantryPage() {
                       key={staple.name}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150"
                       style={{
-                        background: checked ? '#FFF0F8' : 'transparent',
-                        border: checked ? '1.5px solid #FFC3E8' : '1.5px solid transparent',
+                        background: checked ? 'var(--cream-deep)' : 'transparent',
+                        border: checked ? '1.5px solid var(--bone)' : '1.5px solid transparent',
                         opacity: alreadyHave ? 0.45 : 1,
                         cursor: alreadyHave ? 'default' : 'pointer',
                       }}
@@ -754,8 +768,8 @@ export default function PantryPage() {
                         className="flex items-center justify-center shrink-0"
                         style={{
                           width: '18px', height: '18px', borderRadius: '5px',
-                          border: checked ? 'none' : '1.5px solid #FFC3E8',
-                          background: checked ? '#FF61B4' : 'white',
+                          border: checked ? 'none' : '1.5px solid var(--bone)',
+                          background: checked ? 'var(--caramel)' : 'white',
                         }}
                       >
                         {checked && (
@@ -764,10 +778,10 @@ export default function PantryPage() {
                           </svg>
                         )}
                       </div>
-                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: '#512A18', fontWeight: checked ? 600 : 400 }}>
+                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: var(--espresso), fontWeight: checked ? 600 : 400 }}>
                         {staple.name}
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(81,42,24,0.4)', fontFamily: 'var(--font-body)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
                         {alreadyHave ? 'already added' : staple.unit}
                       </span>
                     </div>
@@ -776,16 +790,16 @@ export default function PantryPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid #FFC3E8' }}>
-              <span style={{ fontSize: '0.8125rem', color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}>
+            <div className="px-6 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid var(--bone)' }}>
+              <span style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
                 {quickSelected.size > 0 ? `${quickSelected.size} selected` : 'Select ingredients to add'}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowQuickAdd(false)}
                   className="px-4 py-2 text-sm rounded-lg transition-colors"
-                  style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                  style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   Cancel
@@ -794,9 +808,9 @@ export default function PantryPage() {
                   onClick={handleQuickAdd}
                   disabled={!quickSelected.size || quickAdding}
                   className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: '#FF61B4', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { if (quickSelected.size && !quickAdding) e.currentTarget.style.background = '#E0489E'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#FF61B4'; }}
+                  style={{ background: 'var(--caramel)', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={e => { if (quickSelected.size && !quickAdding) e.currentTarget.style.background = '#A85E22'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--caramel)'; }}
                 >
                   {quickAdding ? 'Adding…' : `Add${quickSelected.size > 0 ? ` ${quickSelected.size}` : ''}`}
                 </button>
@@ -810,22 +824,22 @@ export default function PantryPage() {
       {boughtItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'rgba(81,42,24,0.4)' }}
+          style={{ background: 'var(--muted)' }}
           onClick={e => e.target === e.currentTarget && setBoughtItem(null)}
         >
           <div
             className="w-full max-w-xs bg-white rounded-2xl animate-scale-in"
-            style={{ border: '1px solid #FFC3E8', boxShadow: '0 20px 60px rgba(81,42,24,0.15)' }}
+            style={{ border: '1px solid var(--bone)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)' }}
           >
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #FFC3E8' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: '#512A18' }}>
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bone)' }}>
+              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: var(--espresso) }}>
                 Mark as Bought
               </h2>
               <button
                 onClick={() => setBoughtItem(null)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'rgba(81,42,24,0.55)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                style={{ color: 'var(--muted)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -834,10 +848,10 @@ export default function PantryPage() {
 
             <div className="px-6 py-5 space-y-4">
               <div>
-                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: '#512A18', fontSize: '0.9375rem' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: var(--espresso), fontSize: '0.9375rem' }}>
                   {boughtItem.name}
                 </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'rgba(81,42,24,0.55)', marginTop: '2px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--muted)', marginTop: '2px' }}>
                   How much did you buy? <span style={{ fontStyle: 'italic' }}>(leave blank if you're not sure)</span>
                 </p>
               </div>
@@ -852,21 +866,21 @@ export default function PantryPage() {
                   placeholder="0"
                   autoFocus
                   style={{
-                    flex: 1, border: '1.5px solid #FFC3E8', borderRadius: '8px',
+                    flex: 1, border: '1.5px solid var(--bone)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: '#512A18', padding: '0.5625rem 0.875rem',
+                    color: var(--espresso), padding: '0.5625rem 0.875rem',
                     outline: 'none', background: 'white',
                   }}
-                  onFocus={e => { e.target.style.borderColor = '#FF61B4'; e.target.style.boxShadow = '0 0 0 3px rgba(255,97,180,0.10)'; }}
-                  onBlur={e => { e.target.style.borderColor = '#FFC3E8'; e.target.style.boxShadow = 'none'; }}
+                  onFocus={e => { e.target.style.borderColor = 'var(--caramel)'; e.target.style.boxShadow = '0 0 0 3px rgba(196,114,42,0.10)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--bone)'; e.target.style.boxShadow = 'none'; }}
                 />
                 <select
                   value={boughtUnit}
                   onChange={e => setBoughtUnit(e.target.value)}
                   style={{
-                    border: '1.5px solid #FFC3E8', borderRadius: '8px',
+                    border: '1.5px solid var(--bone)', borderRadius: '8px',
                     fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: '#512A18', padding: '0.5625rem 0.75rem',
+                    color: var(--espresso), padding: '0.5625rem 0.75rem',
                     outline: 'none', background: 'white',
                   }}
                 >
@@ -878,8 +892,8 @@ export default function PantryPage() {
                 <button
                   onClick={() => setBoughtItem(null)}
                   className="px-4 py-2 text-sm rounded-lg transition-colors"
-                  style={{ color: 'rgba(81,42,24,0.55)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#FFF0F8'; }}
+                  style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   Cancel
