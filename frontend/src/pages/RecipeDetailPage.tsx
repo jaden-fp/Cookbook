@@ -269,8 +269,8 @@ export default function RecipeDetailPage() {
         <div
           className="rounded-2xl p-6 sm:p-8 mb-6 animate-fade-up"
           style={{
-            background: 'white',
-            border: '1px solid var(--bone)',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
             boxShadow: 'var(--shadow-sm)',
           }}
         >
