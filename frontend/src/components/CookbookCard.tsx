@@ -75,8 +75,8 @@ export default function CookbookCard({ cookbook, onUpdate }: Props) {
           }}
           onMouseEnter={e => {
             (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)';
-            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 20px 56px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,184,75,0.2)';
-            (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(232,184,75,0.3)';
+            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 40px rgba(240,40,106,0.12), 0 4px 16px rgba(15,12,30,0.08), 0 0 0 1.5px var(--pink)';
+            (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--pink)';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLDivElement).style.transform = '';
