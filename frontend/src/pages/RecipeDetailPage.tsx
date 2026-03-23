@@ -405,7 +405,7 @@ export default function RecipeDetailPage() {
                 className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all duration-200"
                 style={{
                   border: '1.5px solid var(--bone)',
-                  color: 'var(--espresso)',
+                  color: 'var(--text)',
                   borderRadius: 'var(--radius-md)',
                   fontFamily: 'var(--font-body)',
                   background: 'white',
@@ -418,7 +418,7 @@ export default function RecipeDetailPage() {
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = 'var(--bone)';
-                  e.currentTarget.style.color = 'var(--espresso)';
+                  e.currentTarget.style.color = 'var(--text)';
                   e.currentTarget.style.background = 'white';
                 }}
               >
@@ -444,7 +444,7 @@ export default function RecipeDetailPage() {
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.borderColor = 'var(--sand)';
-                    e.currentTarget.style.color = 'var(--espresso)';
+                    e.currentTarget.style.color = 'var(--text)';
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.borderColor = 'var(--bone)';
@@ -478,7 +478,7 @@ export default function RecipeDetailPage() {
               className="flex items-center justify-center transition-colors duration-150"
               style={{
                 width: '2.25rem', height: '2.25rem',
-                color: 'var(--espresso)', fontSize: '1.1rem', fontWeight: 300,
+                color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
                 background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
@@ -490,7 +490,7 @@ export default function RecipeDetailPage() {
               className="text-sm font-semibold text-center"
               style={{
                 minWidth: '3rem',
-                color: 'var(--espresso)',
+                color: 'var(--text)',
                 fontFamily: 'var(--font-body)',
                 borderLeft: '1px solid var(--bone)',
                 borderRight: '1px solid var(--bone)',
@@ -504,7 +504,7 @@ export default function RecipeDetailPage() {
               className="flex items-center justify-center transition-colors duration-150"
               style={{
                 width: '2.25rem', height: '2.25rem',
-                color: 'var(--espresso)', fontSize: '1.1rem', fontWeight: 300,
+                color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
                 background: 'var(--cream-deep)', border: 'none', cursor: 'pointer',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bone)'; }}
@@ -565,7 +565,7 @@ export default function RecipeDetailPage() {
                           style={{ background: dotColor }}
                           title={pantryItems.length > 0 ? status : undefined}
                         />
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--espresso)' }}>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)' }}>
                           <span
                             key={`${scale}-${gi}-${ii}`}
                             className="font-semibold animate-amount"
@@ -611,7 +611,7 @@ export default function RecipeDetailPage() {
                     <li
                       key={i}
                       className="flex items-center gap-2 text-sm"
-                      style={{ color: 'var(--espresso)', fontFamily: 'var(--font-body)' }}
+                      style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}
                     >
                       <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'var(--caramel)' }} />
                       {item.charAt(0).toUpperCase() + item.slice(1)}
@@ -657,7 +657,7 @@ export default function RecipeDetailPage() {
                 </div>
                 <p
                   className="pb-2 leading-relaxed pt-1"
-                  style={{ fontFamily: 'var(--font-body)', color: 'var(--espresso)', fontSize: '0.9375rem', lineHeight: 1.8 }}
+                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text)', fontSize: '0.9375rem', lineHeight: 1.8 }}
                 >
                   {step}
                 </p>
@@ -687,7 +687,7 @@ export default function RecipeDetailPage() {
             style={{ border: '1px solid var(--bone)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
           >
             <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--cream-deep)' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--espresso)', letterSpacing: '-0.01em' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
                 Ingredients Check
               </h2>
               <button
@@ -718,7 +718,7 @@ export default function RecipeDetailPage() {
                     >
                       <span className="text-sm font-bold shrink-0 w-4 text-center" style={{ color: iconColor }}>{icon}</span>
                       <span
-                        style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--espresso)' }}
+                        style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)' }}
                       >
                         {[ing.amount, ing.unit, ing.name].filter(Boolean).join(' ')}
                       </span>
