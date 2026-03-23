@@ -80,11 +80,11 @@ export default function RecipeTile({ recipe }: Props) {
             className="absolute bottom-2 right-2 z-10 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
             style={{
               width: '30px', height: '30px',
-              background: 'rgba(13,13,13,0.75)',
+              background: 'rgba(255,255,255,0.88)',
               backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.15)',
+              border: '1px solid rgba(15,12,30,0.1)',
               cursor: 'pointer',
-              color: 'rgba(255,255,255,0.7)',
+              color: 'var(--text-muted)',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = '#0D0D0D'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(13,13,13,0.75)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
