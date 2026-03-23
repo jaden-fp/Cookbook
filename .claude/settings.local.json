@@ -1,4 +1,18 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/jadencox/Documents/Projects/Cookbook && git add -A && git diff --cached --quiet || (git commit -m 'Auto-save' && git push origin main) 2>/dev/null || true",
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(npm create:*)",
