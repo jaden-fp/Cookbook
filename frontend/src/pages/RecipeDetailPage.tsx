@@ -304,8 +304,8 @@ export default function RecipeDetailPage() {
                     key={i}
                     style={{
                       flex: 1,
-                      background: 'var(--cream)',
-                      border: '1px solid var(--bone)',
+                      background: 'var(--bg-subtle)',
+                      border: '1px solid var(--border)',
                       borderRadius: 'var(--radius-md)',
                       padding: '10px 14px',
                     }}
