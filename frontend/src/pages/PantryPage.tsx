@@ -706,7 +706,7 @@ export default function PantryPage() {
                     onClick={() => handleDelete(item)}
                     className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
                     style={{ color: 'rgba(81,42,24,0.3)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(196,114,42,0.1)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
                   >
                     ×
