@@ -687,15 +687,15 @@ export default function RecipeDetailPage() {
             style={{ background: 'var(--surface)', border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-xl)', maxHeight: '82vh' }}
           >
             <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--surface-hover)' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
                 Ingredients Check
               </h2>
               <button
                 onClick={() => setShowPantryModal(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
                 style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
               >
                 ×
               </button>
