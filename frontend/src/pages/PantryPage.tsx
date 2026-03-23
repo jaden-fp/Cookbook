@@ -392,7 +392,7 @@ export default function PantryPage() {
                         style={{
                           padding: '0.5rem 0.875rem',
                           cursor: 'pointer',
-                          background: i === highlightIdx ? 'var(--cream-deep)' : 'white',
+                          background: i === highlightIdx ? 'var(--surface-hover)' : 'white',
                           fontFamily: 'var(--font-body)',
                           fontSize: '0.875rem',
                           color: 'var(--text)',
@@ -400,10 +400,10 @@ export default function PantryPage() {
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           gap: '8px',
-                          borderBottom: i < filteredSuggestions.length - 1 ? '1px solid var(--cream-deep)' : 'none',
+                          borderBottom: i < filteredSuggestions.length - 1 ? '1px solid var(--surface-hover)' : 'none',
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--cream-deep)'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i === highlightIdx ? 'var(--cream-deep)' : 'white'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-hover)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i === highlightIdx ? 'var(--surface-hover)' : 'white'; }}
                       >
                         <span>
                           {idx >= 0 ? (
@@ -549,7 +549,7 @@ export default function PantryPage() {
           {inStock.length > 0 && (
             <span
               className="text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: 'var(--cream-deep)', color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
+              style={{ background: 'var(--surface-hover)', color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
             >
               {inStock.length}
             </span>
@@ -596,9 +596,9 @@ export default function PantryPage() {
                       <button
                         onClick={() => handleAdjustQty(item, -1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--cream-deep)' }}
+                        style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--surface-hover)' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                       >
                         −
                       </button>
@@ -615,9 +615,9 @@ export default function PantryPage() {
                       <button
                         onClick={() => handleAdjustQty(item, 1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--cream-deep)' }}
+                        style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--surface-hover)' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                       >
                         +
                       </button>
@@ -628,7 +628,7 @@ export default function PantryPage() {
                       onClick={() => handleNeedToBuy(item)}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
                       style={{ border: '1.5px solid var(--accent)', color: 'var(--accent)', fontFamily: 'var(--font-body)', background: 'white' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
                     >
                       Need to Buy
@@ -639,7 +639,7 @@ export default function PantryPage() {
                       onClick={() => handleDelete(item)}
                       className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
                       style={{ color: 'rgba(81,42,24,0.3)' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--accent)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
                     >
                       ×
@@ -672,7 +672,7 @@ export default function PantryPage() {
               <div
                 key={item.id}
                 className="rounded-xl p-4 flex items-center justify-between gap-4"
-                style={{ background: 'var(--cream-deep)', border: '1px solid var(--border-strong)' }}
+                style={{ background: 'var(--surface-hover)', border: '1px solid var(--border-strong)' }}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -737,7 +737,7 @@ export default function PantryPage() {
                 onClick={() => setShowQuickAdd(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
                 style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -757,7 +757,7 @@ export default function PantryPage() {
                       key={staple.name}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150"
                       style={{
-                        background: checked ? 'var(--cream-deep)' : 'transparent',
+                        background: checked ? 'var(--surface-hover)' : 'transparent',
                         border: checked ? '1.5px solid var(--border-strong)' : '1.5px solid transparent',
                         opacity: alreadyHave ? 0.45 : 1,
                         cursor: alreadyHave ? 'default' : 'pointer',
@@ -799,7 +799,7 @@ export default function PantryPage() {
                   onClick={() => setShowQuickAdd(false)}
                   className="px-4 py-2 text-sm rounded-lg transition-colors"
                   style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   Cancel
@@ -839,7 +839,7 @@ export default function PantryPage() {
                 onClick={() => setBoughtItem(null)}
                 className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
                 style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 ×
@@ -893,7 +893,7 @@ export default function PantryPage() {
                   onClick={() => setBoughtItem(null)}
                   className="px-4 py-2 text-sm rounded-lg transition-colors"
                   style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--cream-deep)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   Cancel
