@@ -443,7 +443,7 @@ export default function RecipeDetailPage() {
                     background: 'white',
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'var(--sand)';
+                    e.currentTarget.style.borderColor = 'var(--text-secondary)';
                     e.currentTarget.style.color = 'var(--text)';
                   }}
                   onMouseLeave={e => {
