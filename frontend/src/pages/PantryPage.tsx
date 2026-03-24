@@ -396,16 +396,17 @@ export default function PantryPage() {
               />
             </div>
 
-            {/* Separator */}
-            <div style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
+            {/* Separator — desktop only */}
+            <div className="hidden sm:block" style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
 
-            {/* Qty input — compact */}
+            {/* Qty input — desktop only */}
             <input
               type="text"
               inputMode="decimal"
               value={newQty}
               onChange={e => setNewQty(e.target.value)}
               placeholder="qty"
+              className="hidden sm:block"
               style={{
                 border: 'none', outline: 'none',
                 fontFamily: 'var(--font-body)', fontSize: '0.875rem',
@@ -414,13 +415,14 @@ export default function PantryPage() {
               }}
             />
 
-            {/* Separator */}
-            <div style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
+            {/* Separator — desktop only */}
+            <div className="hidden sm:block" style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
 
-            {/* Unit select — compact */}
+            {/* Unit select — desktop only */}
             <select
               value={newUnit}
               onChange={e => setNewUnit(e.target.value)}
+              className="hidden sm:block"
               style={{
                 border: 'none', outline: 'none',
                 fontFamily: 'var(--font-body)', fontSize: '0.875rem',
@@ -441,6 +443,7 @@ export default function PantryPage() {
                 onChange={e => setCustomUnit(e.target.value)}
                 placeholder="unit"
                 autoFocus
+                className="hidden sm:block"
                 style={{
                   border: 'none', outline: 'none',
                   fontFamily: 'var(--font-body)', fontSize: '0.875rem',
