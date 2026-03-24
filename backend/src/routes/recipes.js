@@ -137,10 +137,16 @@ router.get('/:id/cookbooks', async (req, res) => {
 
 // PATCH /api/recipes/:id — update editable fields
 router.patch('/:id', async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment } = req.body;
   const updates = {};
   if (title !== undefined) updates.title = title;
   if (description !== undefined) updates.description = description;
+  if (prep_time !== undefined) updates.prep_time = prep_time;
+  if (cook_time !== undefined) updates.cook_time = cook_time;
+  if (yieldAmount !== undefined) updates.yield = yieldAmount;
+  if (ingredient_groups !== undefined) updates.ingredient_groups = ingredient_groups;
+  if (instructions !== undefined) updates.instructions = instructions;
+  if (equipment !== undefined) updates.equipment = equipment;
   if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
   const ref = db.collection('recipes').doc(req.params.id);
   await ref.update(updates);
