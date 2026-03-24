@@ -263,6 +263,22 @@ export default function PantryPage() {
     }
   }
 
+  async function handleEditSave() {
+    if (!editItem || !editName.trim() || editSaving) return;
+    setEditSaving(true);
+    try {
+      const updated = await updatePantryItem(editItem.id, {
+        name: editName.trim(),
+        quantity: parseFloat(editQty) || 0,
+        unit: editUnit,
+      });
+      setItems(prev => prev.map(p => p.id === updated.id ? updated : p));
+      setEditItem(null);
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
   async function handleDelete(item: PantryItem) {
     await deletePantryItem(item.id);
     setItems(prev => prev.filter(p => p.id !== item.id));
