@@ -73,6 +73,10 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
 
 .animate-fade-up  { animation: fadeUp  0.5s cubic-bezier(0.22,1,0.36,1) both; }
 .animate-fade-in  { animation: fadeIn  0.3s ease both; }
