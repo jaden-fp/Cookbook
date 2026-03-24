@@ -497,6 +497,7 @@ export default function PantryPage() {
                 />
               )}
             </div>
+            </div>{/* end qty+unit row */}
 
             {/* Submit */}
             <div>
