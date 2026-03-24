@@ -687,7 +687,9 @@ export default function PantryPage() {
                         style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                      >+</button>
+                      >
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="4" width="2" height="10" rx="1"/><rect y="4" width="10" height="2" rx="1"/></svg>
+                      </button>
                     </div>
                   )}
 
