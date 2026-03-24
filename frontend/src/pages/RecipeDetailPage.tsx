@@ -484,10 +484,31 @@ export default function RecipeDetailPage() {
           </div>
 
           {/* Scale control */}
-          <div className="flex items-center gap-2.5 pb-5">
-<button onClick={() => adjustScale(-0.5)} className="transition-all duration-150" style={{ width: '1.5rem', height: '1.5rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-subtle)', border: '1.5px solid var(--border-strong)', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1, paddingBottom: '4px', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>−</button>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontWeight: 700, color: scale !== 1 ? 'var(--accent)' : 'var(--text)', minWidth: '2rem', textAlign: 'center', letterSpacing: '-0.02em' }}>{scaleLabel}</span>
-            <button onClick={() => adjustScale(0.5)} className="transition-all duration-150" style={{ width: '1.5rem', height: '1.5rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-subtle)', border: '1.5px solid var(--border-strong)', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1, paddingBottom: '4px', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>+</button>
+          <div className="flex items-center gap-1 pb-4">
+            {[0.5, 1, 2, 3].map(v => (
+              <button
+                key={v}
+                onClick={() => setScale(v)}
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.75rem',
+                  fontWeight: scale === v ? 700 : 500,
+                  color: scale === v ? 'white' : 'var(--text-muted)',
+                  background: scale === v ? 'var(--accent)' : 'transparent',
+                  border: '1.5px solid',
+                  borderColor: scale === v ? 'var(--accent)' : 'var(--border-strong)',
+                  borderRadius: '999px',
+                  padding: '3px 9px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  lineHeight: 1.4,
+                }}
+                onMouseEnter={e => { if (scale !== v) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }}
+                onMouseLeave={e => { if (scale !== v) { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-muted)'; } }}
+              >
+                {v}×
+              </button>
+            ))}
           </div>
         </div>
 
