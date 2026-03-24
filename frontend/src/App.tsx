@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import BottomNav from './components/BottomNav';
-import FAB from './components/FAB';
 import { FABProvider } from './context/FABContext';
 import CookbooksPage from './pages/CookbooksPage';
 import AllRecipesPage from './pages/AllRecipesPage';
