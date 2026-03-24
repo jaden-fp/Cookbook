@@ -1014,9 +1014,8 @@ export default function PantryPage() {
 
               <div className="flex gap-2">
                 <input
-                  type="number"
-                  min="0"
-                  step="0.25"
+                  type="text"
+                  inputMode="decimal"
                   value={boughtQty}
                   onChange={e => setBoughtQty(e.target.value)}
                   placeholder="0"
