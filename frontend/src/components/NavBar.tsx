@@ -35,10 +35,10 @@ export default function NavBar() {
                 style={{
                   fontFamily: 'var(--font-body)',
                   fontWeight: 600,
-                  fontSize: '0.875rem',
+                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                   color: active ? 'white' : 'rgba(255,255,255,0.7)',
                   textDecoration: 'none',
-                  padding: '6px 14px',
+                  padding: '6px 10px',
                   borderRadius: '999px',
                   background: active ? 'rgba(255,255,255,0.25)' : 'transparent',
                   transition: 'all 0.15s ease',
