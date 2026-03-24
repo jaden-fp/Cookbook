@@ -157,7 +157,7 @@ export default function PantryPage() {
     return () => { document.body.style.overflow = ''; };
   }, [showQuickAdd, boughtItem]);
 
-  const inStock = items.filter(i => i.needs_purchase === 0);
+  const inStock = items.filter(i => i.needs_purchase === 0).sort((a, b) => a.name.localeCompare(b.name));
   const shoppingList = items.filter(i => i.needs_purchase === 1);
   const effectiveUnit = newUnit === '__other__' ? customUnit : newUnit;
 
