@@ -149,7 +149,7 @@ export default function CookbookCard({ cookbook, onUpdate }: Props) {
         className="absolute flex items-center justify-center transition-all duration-200"
         style={{
           top: '8px', right: '8px',
-          width: '26px', height: '26px',
+          width: '34px', height: '34px',
           borderRadius: '50%',
           background: 'rgba(255,255,255,0.88)',
           backdropFilter: 'blur(6px)',
