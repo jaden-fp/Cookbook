@@ -27,7 +27,7 @@ export default function App() {
               pointerEvents: 'auto',
             }}
           >
-            <img src="/logo.png" alt="Logo" style={{ height: '80px', width: 'auto', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="Logo" style={{ height: '100px', width: 'auto', objectFit: 'contain' }} />
           </Link>
           <Routes>
             <Route path="/" element={<Navigate to="/cookbooks" replace />} />
