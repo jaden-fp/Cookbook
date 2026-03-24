@@ -629,18 +629,18 @@ export default function PantryPage() {
                   boxShadow: '0 1px 4px rgba(81,42,24,0.06)',
                 }}
               >
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem' }}>
-                      {item.name}
-                    </p>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', marginTop: '1px' }}>
-                      {item.quantity > 0
-                        ? <span style={{ color: 'var(--text-muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
-                        : <span style={{ color: 'var(--text-muted)' }}>—</span>
-                      }
-                    </p>
-                  </div>
+                {/* Name header */}
+                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem', marginBottom: '10px' }}>
+                  {item.name}
+                </p>
+
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' }}>
+                    {item.quantity > 0
+                      ? <span style={{ color: 'var(--text-muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
+                      : <span style={{ color: 'var(--text-muted)' }}>—</span>
+                    }
+                  </p>
 
                   <div className="flex items-center gap-2 shrink-0 flex-wrap">
                     {/* Qty stepper */}
