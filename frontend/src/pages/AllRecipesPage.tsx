@@ -66,10 +66,17 @@ export default function AllRecipesPage() {
         <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
-      {/* Import bar */}
-      <div className="mb-4 animate-fade-up delay-1">
+      {/* Import bar — desktop only; mobile uses FAB sheet */}
+      <div className="hidden sm:block mb-4 animate-fade-up delay-1">
         <ImportBar />
       </div>
+
+      <BottomSheet open={showImportSheet} onClose={() => setShowImportSheet(false)} title="Import Recipe">
+        <ImportBar onImportComplete={() => {
+          setShowImportSheet(false);
+          getRecipes().then(setRecipes);
+        }} />
+      </BottomSheet>
 
       {/* Divider + sort row */}
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
