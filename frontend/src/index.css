@@ -115,5 +115,5 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 /* ─── Responsive nav logo ─────────────────────────────────────── */
 .nav-logo { height: 148px; width: auto; display: block; transform: translateY(36px); }
 @media (max-width: 640px) {
-  .nav-logo { height: 96px; transform: translateY(36px); }
+  .nav-logo { height: 64px; transform: translateY(20px); }
 }
