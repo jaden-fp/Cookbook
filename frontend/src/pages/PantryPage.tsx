@@ -667,7 +667,7 @@ export default function PantryPage() {
                     >
                       <button
                         onClick={() => handleAdjustQty(item, -1)}
-                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0, paddingBottom: '1px' }}
+                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0, paddingTop: '3px' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                       >−</button>
@@ -676,7 +676,7 @@ export default function PantryPage() {
                       </span>
                       <button
                         onClick={() => handleAdjustQty(item, 1)}
-                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0, paddingBottom: '1px' }}
+                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0, paddingTop: '3px' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                       >+</button>
