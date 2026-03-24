@@ -20,8 +20,8 @@ export default function App() {
           <Link to="/cookbooks" className="sm:hidden"
             style={{
               position: 'fixed',
-              top: 0,
-              right: 12,
+              top: 8,
+              right: -8,
               zIndex: 45,
               textDecoration: 'none',
               pointerEvents: 'auto',
