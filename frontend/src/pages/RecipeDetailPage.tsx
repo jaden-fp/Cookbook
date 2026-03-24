@@ -374,7 +374,23 @@ export default function RecipeDetailPage() {
           }}
         >
           {/* Description */}
-          {recipe.description && (
+          {isEditing && draft ? (
+            <textarea
+              value={draft.description}
+              onChange={e => setDraft(d => d ? { ...d, description: e.target.value } : d)}
+              rows={3}
+              placeholder="Add a description…"
+              className="w-full resize-none mb-6 transition-all duration-200"
+              style={{
+                border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                color: 'var(--text)', padding: '0.625rem 0.875rem',
+                outline: 'none', background: 'var(--bg-subtle)', lineHeight: 1.75,
+              }}
+              onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+              onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+            />
+          ) : recipe.description ? (
             <p
               className="mb-6 leading-relaxed"
               style={{
@@ -387,7 +403,7 @@ export default function RecipeDetailPage() {
             >
               {recipe.description}
             </p>
-          )}
+          ) : null}
 
           {/* Meta pills */}
           {(recipe.prep_time || recipe.cook_time || recipe.yield) && (
