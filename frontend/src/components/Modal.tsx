@@ -18,7 +18,7 @@ export default function Modal({ onClose, children, title }: Props) {
     };
   }, [onClose]);
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
       style={{ background: 'rgba(15,12,30,0.45)' }}
@@ -27,7 +27,7 @@ export default function Modal({ onClose, children, title }: Props) {
       <div
         className="w-full max-w-md animate-scale-in flex flex-col"
         style={{
-          maxHeight: 'calc(100vh - 2rem)',
+          maxHeight: 'calc(100dvh - 2rem)',
           background: 'var(--surface)',
           borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--border-strong)',
@@ -59,6 +59,7 @@ export default function Modal({ onClose, children, title }: Props) {
         </div>
         <div className="p-6 overflow-y-auto">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
