@@ -5,7 +5,7 @@ export default function NavBar() {
   const isActive = (to: string) => pathname.startsWith(to);
 
   return (
-    <nav className="sticky top-0 z-40"
+    <nav className="hidden sm:block sticky top-0 z-40"
       style={{
         background: '#F46696',
         borderBottom: 'none',
