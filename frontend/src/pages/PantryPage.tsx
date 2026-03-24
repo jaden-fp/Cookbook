@@ -859,30 +859,19 @@ export default function PantryPage() {
                 >
                   Delete
                 </button>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setEditItem(null)}
-                    className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
-                    style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleEditSave}
-                    disabled={!editName.trim() || editSaving}
-                    className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
-                    style={{
-                      background: 'var(--accent)', fontFamily: 'var(--font-body)',
-                      borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-                    }}
-                    onMouseEnter={e => { if (editName.trim() && !editSaving) e.currentTarget.style.background = '#D94E7A'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-                  >
-                    {editSaving ? 'Saving…' : 'Save'}
-                  </button>
-                </div>
+                <button
+                  onClick={handleEditSave}
+                  disabled={!editName.trim() || editSaving}
+                  className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
+                  style={{
+                    background: 'var(--accent)', fontFamily: 'var(--font-body)',
+                    borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => { if (editName.trim() && !editSaving) e.currentTarget.style.background = '#D94E7A'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+                >
+                  {editSaving ? 'Saving…' : 'Save'}
+                </button>
               </div>
             </div>
           </div>
