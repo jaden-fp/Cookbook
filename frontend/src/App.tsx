@@ -11,6 +11,7 @@ export default function App() {
     <BrowserRouter>
       <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
         <NavBar />
+        <div style={{ paddingTop: '60px' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/cookbooks" replace />} />
           <Route path="/cookbooks" element={<CookbooksPage />} />
