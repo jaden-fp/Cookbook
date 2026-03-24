@@ -287,7 +287,7 @@ export default function CookbookDetailPage() {
           ← Cookbooks
         </Link>
 
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex items-start sm:items-end justify-between gap-4 flex-wrap">
           <div>
             <p style={{
               fontFamily: 'var(--font-body)',
