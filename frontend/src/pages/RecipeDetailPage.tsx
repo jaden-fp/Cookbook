@@ -533,31 +533,7 @@ export default function RecipeDetailPage() {
 
           {/* Scale control */}
           <div className="flex items-center gap-1.5 pb-4">
-            {[0.5, 1, 2, 3].map(v => (
-              <button
-                key={v}
-                onClick={() => setScale(v)}
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.75rem',
-                  fontWeight: scale === v ? 700 : 500,
-                  color: scale === v ? 'white' : 'var(--text-muted)',
-                  background: scale === v ? 'var(--accent)' : 'transparent',
-                  border: '1.5px solid',
-                  borderColor: scale === v ? 'var(--accent)' : 'var(--border-strong)',
-                  borderRadius: '999px',
-                  padding: '3px 9px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  lineHeight: 1.4,
-                }}
-                onMouseEnter={e => { if (scale !== v) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }}
-                onMouseLeave={e => { if (scale !== v) { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-muted)'; } }}
-              >
-                {v}×
-              </button>
-            ))}
-            <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', marginLeft: '2px' }}>
+            <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
                 style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 8px 3px', lineHeight: 1, transition: 'color 0.15s' }}
