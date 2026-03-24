@@ -88,7 +88,7 @@ export default function ImportBar({ onSuccess }: Props) {
           className="transition-all duration-200 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           style={{
             background: 'var(--accent)',
-            color: '#0D0D0D',
+            color: '#FFFFFF',
             fontFamily: 'var(--font-body)',
             fontWeight: 700,
             fontSize: '0.875rem',
