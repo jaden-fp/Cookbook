@@ -497,12 +497,12 @@ export default function RecipeDetailPage() {
             </button>
             <span
               style={{
-                minWidth: '3rem', textAlign: 'center',
-                fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 700,
+                minWidth: '2.5rem', textAlign: 'center',
+                fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 700,
                 color: scale !== 1 ? 'var(--accent)' : 'var(--text)',
                 borderLeft: '1px solid rgba(255,255,255,0.6)',
                 borderRight: '1px solid rgba(255,255,255,0.6)',
-                padding: '0 0.25rem', lineHeight: '2.25rem',
+                padding: '0 0.25rem', lineHeight: '1.75rem',
                 letterSpacing: '-0.01em',
               }}
             >
