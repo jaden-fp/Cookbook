@@ -128,10 +128,10 @@ export default function CookbooksPage() {
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
         style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
       >
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-          {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
-        </p>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+            {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
+          </p>
           {!loading && cookbooks.length > 0 && (
             <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
               <select
@@ -153,13 +153,14 @@ export default function CookbooksPage() {
               </svg>
             </div>
           )}
-          <Link
-            to="/recipes"
-            style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
-          >
-            View all recipes →
+        </div>
+        <Link
+          to="/recipes"
+          style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+        >
+          View all recipes →
           </Link>
         </div>
       </div>
