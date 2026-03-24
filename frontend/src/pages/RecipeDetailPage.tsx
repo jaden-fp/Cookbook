@@ -772,10 +772,10 @@ export default function RecipeDetailPage() {
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Pantry check modal */}
-      {showPantryModal && (
+      {showPantryModal && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           style={{ background: 'rgba(15,12,30,0.45)' }}
