@@ -47,9 +47,9 @@ export default function BottomNav() {
     <nav
       className="sm:hidden fixed bottom-0 left-0 right-0 z-50"
       style={{
-        background: 'var(--text)',
+        background: 'var(--accent)',
         borderTop: 'none',
-        boxShadow: '0 -4px 24px rgba(15,12,30,0.18)',
+        boxShadow: '0 -4px 24px rgba(244,102,150,0.25)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
