@@ -540,7 +540,7 @@ export default function RecipeDetailPage() {
                 onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
               >−</button>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent)', minWidth: '28px', textAlign: 'center', userSelect: 'none' }}>{scale}×</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent)', minWidth: '28px', textAlign: 'center', userSelect: 'none', background: 'white', padding: '0 2px' }}>{scale}×</span>
               <button
                 onClick={() => adjustScale(0.5)}
                 style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px', lineHeight: 1, transition: 'color 0.15s', display: 'flex', alignItems: 'center', paddingBottom: '7px' }}
