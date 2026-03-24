@@ -23,7 +23,7 @@ export default function NavBar() {
               height: '174px',
               width: 'auto',
               display: 'block',
-              transform: 'translateY(-50%) translateY(36px)',
+              transform: 'translateY(36px)',
             }}
           />
         </Link>
