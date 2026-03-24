@@ -139,7 +139,7 @@ export default function CookbooksPage() {
                 setSort(val);
                 localStorage.setItem('cookbooks-sort', val);
               }}
-              style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', borderRadius: 'var(--radius-sm)', padding: '4px 0', cursor: 'pointer', outline: 'none', appearance: 'none', WebkitAppearance: 'none' as React.CSSProperties['WebkitAppearance'] }}
+              style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', borderRadius: 'var(--radius-sm)', padding: '4px 0', cursor: 'pointer', outline: 'none', appearance: 'none' }}
             >
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
