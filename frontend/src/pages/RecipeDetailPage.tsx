@@ -889,33 +889,82 @@ export default function RecipeDetailPage() {
 
         {/* Instructions tab */}
         {tab === 'instructions' && (
-          <ol className="space-y-6 animate-fade-up">
-            {recipe.instructions.map((step, i) => (
-              <li key={i} className="flex gap-5">
-                <div className="shrink-0 flex flex-col items-center">
+          isEditing && draft ? (
+            <div className="space-y-3 animate-fade-up">
+              {draft.instructions.map((step, i) => (
+                <div key={i} className="flex gap-3 items-start">
                   <span
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
-                    style={{
-                      background: 'var(--accent)',
-                      fontFamily: 'var(--font-body)',
-                      boxShadow: '0 2px 8px var(--accent-glow)',
-                    }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0 mt-1"
+                    style={{ background: 'var(--accent)', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px var(--accent-glow)' }}
                   >
                     {i + 1}
                   </span>
-                  {i < recipe.instructions.length - 1 && (
-                    <div className="flex-1 w-px mt-2" style={{ background: 'var(--border-strong)', minHeight: '1.5rem' }} />
-                  )}
+                  <textarea
+                    value={step}
+                    onChange={e => setDraft(d => {
+                      if (!d) return d;
+                      const ins = d.instructions.map((s, si) => si === i ? e.target.value : s);
+                      return { ...d, instructions: ins };
+                    })}
+                    rows={3}
+                    className="flex-1 resize-none transition-all duration-200"
+                    style={{
+                      border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
+                      fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                      color: 'var(--text)', padding: '0.625rem 0.875rem',
+                      outline: 'none', background: 'var(--bg-subtle)', lineHeight: 1.8,
+                    }}
+                    onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+                    onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+                  />
+                  <button
+                    onClick={() => setDraft(d => d ? { ...d, instructions: d.instructions.filter((_, si) => si !== i) } : d)}
+                    className="w-7 h-7 flex items-center justify-center rounded-full transition-colors mt-1 shrink-0"
+                    style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+                  </button>
                 </div>
-                <p
-                  className="pb-2 leading-relaxed pt-1"
-                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text)', fontSize: '0.9375rem', lineHeight: 1.8 }}
-                >
-                  {step}
-                </p>
-              </li>
-            ))}
-          </ol>
+              ))}
+              <button
+                onClick={() => setDraft(d => d ? { ...d, instructions: [...d.instructions, ''] } : d)}
+                className="text-sm font-semibold mt-2"
+                style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+              >
+                + Add step
+              </button>
+            </div>
+          ) : (
+            <ol className="space-y-6 animate-fade-up">
+              {recipe.instructions.map((step, i) => (
+                <li key={i} className="flex gap-5">
+                  <div className="shrink-0 flex flex-col items-center">
+                    <span
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
+                      style={{
+                        background: 'var(--accent)',
+                        fontFamily: 'var(--font-body)',
+                        boxShadow: '0 2px 8px var(--accent-glow)',
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                    {i < recipe.instructions.length - 1 && (
+                      <div className="flex-1 w-px mt-2" style={{ background: 'var(--border-strong)', minHeight: '1.5rem' }} />
+                    )}
+                  </div>
+                  <p
+                    className="pb-2 leading-relaxed pt-1"
+                    style={{ fontFamily: 'var(--font-body)', color: 'var(--text)', fontSize: '0.9375rem', lineHeight: 1.8 }}
+                  >
+                    {step}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          )
         )}
       </div>
 
