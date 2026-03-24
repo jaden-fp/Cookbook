@@ -536,14 +536,14 @@ export default function RecipeDetailPage() {
             <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
-                style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 8px 3px', lineHeight: 1, transition: 'color 0.15s' }}
+                style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px', lineHeight: 1, transition: 'color 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
               >−</button>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text)', minWidth: '28px', textAlign: 'center', userSelect: 'none' }}>{scale}×</span>
               <button
                 onClick={() => adjustScale(0.5)}
-                style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 8px 3px', lineHeight: 1, transition: 'color 0.15s' }}
+                style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px', lineHeight: 1, transition: 'color 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
               >+</button>
