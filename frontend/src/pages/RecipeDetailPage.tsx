@@ -664,53 +664,182 @@ export default function RecipeDetailPage() {
         {/* Ingredients tab */}
         {tab === 'ingredients' && (
           <div className="space-y-7 animate-fade-up">
-            {recipe.ingredient_groups.map((group, gi) => (
+            {(isEditing && draft ? draft.ingredient_groups : recipe.ingredient_groups).map((group, gi) => (
               <div key={gi}>
-                {group.group_name && (
+                {isEditing && draft ? (
+                  <div className="flex items-center gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={group.group_name ?? ''}
+                      onChange={e => setDraft(d => {
+                        if (!d) return d;
+                        const gs = d.ingredient_groups.map((g, i) => i === gi ? { ...g, group_name: e.target.value || null } : g);
+                        return { ...d, ingredient_groups: gs };
+                      })}
+                      placeholder="Group name (optional)"
+                      style={{
+                        flex: 1, border: 'none', borderBottom: '1.5px solid var(--border-strong)',
+                        fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600,
+                        color: 'var(--accent)', background: 'transparent', outline: 'none',
+                        textTransform: 'uppercase', letterSpacing: '0.12em', paddingBottom: '2px',
+                      }}
+                    />
+                    {draft.ingredient_groups.length > 1 && (
+                      <button
+                        onClick={() => setDraft(d => d ? { ...d, ingredient_groups: d.ingredient_groups.filter((_, i) => i !== gi) } : d)}
+                        style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem' }}
+                      >Remove group</button>
+                    )}
+                  </div>
+                ) : group.group_name ? (
                   <div className="flex items-center gap-3 mb-3">
-                    <span
-                      className="text-xs font-semibold uppercase tracking-[0.12em]"
-                      style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
-                    >
+                    <span className="text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)' }}>
                       {group.group_name}
                     </span>
                     <div className="flex-1 h-px" style={{ background: 'var(--border-strong)' }} />
                   </div>
-                )}
-                <ul className="space-y-2.5">
-                  {group.ingredients.map((ing, ii) => {
-                    const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
-                    const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--purple)';
-                    return (
-                      <li key={ii} className="flex items-baseline gap-3">
-                        <span
-                          className="w-1.5 h-1.5 rounded-full shrink-0 mt-2"
-                          style={{ background: dotColor }}
-                          title={pantryItems.length > 0 ? status : undefined}
+                ) : null}
+
+                {isEditing && draft ? (
+                  <div className="space-y-2">
+                    {group.ingredients.map((ing, ii) => (
+                      <div key={ii} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={ing.amount}
+                          onChange={e => setDraft(d => {
+                            if (!d) return d;
+                            const gs = d.ingredient_groups.map((g, gi2) => gi2 !== gi ? g : {
+                              ...g, ingredients: g.ingredients.map((ing2, ii2) => ii2 !== ii ? ing2 : { ...ing2, amount: e.target.value }),
+                            });
+                            return { ...d, ingredient_groups: gs };
+                          })}
+                          placeholder="amt"
+                          style={{ width: '52px', border: '1.5px solid var(--border-strong)', borderRadius: '6px', fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)', padding: '5px 7px', outline: 'none', background: 'var(--bg-subtle)' }}
+                          onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                          onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
                         />
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)' }}>
+                        <input
+                          type="text"
+                          value={ing.unit}
+                          onChange={e => setDraft(d => {
+                            if (!d) return d;
+                            const gs = d.ingredient_groups.map((g, gi2) => gi2 !== gi ? g : {
+                              ...g, ingredients: g.ingredients.map((ing2, ii2) => ii2 !== ii ? ing2 : { ...ing2, unit: e.target.value }),
+                            });
+                            return { ...d, ingredient_groups: gs };
+                          })}
+                          placeholder="unit"
+                          style={{ width: '64px', border: '1.5px solid var(--border-strong)', borderRadius: '6px', fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)', padding: '5px 7px', outline: 'none', background: 'var(--bg-subtle)' }}
+                          onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                          onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
+                        />
+                        <input
+                          type="text"
+                          value={ing.name}
+                          onChange={e => setDraft(d => {
+                            if (!d) return d;
+                            const gs = d.ingredient_groups.map((g, gi2) => gi2 !== gi ? g : {
+                              ...g, ingredients: g.ingredients.map((ing2, ii2) => ii2 !== ii ? ing2 : { ...ing2, name: e.target.value }),
+                            });
+                            return { ...d, ingredient_groups: gs };
+                          })}
+                          placeholder="ingredient name"
+                          style={{ flex: 1, border: '1.5px solid var(--border-strong)', borderRadius: '6px', fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)', padding: '5px 7px', outline: 'none', background: 'var(--bg-subtle)' }}
+                          onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                          onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
+                        />
+                        <input
+                          type="text"
+                          value={ing.notes ?? ''}
+                          onChange={e => setDraft(d => {
+                            if (!d) return d;
+                            const gs = d.ingredient_groups.map((g, gi2) => gi2 !== gi ? g : {
+                              ...g, ingredients: g.ingredients.map((ing2, ii2) => ii2 !== ii ? ing2 : { ...ing2, notes: e.target.value || null }),
+                            });
+                            return { ...d, ingredient_groups: gs };
+                          })}
+                          placeholder="notes"
+                          style={{ width: '90px', border: '1.5px solid var(--border-strong)', borderRadius: '6px', fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', padding: '5px 7px', outline: 'none', background: 'var(--bg-subtle)', fontStyle: 'italic' }}
+                          onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                          onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
+                        />
+                        <button
+                          onClick={() => setDraft(d => {
+                            if (!d) return d;
+                            const gs = d.ingredient_groups.map((g, gi2) => gi2 !== gi ? g : {
+                              ...g, ingredients: g.ingredients.filter((_, ii2) => ii2 !== ii),
+                            });
+                            return { ...d, ingredient_groups: gs };
+                          })}
+                          style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
+                          onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        >
+                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => setDraft(d => {
+                        if (!d) return d;
+                        const gs = d.ingredient_groups.map((g, gi2) => gi2 !== gi ? g : {
+                          ...g, ingredients: [...g.ingredients, { amount: '', unit: '', name: '', notes: null }],
+                        });
+                        return { ...d, ingredient_groups: gs };
+                      })}
+                      className="text-xs font-semibold mt-1"
+                      style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', padding: '4px 0' }}
+                    >
+                      + Add ingredient
+                    </button>
+                  </div>
+                ) : (
+                  <ul className="space-y-2.5">
+                    {group.ingredients.map((ing, ii) => {
+                      const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
+                      const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--purple)';
+                      return (
+                        <li key={ii} className="flex items-baseline gap-3">
                           <span
-                            key={`${scale}-${gi}-${ii}`}
-                            className="font-semibold animate-amount"
-                          >
-                            {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
-                          </span>{' '}
-                          {ing.name}
-                          {ing.notes && (
+                            className="w-1.5 h-1.5 rounded-full shrink-0 mt-2"
+                            style={{ background: dotColor }}
+                            title={pantryItems.length > 0 ? status : undefined}
+                          />
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)' }}>
                             <span
-                              className="ml-1"
-                              style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
+                              key={`${scale}-${gi}-${ii}`}
+                              className="font-semibold animate-amount"
                             >
-                              ({ing.notes})
-                            </span>
-                          )}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                              {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
+                            </span>{' '}
+                            {ing.name}
+                            {ing.notes && (
+                              <span
+                                className="ml-1"
+                                style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
+                              >
+                                ({ing.notes})
+                              </span>
+                            )}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             ))}
+
+            {isEditing && draft && (
+              <button
+                onClick={() => setDraft(d => d ? { ...d, ingredient_groups: [...d.ingredient_groups, { group_name: null, ingredients: [{ amount: '', unit: '', name: '', notes: null }] }] } : d)}
+                className="text-sm font-semibold"
+                style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+              >
+                + Add ingredient group
+              </button>
+            )}
 
             {/* Equipment */}
             {recipe.equipment && recipe.equipment.length > 0 && (
