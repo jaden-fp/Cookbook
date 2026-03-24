@@ -652,8 +652,9 @@ export default function PantryPage() {
             {inStock.map((item, i) => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 group"
-                style={{ padding: '12px 16px', borderBottom: i < inStock.length - 1 ? '1px solid var(--border)' : 'none' }}
+                className="flex items-center gap-3 group sm:cursor-default"
+                style={{ padding: '12px 16px', borderBottom: i < inStock.length - 1 ? '1px solid var(--border)' : 'none', cursor: 'pointer' }}
+                onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
               >
                 {/* Name */}
                 <p className="flex-1 min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
@@ -661,11 +662,12 @@ export default function PantryPage() {
                 </p>
 
                 {/* Right side: stepper (if qty) + list button + edit */}
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
+                  {/* Edit pencil — desktop hover only */}
                   <button
                     onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
                     title="Edit item"
-                    className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                    className="hidden sm:flex shrink-0 items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
                     style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
