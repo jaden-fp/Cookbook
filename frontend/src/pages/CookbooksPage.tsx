@@ -196,7 +196,7 @@ export default function CookbooksPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {cookbooks.map((cb, i) => (
+          {sortCookbooks(cookbooks, sort).map((cb, i) => (
             <div key={cb.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
               <CookbookCard cookbook={cb} onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))} />
             </div>
