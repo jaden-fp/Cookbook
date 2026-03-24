@@ -94,10 +94,9 @@ export default function AllRecipesPage() {
                 WebkitAppearance: 'none',
               }}
             >
+              <option value="az">A → Z</option>
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
-              <option value="az">A → Z</option>
-              <option value="za">Z → A</option>
               <option value="rating">Top rated</option>
             </select>
             <svg
