@@ -103,7 +103,7 @@ export default function AllRecipesPage() {
 
       {/* Grid */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {Array.from({ length: 9 }).map((_, i) => (
             <div key={i} className="overflow-hidden" style={{ borderRadius: 'var(--radius-lg)', background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <div className="skeleton" style={{ height: '190px' }} />
@@ -130,7 +130,7 @@ export default function AllRecipesPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {sortRecipes(recipes, sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
               <RecipeTile recipe={r} />
