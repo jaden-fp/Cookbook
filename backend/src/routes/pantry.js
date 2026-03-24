@@ -29,8 +29,9 @@ router.post('/', async (req, res) => {
 
 // PATCH /api/pantry/:id
 router.patch('/:id', async (req, res) => {
-  const { quantity, unit, needs_purchase } = req.body;
+  const { name, quantity, unit, needs_purchase } = req.body;
   const updates = { updated_at: new Date().toISOString() };
+  if (name !== undefined) updates.name = name.trim();
   if (quantity !== undefined) updates.quantity = quantity;
   if (unit !== undefined) updates.unit = unit;
   if (needs_purchase !== undefined) updates.needs_purchase = needs_purchase ? 1 : 0;
