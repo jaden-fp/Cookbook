@@ -41,6 +41,19 @@ export async function rateRecipe(
   return res.json();
 }
 
+export async function updateRecipe(
+  id: string,
+  updates: { title?: string; description?: string }
+): Promise<Recipe> {
+  const res = await fetch(`${BASE}/recipes/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error('Failed to update recipe');
+  return res.json();
+}
+
 export async function getRecipeCookbooks(id: string): Promise<Cookbook[]> {
   const res = await fetch(`${BASE}/recipes/${id}/cookbooks`);
   return res.json();
