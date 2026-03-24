@@ -130,14 +130,32 @@ export default function CookbooksPage() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
           {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
         </p>
-        <Link
-          to="/recipes"
-          style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
-        >
-          View all recipes →
-        </Link>
+        <div className="flex items-center gap-4">
+          {!loading && cookbooks.length > 0 && (
+            <select
+              value={sort}
+              onChange={e => {
+                const val = e.target.value as SortOption;
+                setSort(val);
+                localStorage.setItem('cookbooks-sort', val);
+              }}
+              style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', borderRadius: 'var(--radius-sm)', padding: '4px 0', cursor: 'pointer', outline: 'none', appearance: 'none', WebkitAppearance: 'none' as React.CSSProperties['WebkitAppearance'] }}
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+            </select>
+          )}
+          <Link
+            to="/recipes"
+            style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+          >
+            View all recipes →
+          </Link>
+        </div>
       </div>
 
       {/* Content */}
