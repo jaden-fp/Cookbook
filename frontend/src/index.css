@@ -12,17 +12,17 @@
   --text-secondary:rgba(15,12,30,0.62);
   --text-muted:   rgba(15,12,30,0.38);
 
-  --pink:         #F0286A;
-  --pink-lt:      rgba(240,40,106,0.09);
-  --pink-bright:  #FF4D88;
+  --pink:         #F46696;
+  --pink-lt:      rgba(244,102,150,0.09);
+  --pink-bright:  #F46696;
   --teal:         #00C4B4;
   --teal-lt:      rgba(0,196,180,0.1);
   --purple:       #7040DC;
   --purple-lt:    rgba(112,64,220,0.09);
 
-  --accent:       #F0286A;
-  --accent-dim:   rgba(240,40,106,0.09);
-  --accent-glow:  rgba(240,40,106,0.2);
+  --accent:       #F46696;
+  --accent-dim:   rgba(244,102,150,0.09);
+  --accent-glow:  rgba(244,102,150,0.2);
 
   --font-display: 'proxima-nova', 'Proxima Nova', 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-body:    'proxima-nova', 'Proxima Nova', 'Plus Jakarta Sans', system-ui, sans-serif;
