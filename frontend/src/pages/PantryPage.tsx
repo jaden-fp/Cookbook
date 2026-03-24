@@ -154,7 +154,7 @@ export default function PantryPage() {
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setShowQuickAdd(false); setBoughtItem(null); }
+      if (e.key === 'Escape') { setShowQuickAdd(false); setBoughtItem(null); setEditItem(null); }
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
