@@ -70,7 +70,7 @@ export default function ImportBar({ onSuccess }: Props) {
           type="url"
           value={url}
           onChange={e => setUrl(e.target.value)}
-          placeholder="Paste a recipe URL to import…"
+          placeholder="Paste a recipe URL…"
           disabled={importing}
           className="flex-1 bg-transparent"
           style={{
