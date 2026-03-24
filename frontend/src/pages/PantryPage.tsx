@@ -431,108 +431,93 @@ export default function PantryPage() {
               )}
             </div>
 
-            {/* Quantity + Unit — side by side on all sizes */}
-            <div className="flex gap-2 items-end">
-            <div style={{ width: '80px' }}>
-              <label style={{
-                display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
-                marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
-              }}>
-                Qty <span style={{ textTransform: 'none', fontWeight: 400, fontSize: '0.7rem' }}>(opt.)</span>
-              </label>
+            {/* Separator */}
+            <div style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
+
+            {/* Qty input — compact */}
+            <input
+              type="number"
+              min="0"
+              step="0.25"
+              value={newQty}
+              onChange={e => setNewQty(e.target.value)}
+              placeholder="qty"
+              style={{
+                border: 'none', outline: 'none',
+                fontFamily: 'var(--font-body)', fontSize: '0.875rem',
+                color: 'var(--text)', padding: '0.75rem 0.5rem',
+                background: 'transparent', width: '52px', textAlign: 'center',
+              }}
+            />
+
+            {/* Separator */}
+            <div style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
+
+            {/* Unit select — compact */}
+            <select
+              value={newUnit}
+              onChange={e => setNewUnit(e.target.value)}
+              style={{
+                border: 'none', outline: 'none',
+                fontFamily: 'var(--font-body)', fontSize: '0.875rem',
+                color: newUnit ? 'var(--text)' : 'var(--text-muted)',
+                padding: '0.75rem 0.5rem',
+                background: 'transparent', cursor: 'pointer',
+              }}
+            >
+              <option value="">unit</option>
+              {UNITS.filter(u => u !== '').map(u => <option key={u} value={u}>{u}</option>)}
+              <option value="__other__">other…</option>
+            </select>
+
+            {newUnit === '__other__' && (
               <input
-                type="number"
-                min="0"
-                step="0.25"
-                value={newQty}
-                onChange={e => setNewQty(e.target.value)}
-                placeholder="?"
-                className="w-full transition-all duration-200"
+                type="text"
+                value={customUnit}
+                onChange={e => setCustomUnit(e.target.value)}
+                placeholder="unit"
+                autoFocus
                 style={{
-                  border: '1.5px solid var(--border-strong)', borderRadius: '10px',
-                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                  outline: 'none', background: 'var(--surface)',
+                  border: 'none', outline: 'none',
+                  fontFamily: 'var(--font-body)', fontSize: '0.875rem',
+                  color: 'var(--text)', padding: '0.75rem 0.5rem',
+                  background: 'transparent', width: '72px',
                 }}
-                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
               />
-            </div>
+            )}
 
-            {/* Unit */}
-            <div className="flex items-end gap-2">
-              <div>
-                <label style={{
-                  display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                  color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
-                  marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
-                }}>
-                  Unit
-                </label>
-                <select
-                  value={newUnit}
-                  onChange={e => setNewUnit(e.target.value)}
-                  style={{
-                    border: '1.5px solid var(--border-strong)', borderRadius: '10px',
-                    fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                    outline: 'none', background: 'var(--surface)', height: '44px',
-                  }}
-                >
-                  {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
-                  <option value="__other__">other…</option>
-                </select>
-              </div>
-              {newUnit === '__other__' && (
-                <input
-                  type="text"
-                  value={customUnit}
-                  onChange={e => setCustomUnit(e.target.value)}
-                  placeholder="unit"
-                  autoFocus
-                  style={{
-                    border: '1.5px solid var(--border-strong)', borderRadius: '10px',
-                    fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                    outline: 'none', background: 'var(--surface)', width: '88px', height: '44px',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                  onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-                />
-              )}
-            </div>
-            </div>{/* end qty+unit row */}
-
-            {/* Submit */}
-            <div>
-              <label style={{ visibility: 'hidden', display: 'block', fontSize: '0.75rem', marginBottom: '4px' }}>Add</label>
-              <button
-                type="submit"
-                disabled={!newName.trim() || saving}
-                className="px-5 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{
-                  background: 'var(--accent)', borderRadius: '10px',
-                  fontFamily: 'var(--font-body)',
-                  boxShadow: '0 2px 8px var(--accent-glow)',
-                  height: '44px', whiteSpace: 'nowrap',
-                }}
-                onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#D94E7A'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-              >
-                {saving ? 'Adding…' : '+ Add to Pantry'}
-              </button>
-            </div>
+            {/* Add button — inset pink pill */}
+            <button
+              type="submit"
+              disabled={!newName.trim() || saving}
+              className="transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              style={{
+                background: 'var(--accent)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '999px',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                padding: '0 1.25rem',
+                margin: '4px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#D94E7A'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+            >
+              {saving ? 'Adding…' : 'Add'}
+            </button>
           </div>
         </form>
 
-        <p style={{ minHeight: '20px', marginTop: '6px', fontSize: '0.875rem', color: '#C0392B', fontFamily: 'var(--font-body)', visibility: addError ? 'visible' : 'hidden' }}>
-          {addError ?? ' '}
-        </p>
-
+        {addError && (
+          <p style={{ marginTop: '6px', fontSize: '0.875rem', color: '#C0392B', fontFamily: 'var(--font-body)', paddingLeft: '1.25rem' }}>
+            {addError}
+          </p>
+        )}
       </div>
-
-      <div style={{ borderBottom: '1px solid var(--border-strong)', marginBottom: '24px' }} />
 
       {/* Shopping List */}
       {shoppingList.length > 0 && (
