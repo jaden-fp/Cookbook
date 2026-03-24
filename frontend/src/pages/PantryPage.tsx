@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import BottomSheet from '../components/BottomSheet';
 import { getPantryItems, addPantryItem, updatePantryItem, deletePantryItem } from '../api';
-import { useFAB } from '../context/FABContext';
 import type { PantryItem } from '../types';
 
 type Suggestion = { name: string; unit: string };
