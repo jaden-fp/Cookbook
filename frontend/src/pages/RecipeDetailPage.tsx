@@ -469,28 +469,38 @@ export default function RecipeDetailPage() {
           >
             Scale
           </span>
-          <div className="inline-flex items-center gap-2">
+          <div
+            className="inline-flex items-center"
+            style={{
+              border: '1.5px solid var(--border-strong)',
+              borderRadius: '999px',
+              background: 'var(--surface)',
+              overflow: 'hidden',
+            }}
+          >
             <button
               onClick={() => adjustScale(-0.5)}
-              className="flex items-center justify-center rounded-full transition-all duration-150"
+              className="transition-colors duration-150"
               style={{
-                width: '2rem', height: '2rem',
-                background: 'var(--bg-subtle)',
-                border: '1.5px solid var(--border-strong)',
-                color: 'var(--text-muted)',
-                fontSize: '1rem', fontWeight: 400,
-                cursor: 'pointer', lineHeight: 1,
+                width: '2.25rem', height: '2.25rem',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: 'var(--text-muted)', fontSize: '1.125rem', lineHeight: 1,
+                paddingBottom: '1px',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
             >
               −
             </button>
             <span
               style={{
-                minWidth: '2.5rem', textAlign: 'center',
-                fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontWeight: 700,
+                minWidth: '3rem', textAlign: 'center',
+                fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 700,
                 color: scale !== 1 ? 'var(--accent)' : 'var(--text)',
+                borderLeft: '1px solid var(--border-strong)',
+                borderRight: '1px solid var(--border-strong)',
+                padding: '0 0.25rem', lineHeight: '2.25rem',
                 letterSpacing: '-0.01em',
               }}
             >
@@ -498,17 +508,16 @@ export default function RecipeDetailPage() {
             </span>
             <button
               onClick={() => adjustScale(0.5)}
-              className="flex items-center justify-center rounded-full transition-all duration-150"
+              className="transition-colors duration-150"
               style={{
-                width: '2rem', height: '2rem',
-                background: 'var(--bg-subtle)',
-                border: '1.5px solid var(--border-strong)',
-                color: 'var(--text-muted)',
-                fontSize: '1rem', fontWeight: 400,
-                cursor: 'pointer', lineHeight: 1,
+                width: '2.25rem', height: '2.25rem',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: 'var(--text-muted)', fontSize: '1.125rem', lineHeight: 1,
+                paddingBottom: '1px',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
             >
               +
             </button>
