@@ -245,7 +245,7 @@ export default function CookbookDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-6 lg:px-12 py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 py-10">
         <div className="skeleton h-8 w-48 rounded-lg mb-8" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
           {Array.from({ length: 6 }).map((_, i) => (
