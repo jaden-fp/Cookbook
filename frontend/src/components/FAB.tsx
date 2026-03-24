@@ -10,7 +10,7 @@ export default function FAB() {
       onClick={action}
       className="sm:hidden fixed z-40"
       style={{
-        bottom: 'calc(56px + env(safe-area-inset-bottom) + 16px)',
+        bottom: 'calc(58px + env(safe-area-inset-bottom) + 26px)',
         right: '20px',
         width: '52px',
         height: '52px',
