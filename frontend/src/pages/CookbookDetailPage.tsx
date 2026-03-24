@@ -53,86 +53,45 @@ function AddRecipesModal({
     }
   }
 
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', h);
-    document.body.style.overflow = 'hidden';
-    return () => { window.removeEventListener('keydown', h); document.body.style.overflow = ''; };
-  }, [onClose]);
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-      style={{ background: 'rgba(15,12,30,0.45)' }}
-      onClick={e => e.target === e.currentTarget && onClose()}
-    >
-      <div
-        className="w-full max-w-md animate-scale-in flex flex-col"
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border-strong)',
-          borderRadius: 'var(--radius-xl)',
-          boxShadow: 'var(--shadow-xl)',
-          maxHeight: '80vh',
-        }}
-      >
-        {/* Header */}
-        <div
-          className="flex items-center justify-between px-6 py-4 shrink-0"
-          style={{ borderBottom: '1px solid var(--border)' }}
-        >
-          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.375rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
-            Add Recipes
-          </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-            style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-          </button>
-        </div>
-
+    <BottomSheet open={true} onClose={onClose} title="Add Recipes">
+      <div className="space-y-3">
         {/* Search */}
-        <div className="px-4 pt-4 pb-2 shrink-0">
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search recipes…"
-            autoFocus
-            className="w-full transition-all duration-200"
-            style={{
-              border: '1.5px solid var(--border-strong)',
-              borderRadius: 'var(--radius-sm)',
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.875rem',
-              color: 'var(--text)',
-              padding: '0.5625rem 0.875rem',
-              outline: 'none',
-              background: 'var(--bg-subtle)',
-            }}
-            onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-            onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
+        <input
+          type="text"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search recipes…"
+          autoFocus
+          className="w-full transition-all duration-200"
+          style={{
+            border: '1.5px solid var(--border-strong)',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.875rem',
+            color: 'var(--text)',
+            padding: '0.5625rem 0.875rem',
+            outline: 'none',
+            background: 'var(--bg-subtle)',
+          }}
+          onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+          onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+        />
 
         {/* Recipe list */}
-        <div className="overflow-y-auto flex-1 px-4 pb-4">
+        <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
           {filtered.length === 0 ? (
             <p className="text-center py-8 text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
               {all.length === 0 ? 'All recipes are already in this cookbook.' : 'No recipes match.'}
             </p>
           ) : (
-            <div className="space-y-1 pt-1">
+            <div className="space-y-1">
               {filtered.map(r => {
                 const checked = selected.has(r.id);
                 return (
                   <label
                     key={r.id}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150"
+                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-150"
                     style={{
                       background: checked ? 'var(--accent-dim)' : 'transparent',
                       border: checked ? '1.5px solid var(--accent)' : '1.5px solid transparent',
@@ -141,7 +100,6 @@ function AddRecipesModal({
                     onMouseEnter={e => { if (!checked) e.currentTarget.style.background = 'var(--bg-subtle)'; }}
                     onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
                   >
-                    {/* Thumbnail */}
                     <div
                       className="shrink-0 overflow-hidden"
                       style={{ width: '44px', height: '44px', borderRadius: 'var(--radius-sm)', background: 'var(--border)' }}
@@ -156,15 +114,12 @@ function AddRecipesModal({
                         </div>
                       )}
                     </div>
-
                     <span
                       className="flex-1 text-sm line-clamp-2 leading-snug"
                       style={{ fontFamily: 'var(--font-body)', color: 'var(--text)', fontWeight: checked ? 600 : 400 }}
                     >
                       {r.title}
                     </span>
-
-                    {/* Checkbox */}
                     <div
                       className="flex items-center justify-center shrink-0 transition-all duration-150"
                       style={{
@@ -189,44 +144,29 @@ function AddRecipesModal({
         </div>
 
         {/* Footer */}
-        <div
-          className="px-6 py-4 flex items-center justify-between shrink-0"
-          style={{ borderTop: '1px solid var(--border)' }}
-        >
+        <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid var(--border)' }}>
           <span style={{ fontSize: '0.8125rem', color: saveError ? '#E03E3E' : 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
             {saveError ?? (selected.size > 0 ? `${selected.size} selected` : 'Select recipes to add')}
           </span>
-          <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm transition-colors"
-              style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={!selected.size || saving}
-              className="px-5 py-2 text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{
-                background: 'var(--accent)',
-                fontFamily: 'var(--font-body)',
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px var(--accent-glow)',
-              }}
-              onMouseEnter={e => { if (selected.size && !saving) e.currentTarget.style.background = '#D94E7A'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-            >
-              {saving ? 'Adding…' : `Add${selected.size > 0 ? ` ${selected.size}` : ''}`}
-            </button>
-          </div>
+          <button
+            onClick={handleSave}
+            disabled={!selected.size || saving}
+            className="px-5 py-2 text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              background: 'var(--accent)',
+              fontFamily: 'var(--font-body)',
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={e => { if (selected.size && !saving) e.currentTarget.style.background = '#D94E7A'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+          >
+            {saving ? 'Adding…' : `Add${selected.size > 0 ? ` ${selected.size}` : ''}`}
+          </button>
         </div>
       </div>
-    </div>
+    </BottomSheet>
   );
 }
 
