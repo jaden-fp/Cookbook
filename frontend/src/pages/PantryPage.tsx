@@ -577,21 +577,6 @@ export default function PantryPage() {
                   borderBottom: i < shoppingList.length - 1 ? '1px solid var(--border)' : 'none',
                 }}
               >
-                {/* Circle checkbox */}
-                <button
-                  onClick={async () => { const u = await updatePantryItem(item.id, { needs_purchase: 0 }); setItems(prev => prev.map(p => p.id === u.id ? u : p)); }}
-                  title="Mark as bought"
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200"
-                  style={{
-                    width: '22px', height: '22px',
-                    border: '1.5px solid var(--border-strong)',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00C4B4'; e.currentTarget.style.background = 'rgba(0,196,180,0.08)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.background = 'transparent'; }}
-                />
-
                 <div className="flex-1 min-w-0">
                   <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
                     {item.name}
