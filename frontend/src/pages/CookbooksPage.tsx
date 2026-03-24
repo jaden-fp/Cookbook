@@ -201,7 +201,7 @@ export default function CookbooksPage() {
               <CookbookCard cookbook={cb} onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))} />
             </div>
           ))}
-          <CreateTile />
+          <div className="hidden sm:block"><CreateTile /></div>
         </div>
       )}
 
