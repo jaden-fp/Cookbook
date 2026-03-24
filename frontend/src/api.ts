@@ -164,7 +164,7 @@ export async function addPantryItem(data: {
 
 export async function updatePantryItem(
   id: string,
-  updates: { quantity?: number; unit?: string; needs_purchase?: number }
+  updates: { name?: string; quantity?: number; unit?: string; needs_purchase?: number }
 ): Promise<PantryItem> {
   const res = await fetch(`${BASE}/pantry/${id}`, {
     method: 'PATCH',
