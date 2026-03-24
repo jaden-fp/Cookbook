@@ -810,10 +810,10 @@ export default function PantryPage() {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Mark as Bought Modal */}
-      {boughtItem && (
+      {boughtItem && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           style={{ background: 'var(--text-muted)' }}
