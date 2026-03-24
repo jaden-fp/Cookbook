@@ -683,7 +683,7 @@ export default function PantryPage() {
                       <button
                         onClick={() => handleAdjustQty(item, 1)}
                         className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                        style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                       >
