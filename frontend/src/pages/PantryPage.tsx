@@ -677,13 +677,13 @@ export default function PantryPage() {
                 }}
               >
                 {/* Name */}
-                <p className="flex-1 min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
+                <p className="min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
                   {item.name}
                 </p>
 
-                {/* Qty badge + stepper — only when quantity is set */}
+                {/* Qty badge + stepper — only when quantity is set, sits left of actions */}
                 {item.quantity > 0 && (
-                  <>
+                  <div className="flex items-center gap-2 ml-2">
                     <span style={{
                       fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)',
                       flexShrink: 0,
@@ -715,8 +715,11 @@ export default function PantryPage() {
                         +
                       </button>
                     </div>
-                  </>
+                  </div>
                 )}
+
+                {/* Spacer */}
+                <div className="flex-1" />
 
                 {/* Edit — icon button */}
                 <button
@@ -732,11 +735,11 @@ export default function PantryPage() {
                   </svg>
                 </button>
 
-                {/* Need to Buy — icon button */}
+                {/* Add to Shopping List — always visible */}
                 <button
                   onClick={() => handleNeedToBuy(item)}
-                  title="Move to shopping list"
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                  title="Add to shopping list"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200"
                   style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
