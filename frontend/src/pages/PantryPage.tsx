@@ -357,17 +357,19 @@ export default function PantryPage() {
                 onKeyDown={handleNameKeyDown}
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                placeholder="e.g. Butter"
+                placeholder="Add an ingredient…"
                 autoComplete="off"
-                className="w-full transition-all duration-200"
+                className="w-full"
                 style={{
-                  border: '1.5px solid var(--border-strong)', borderRadius: '10px',
-                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: 'var(--text)', padding: '0.5625rem 0.875rem',
-                  outline: 'none', background: 'var(--surface)',
+                  border: 'none',
+                  outline: 'none',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  color: 'var(--text)',
+                  padding: '0.75rem 1.25rem',
+                  background: 'transparent',
+                  minWidth: 0,
                 }}
-                onMouseEnter={e => { (e.target as HTMLInputElement).style.borderColor = 'var(--accent)'; (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                onMouseLeave={e => { if (document.activeElement !== e.target) { (e.target as HTMLInputElement).style.borderColor = 'var(--border-strong)'; (e.target as HTMLInputElement).style.boxShadow = 'none'; } }}
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <div
