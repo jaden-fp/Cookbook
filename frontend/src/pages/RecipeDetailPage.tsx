@@ -406,7 +406,46 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* Meta pills */}
-          {(recipe.prep_time || recipe.cook_time || recipe.yield) && (
+          {isEditing && draft ? (
+            <div className="flex gap-2 mb-6">
+              {([
+                { label: 'Prep', key: 'prep_time' as const, placeholder: 'e.g. 15 min' },
+                { label: 'Cook', key: 'cook_time' as const, placeholder: 'e.g. 30 min' },
+                { label: 'Yield', key: 'yield' as const, placeholder: 'e.g. 12 cookies' },
+              ]).map(({ label, key, placeholder }) => (
+                <div
+                  key={key}
+                  style={{
+                    flex: 1,
+                    background: 'var(--bg-subtle)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '10px 14px',
+                  }}
+                >
+                  <div style={{
+                    fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600,
+                    textTransform: 'uppercase', letterSpacing: '0.1em',
+                    marginBottom: '4px', fontFamily: 'var(--font-body)',
+                  }}>
+                    {label}
+                  </div>
+                  <input
+                    type="text"
+                    value={draft[key]}
+                    onChange={e => setDraft(d => d ? { ...d, [key]: e.target.value } : d)}
+                    placeholder={placeholder}
+                    style={{
+                      width: '100%', border: 'none', outline: 'none',
+                      fontFamily: 'var(--font-body)', fontSize: '0.875rem',
+                      fontWeight: 600, color: 'var(--text)', background: 'transparent',
+                      padding: 0,
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (recipe.prep_time || recipe.cook_time || recipe.yield) ? (
             <div className="flex gap-2 mb-6">
               {[
                 recipe.prep_time && { label: 'Prep', value: recipe.prep_time },
@@ -439,7 +478,7 @@ export default function RecipeDetailPage() {
                 ))
               }
             </div>
-          )}
+          ) : null}
 
           {/* Pantry banner */}
           {hasMissingOrLow && !bannerDismissed && (
