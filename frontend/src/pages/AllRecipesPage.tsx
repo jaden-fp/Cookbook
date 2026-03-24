@@ -9,10 +9,9 @@ type SortOption = 'az' | 'newest' | 'oldest' | 'rating';
 function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
   const sorted = [...recipes];
   switch (sort) {
+    case 'az':      return sorted.sort((a, b) => a.title.localeCompare(b.title));
     case 'newest':  return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     case 'oldest':  return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-    case 'az':      return sorted.sort((a, b) => a.title.localeCompare(b.title));
-    case 'za':      return sorted.sort((a, b) => b.title.localeCompare(a.title));
     case 'rating':  return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
   }
 }
