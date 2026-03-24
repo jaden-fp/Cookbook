@@ -24,7 +24,7 @@
   --accent-dim:   rgba(240,40,106,0.09);
   --accent-glow:  rgba(240,40,106,0.2);
 
-  --font-display: 'proxima-nova', 'Proxima Nova', 'Syne', sans-serif;
+  --font-display: 'proxima-nova', 'Proxima Nova', 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-body:    'proxima-nova', 'Proxima Nova', 'Plus Jakarta Sans', system-ui, sans-serif;
 
   --radius-sm: 8px;
