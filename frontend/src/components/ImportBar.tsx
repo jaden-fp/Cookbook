@@ -20,6 +20,14 @@ export default function ImportBar({ onSuccess }: Props) {
   const [importMsgIdx, setImportMsgIdx] = useState(0);
   const [importError, setImportError] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const navigate = useNavigate();
   const importIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
