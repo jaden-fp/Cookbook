@@ -521,62 +521,87 @@ export default function PantryPage() {
 
       {/* Shopping List */}
       {shoppingList.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-2 mb-4">
-            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>
+        <section className="mb-10 animate-fade-up delay-2">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Shopping List
             </h2>
             <span
-              className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
               style={{ background: 'var(--accent)', color: 'white', fontFamily: 'var(--font-body)' }}
             >
               {shoppingList.length}
             </span>
           </div>
 
-          <div className="space-y-3">
-            {shoppingList.map(item => (
+          <div
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            {shoppingList.map((item, i) => (
               <div
                 key={item.id}
-                className="rounded-xl p-4 flex items-center justify-between gap-4"
-                style={{ background: 'var(--surface-hover)', border: '1px solid var(--border-strong)' }}
+                className="flex items-center gap-3 group"
+                style={{
+                  padding: '14px 16px',
+                  borderBottom: i < shoppingList.length - 1 ? '1px solid var(--border)' : 'none',
+                }}
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <path d="M16 10a4 4 0 01-8 0" />
-                  </svg>
-                  <div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem' }}>
-                      {item.name}
+                {/* Circle checkbox */}
+                <button
+                  onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
+                  title="Mark as bought"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200"
+                  style={{
+                    width: '22px', height: '22px',
+                    border: '1.5px solid var(--border-strong)',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00C4B4'; e.currentTarget.style.background = 'rgba(0,196,180,0.08)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.background = 'transparent'; }}
+                />
+
+                <div className="flex-1 min-w-0">
+                  <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
+                    {item.name}
+                  </p>
+                  {item.unit && (
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1px' }}>
+                      {item.unit}
                     </p>
-                    {item.unit && (
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '1px' }}>
-                        {item.unit}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white transition-all duration-200"
-                    style={{ background: 'var(--bg-subtle)', fontFamily: 'var(--font-body)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
+                    style={{
+                      background: 'rgba(0,196,180,0.1)',
+                      color: '#00A89A',
+                      border: 'none',
+                      fontFamily: 'var(--font-body)',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
                   >
-                    Mark as Bought
+                    Got it
                   </button>
                   <button
                     onClick={() => handleDelete(item)}
-                    className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
-                    style={{ color: 'rgba(81,42,24,0.3)' }}
+                    className="w-7 h-7 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                    style={{ color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                   >
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
                   </button>
                 </div>
               </div>
