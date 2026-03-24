@@ -23,7 +23,7 @@ export default function NavBar() {
           />
         </Link>
 
-        <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
+        <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 ml-auto sm:ml-0">
           {[
             { to: '/cookbooks', label: 'Cookbooks' },
             { to: '/recipes',   label: 'Recipes' },
