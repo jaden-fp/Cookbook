@@ -233,7 +233,7 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Breadcrumb + Title */}
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-8 max-w-3xl mx-auto">
+        <div className="absolute inset-x-0 bottom-0 px-4 sm:px-6 pb-8 max-w-3xl mx-auto">
           <div className="flex items-center gap-1.5 mb-3">
             <Link
               to="/recipes"
