@@ -132,20 +132,25 @@ export default function CookbooksPage() {
         </p>
         <div className="flex items-center gap-4">
           {!loading && cookbooks.length > 0 && (
-            <select
-              value={sort}
-              onChange={e => {
-                const val = e.target.value as SortOption;
-                setSort(val);
-                localStorage.setItem('cookbooks-sort', val);
-              }}
-              style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', borderRadius: 'var(--radius-sm)', padding: '4px 0', cursor: 'pointer', outline: 'none', appearance: 'none' }}
-            >
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-              <option value="az">A → Z</option>
-              <option value="za">Z → A</option>
-            </select>
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+              <select
+                value={sort}
+                onChange={e => {
+                  const val = e.target.value as SortOption;
+                  setSort(val);
+                  localStorage.setItem('cookbooks-sort', val);
+                }}
+                style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', padding: '5px 30px 5px 12px', cursor: 'pointer', outline: 'none', appearance: 'none' }}
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="az">A → Z</option>
+                <option value="za">Z → A</option>
+              </select>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ position: 'absolute', right: '10px', pointerEvents: 'none', color: 'var(--text-muted)' }}>
+                <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
           )}
           <Link
             to="/recipes"
