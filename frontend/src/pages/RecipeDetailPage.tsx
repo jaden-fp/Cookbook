@@ -533,7 +533,7 @@ export default function RecipeDetailPage() {
 
           {/* Scale control */}
           <div className="flex items-center gap-1.5 pb-4">
-            <div className="flex items-center" style={{ border: '1.5px solid var(--accent)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--accent-dim)' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
                 style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px', lineHeight: 1, transition: 'color 0.15s', display: 'flex', alignItems: 'center', paddingBottom: '7px' }}
