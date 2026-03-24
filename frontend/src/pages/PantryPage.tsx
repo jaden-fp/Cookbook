@@ -149,19 +149,9 @@ export default function PantryPage() {
   const [editUnit, setEditUnit] = useState('');
   const [editSaving, setEditSaving] = useState(false);
 
-  const { setAction } = useFAB();
-
   useEffect(() => {
     getPantryItems().then(setItems).finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-    setAction(() => {
-      nameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      nameRef.current?.focus();
-    });
-    return () => setAction(null);
-  }, [setAction]);
 
 
   useEffect(() => {
