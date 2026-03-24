@@ -99,7 +99,7 @@ export default function ImportBar({ onSuccess }: Props) {
             cursor: 'pointer',
             letterSpacing: '0',
           }}
-          onMouseEnter={e => { if (!importing && url.trim()) e.currentTarget.style.background = '#D0155A'; }}
+          onMouseEnter={e => { if (!importing && url.trim()) e.currentTarget.style.background = '#D94E7A'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
         >
           {importing ? (

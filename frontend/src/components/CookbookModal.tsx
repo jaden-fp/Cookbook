@@ -134,7 +134,7 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
               disabled={!newName.trim() || creating}
               className="px-3 py-1.5 text-sm font-semibold transition-all duration-200 disabled:opacity-40"
               style={{ background: 'var(--accent)', color: 'white', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-body)', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#D0155A'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
             >
               {creating ? '…' : '+ Add'}
@@ -164,7 +164,7 @@ export default function CookbookModal({ recipeId, onClose }: Props) {
               cursor: 'pointer',
               boxShadow: '0 2px 8px var(--accent-glow)',
             }}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#D0155A'; }}
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#D94E7A'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
           >
             {saving ? 'Saving…' : 'Done'}

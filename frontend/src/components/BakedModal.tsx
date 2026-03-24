@@ -71,7 +71,7 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
           <button onClick={handleSave} disabled={!rating || saving}
             className="px-5 py-2 text-sm font-bold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: 'var(--accent)', color: '#0D0D0D', fontFamily: 'var(--font-body)', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer' }}
-            onMouseEnter={e => { if (!saving && rating) e.currentTarget.style.background = '#D0155A'; }}
+            onMouseEnter={e => { if (!saving && rating) e.currentTarget.style.background = '#D94E7A'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}>
             {saving ? 'Saving…' : 'Save'}
           </button>

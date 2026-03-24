@@ -155,7 +155,7 @@ export default function CookbooksPage() {
               cursor: 'pointer',
               letterSpacing: '-0.01em',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#D0155A'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
           >
             + Create Cookbook
@@ -246,7 +246,7 @@ export default function CookbooksPage() {
                     border: 'none',
                     cursor: 'pointer',
                   }}
-                  onMouseEnter={e => { if (createName.trim() && !creating) e.currentTarget.style.background = '#D0155A'; }}
+                  onMouseEnter={e => { if (createName.trim() && !creating) e.currentTarget.style.background = '#D94E7A'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
                 >
                   {creating ? 'Creating…' : 'Create'}

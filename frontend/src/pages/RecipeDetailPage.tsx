@@ -388,7 +388,7 @@ export default function RecipeDetailPage() {
                       cursor: 'pointer',
                     }
               }
-              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#D0155A'; }}
+              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#D94E7A'; }}
               onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = 'var(--accent)'; }}
             >
               {recipe.rating ? (
@@ -469,46 +469,46 @@ export default function RecipeDetailPage() {
           >
             Scale
           </span>
-          <div
-            className="inline-flex items-center rounded-full overflow-hidden"
-            style={{ border: '1.5px solid var(--border-strong)', background: 'var(--surface)' }}
-          >
+          <div className="inline-flex items-center gap-2">
             <button
               onClick={() => adjustScale(-0.5)}
-              className="flex items-center justify-center transition-colors duration-150"
+              className="flex items-center justify-center rounded-full transition-all duration-150"
               style={{
-                width: '2.25rem', height: '2.25rem',
-                color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
-                background: 'var(--bg-subtle)', border: 'none', cursor: 'pointer',
+                width: '2rem', height: '2rem',
+                background: 'var(--bg-subtle)',
+                border: '1.5px solid var(--border-strong)',
+                color: 'var(--text-muted)',
+                fontSize: '1rem', fontWeight: 400,
+                cursor: 'pointer', lineHeight: 1,
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
             >
               −
             </button>
             <span
-              className="text-sm font-semibold text-center"
               style={{
-                minWidth: '3rem',
-                color: 'var(--text)',
-                fontFamily: 'var(--font-body)',
-                borderLeft: '1px solid var(--border)',
-                borderRight: '1px solid var(--border)',
-                padding: '0.4rem 0.25rem',
+                minWidth: '2.5rem', textAlign: 'center',
+                fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontWeight: 700,
+                color: scale !== 1 ? 'var(--accent)' : 'var(--text)',
+                letterSpacing: '-0.01em',
               }}
             >
               {scaleLabel}
             </span>
             <button
               onClick={() => adjustScale(0.5)}
-              className="flex items-center justify-center transition-colors duration-150"
+              className="flex items-center justify-center rounded-full transition-all duration-150"
               style={{
-                width: '2.25rem', height: '2.25rem',
-                color: 'var(--text)', fontSize: '1.1rem', fontWeight: 300,
-                background: 'var(--bg-subtle)', border: 'none', cursor: 'pointer',
+                width: '2rem', height: '2rem',
+                background: 'var(--bg-subtle)',
+                border: '1.5px solid var(--border-strong)',
+                color: 'var(--text-muted)',
+                fontSize: '1rem', fontWeight: 400,
+                cursor: 'pointer', lineHeight: 1,
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
             >
               +
             </button>
@@ -760,7 +760,7 @@ export default function RecipeDetailPage() {
                   cursor: 'pointer',
                   boxShadow: '0 2px 8px var(--accent-glow)',
                 }}
-                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#D0155A'; }}
+                onMouseEnter={e => { if (!addingAll) e.currentTarget.style.background = '#D94E7A'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
               >
                 {addingAll ? 'Adding…' : 'Add all missing to Shopping List'}

@@ -217,7 +217,7 @@ function AddRecipesModal({
                 cursor: 'pointer',
                 boxShadow: '0 2px 8px var(--accent-glow)',
               }}
-              onMouseEnter={e => { if (selected.size && !saving) e.currentTarget.style.background = '#D0155A'; }}
+              onMouseEnter={e => { if (selected.size && !saving) e.currentTarget.style.background = '#D94E7A'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
             >
               {saving ? 'Adding…' : `Add${selected.size > 0 ? ` ${selected.size}` : ''}`}
@@ -335,7 +335,7 @@ export default function CookbookDetailPage() {
               letterSpacing: '-0.01em',
               boxShadow: '0 2px 10px var(--accent-glow)',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#D0155A'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
           >
             + Add Recipes
@@ -368,7 +368,7 @@ export default function CookbookDetailPage() {
               padding: '10px 24px',
               cursor: 'pointer',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#D0155A'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
           >
             + Add Recipes

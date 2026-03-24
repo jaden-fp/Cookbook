@@ -512,7 +512,7 @@ export default function PantryPage() {
                   boxShadow: '0 2px 8px var(--accent-glow)',
                   height: '44px', whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#D0155A'; }}
+                onMouseEnter={e => { if (newName.trim()) e.currentTarget.style.background = '#D94E7A'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
               >
                 {saving ? 'Adding…' : '+ Add to Pantry'}
@@ -530,7 +530,7 @@ export default function PantryPage() {
             onClick={() => { setShowQuickAdd(true); setQuickSelected(new Set()); }}
             className="text-sm transition-colors duration-200"
             style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)', fontWeight: 500 }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#D0155A'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#D94E7A'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--accent)'; }}
           >
             ✦ Quick add common baking ingredients
@@ -809,7 +809,7 @@ export default function PantryPage() {
                   disabled={!quickSelected.size || quickAdding}
                   className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ background: 'var(--accent)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { if (quickSelected.size && !quickAdding) e.currentTarget.style.background = '#D0155A'; }}
+                  onMouseEnter={e => { if (quickSelected.size && !quickAdding) e.currentTarget.style.background = '#D94E7A'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
                 >
                   {quickAdding ? 'Adding…' : `Add${quickSelected.size > 0 ? ` ${quickSelected.size}` : ''}`}
