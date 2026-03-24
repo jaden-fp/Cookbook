@@ -19,12 +19,7 @@ export default function NavBar() {
           <img
             src="/logo.png"
             alt="Logo"
-            style={{
-              height: '148px',
-              width: 'auto',
-              display: 'block',
-              transform: 'translateY(36px)',
-            }}
+            className="nav-logo"
           />
         </Link>
 
