@@ -148,22 +148,41 @@ export default function RecipeDetailPage() {
 
   function openEdit() {
     if (!recipe) return;
-    setEditTitle(recipe.title);
-    setEditDescription(recipe.description ?? '');
-    setShowEdit(true);
+    setDraft({
+      title: recipe.title,
+      description: recipe.description ?? '',
+      prep_time: recipe.prep_time ?? '',
+      cook_time: recipe.cook_time ?? '',
+      yield: recipe.yield ?? '',
+      ingredient_groups: JSON.parse(JSON.stringify(recipe.ingredient_groups)),
+      instructions: [...recipe.instructions],
+      equipment: [...recipe.equipment],
+    });
+    setIsEditing(true);
   }
 
-  async function handleSaveEdit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!id || !recipe || saving) return;
+  function cancelEdit() {
+    setIsEditing(false);
+    setDraft(null);
+  }
+
+  async function handleSaveEdit() {
+    if (!id || !recipe || !draft || saving) return;
     setSaving(true);
     try {
       const updated = await updateRecipe(id, {
-        title: editTitle.trim() || recipe.title,
-        description: editDescription.trim() || undefined,
+        title: draft.title.trim() || recipe.title,
+        description: draft.description.trim() || undefined,
+        prep_time: draft.prep_time.trim() || undefined,
+        cook_time: draft.cook_time.trim() || undefined,
+        yield: draft.yield.trim() || undefined,
+        ingredient_groups: draft.ingredient_groups,
+        instructions: draft.instructions.filter(s => s.trim()),
+        equipment: draft.equipment.filter(e => e.trim()),
       });
       setRecipe(updated);
-      setShowEdit(false);
+      setIsEditing(false);
+      setDraft(null);
     } finally {
       setSaving(false);
     }
