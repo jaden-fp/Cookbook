@@ -135,6 +135,20 @@ router.get('/:id/cookbooks', async (req, res) => {
   res.json(cookbooks.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() })));
 });
 
+// PATCH /api/recipes/:id — update editable fields
+router.patch('/:id', async (req, res) => {
+  const { title, description } = req.body;
+  const updates = {};
+  if (title !== undefined) updates.title = title;
+  if (description !== undefined) updates.description = description;
+  if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
+  const ref = db.collection('recipes').doc(req.params.id);
+  await ref.update(updates);
+  const doc = await ref.get();
+  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
+  res.json({ id: doc.id, ...doc.data() });
+});
+
 // DELETE /api/recipes/:id
 router.delete('/:id', async (req, res) => {
   await db.collection('recipes').doc(req.params.id).delete();
