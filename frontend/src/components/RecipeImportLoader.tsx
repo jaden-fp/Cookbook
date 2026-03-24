@@ -37,7 +37,7 @@ export default function RecipeImportLoader({ url }: Props) {
     return () => clearInterval(id);
   }, []);
 
-  return (
+  return createPortal(
     <>
       <style>{`
         @keyframes loader-bob {
