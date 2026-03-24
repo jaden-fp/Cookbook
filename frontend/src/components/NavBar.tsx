@@ -5,6 +5,15 @@ export default function NavBar() {
   const isActive = (to: string) => pathname.startsWith(to);
 
   return (
+    <>
+      {/* Mobile header — logo only */}
+      <header className="sm:hidden sticky top-0 z-40 flex items-center justify-center"
+        style={{ background: '#F46696', height: '52px', overflow: 'visible' }}>
+        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <img src="/logo.png" alt="Logo" style={{ height: '80px', width: 'auto', objectFit: 'contain' }} />
+        </Link>
+      </header>
+
     <nav className="hidden sm:block sticky top-0 z-40"
       style={{
         background: '#F46696',
