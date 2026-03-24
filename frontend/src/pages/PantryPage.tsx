@@ -371,64 +371,6 @@ export default function PantryPage() {
                   minWidth: 0,
                 }}
               />
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div
-                  ref={dropdownRef}
-                  style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 4px)',
-                    left: 0,
-                    right: 0,
-                    zIndex: 50,
-                    background: 'var(--surface)',
-                    border: '1.5px solid var(--border-strong)',
-                    borderRadius: '10px',
-                    boxShadow: '0 8px 24px rgba(15,12,30,0.08)',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {filteredSuggestions.map((s, i) => {
-                    const q = newName.toLowerCase();
-                    const idx = s.name.toLowerCase().indexOf(q);
-                    return (
-                      <div
-                        key={s.name}
-                        onMouseDown={() => selectSuggestion(s)}
-                        style={{
-                          padding: '0.5rem 0.875rem',
-                          cursor: 'pointer',
-                          background: i === highlightIdx ? 'var(--surface-hover)' : 'white',
-                          fontFamily: 'var(--font-body)',
-                          fontSize: '0.875rem',
-                          color: 'var(--text)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '8px',
-                          borderBottom: i < filteredSuggestions.length - 1 ? '1px solid var(--surface-hover)' : 'none',
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-hover)'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i === highlightIdx ? 'var(--surface-hover)' : 'white'; }}
-                      >
-                        <span>
-                          {idx >= 0 ? (
-                            <>
-                              {s.name.slice(0, idx)}
-                              <strong style={{ color: 'var(--accent)' }}>{s.name.slice(idx, idx + q.length)}</strong>
-                              {s.name.slice(idx + q.length)}
-                            </>
-                          ) : s.name}
-                        </span>
-                        {s.unit && (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', flexShrink: 0 }}>
-                            {s.unit}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
 
             {/* Separator */}
