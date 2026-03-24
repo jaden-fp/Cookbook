@@ -335,7 +335,7 @@ export default function PantryPage() {
       {/* Add ingredient form */}
       <div className="animate-fade-up delay-1 mb-6">
         <form onSubmit={handleAdd}>
-          <div className="flex gap-2 flex-wrap items-end">
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
 
             {/* Name */}
             <div className="flex-1" style={{ minWidth: '160px', position: 'relative' }}>
