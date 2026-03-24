@@ -656,40 +656,37 @@ export default function PantryPage() {
                   {item.name}
                 </p>
 
-                {/* Qty badge + stepper — only when quantity is set, sits left of actions */}
+                {/* Qty stepper with count inside — only when quantity is set */}
                 {item.quantity > 0 && (
-                  <div className="flex items-center gap-2 ml-2">
+                  <div
+                    className="inline-flex items-center shrink-0 ml-2"
+                    style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                  >
+                    <button
+                      onClick={() => handleAdjustQty(item, -1)}
+                      className="flex items-center justify-center transition-colors duration-150"
+                      style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                    >
+                      −
+                    </button>
                     <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)',
-                      flexShrink: 0,
+                      fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500,
+                      color: 'var(--text)', padding: '0 10px', whiteSpace: 'nowrap',
+                      borderLeft: '1px solid var(--border-strong)', borderRight: '1px solid var(--border-strong)',
                     }}>
                       {item.quantity}{item.unit ? ` ${item.unit}` : ''}
                     </span>
-
-                    <div
-                      className="inline-flex items-center shrink-0"
-                      style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                    <button
+                      onClick={() => handleAdjustQty(item, 1)}
+                      className="flex items-center justify-center transition-colors duration-150"
+                      style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                     >
-                      <button
-                        onClick={() => handleAdjustQty(item, -1)}
-                        className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                      >
-                        −
-                      </button>
-                      <div style={{ width: '1px', height: '16px', background: 'var(--border-strong)', flexShrink: 0 }} />
-                      <button
-                        onClick={() => handleAdjustQty(item, 1)}
-                        className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                      >
-                        +
-                      </button>
-                    </div>
+                      +
+                    </button>
                   </div>
                 )}
 
