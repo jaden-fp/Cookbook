@@ -708,6 +708,7 @@ export default function PantryPage() {
       </section>
 
 
+
       {/* Quick Add Modal */}
       {showQuickAdd && (
         <div
