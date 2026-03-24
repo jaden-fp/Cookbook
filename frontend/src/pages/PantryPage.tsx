@@ -426,9 +426,9 @@ export default function PantryPage() {
               )}
             </div>
 
-            {/* Quantity */}
-            <div className="flex gap-2 sm:block">
-            <div style={{ flex: 1 }}>
+            {/* Quantity + Unit — side by side on all sizes */}
+            <div className="flex gap-2 items-end">
+            <div style={{ width: '80px' }}>
               <label style={{
                 display: 'block', fontSize: '0.75rem', fontWeight: 600,
                 color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
