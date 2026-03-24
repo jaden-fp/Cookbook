@@ -148,7 +148,7 @@ export default function RecipeDetailPage() {
 
   if (!recipe) {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-20 text-center">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-20 text-center">
         <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>Recipe not found.</p>
         <Link
           to="/recipes"
