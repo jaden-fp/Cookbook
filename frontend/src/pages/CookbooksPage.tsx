@@ -27,10 +27,16 @@ export default function CookbooksPage() {
   const [createName, setCreateName] = useState('');
   const [creating, setCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { setAction } = useFAB();
 
   useEffect(() => {
     getCookbooks().then(setCookbooks).finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    setAction(() => setShowCreate(true));
+    return () => setAction(null);
+  }, [setAction]);
 
   useEffect(() => {
     if (showCreate) {
