@@ -401,9 +401,8 @@ export default function PantryPage() {
 
             {/* Qty input — compact */}
             <input
-              type="number"
-              min="0"
-              step="0.25"
+              type="text"
+              inputMode="decimal"
               value={newQty}
               onChange={e => setNewQty(e.target.value)}
               placeholder="qty"
