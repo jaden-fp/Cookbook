@@ -7,7 +7,7 @@ export default function NavBar() {
   return (
     <nav className="sticky top-0 z-40"
       style={{
-        background: 'var(--pink-bright)',
+        background: '#FE3F8D',
         borderBottom: 'none',
         height: '72px',
         overflow: 'visible',
