@@ -263,7 +263,7 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-6 pb-20 pt-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-20 pt-8">
 
         {/* Info card */}
         <div
