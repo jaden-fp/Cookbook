@@ -77,9 +77,9 @@ export default function RecipeTile({ recipe }: Props) {
           <button
             onClick={e => { e.preventDefault(); e.stopPropagation(); setShowCookbook(true); }}
             title="Add to cookbook"
-            className="absolute bottom-2 right-2 z-10 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+            className="absolute bottom-2 right-2 z-10 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
             style={{
-              width: '30px', height: '30px',
+              width: '36px', height: '36px',
               background: 'rgba(255,255,255,0.88)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(15,12,30,0.1)',
