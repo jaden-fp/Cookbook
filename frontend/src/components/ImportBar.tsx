@@ -111,20 +111,21 @@ export default function ImportBar({ onSuccess }: Props) {
         </button>
       </form>
 
-      {importing && (
-        <div className="mt-3 flex items-center gap-2 justify-center" key={importMsgIdx}>
-          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
-          <p className="text-sm animate-msg" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
-            {IMPORT_MESSAGES[importMsgIdx]}
+      <div style={{ minHeight: '32px', marginTop: '10px' }}>
+        {importing && (
+          <div className="flex items-center gap-2 justify-center" key={importMsgIdx}>
+            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
+            <p className="text-sm animate-msg" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+              {IMPORT_MESSAGES[importMsgIdx]}
+            </p>
+          </div>
+        )}
+        {importError && !importing && (
+          <p className="text-sm text-center" style={{ color: 'var(--danger)', fontFamily: 'var(--font-body)' }}>
+            {importError}
           </p>
-        </div>
-      )}
-
-      {importError && !importing && (
-        <p className="mt-2.5 text-sm text-center" style={{ color: 'var(--danger)', fontFamily: 'var(--font-body)' }}>
-          {importError}
-        </p>
-      )}
+        )}
+      </div>
     </div>
   );
 }
