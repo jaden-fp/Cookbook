@@ -472,9 +472,11 @@ export default function RecipeDetailPage() {
           <div
             className="inline-flex items-center"
             style={{
-              border: '1.5px solid var(--border-strong)',
+              border: '1px solid rgba(255,255,255,0.6)',
               borderRadius: '999px',
-              background: 'var(--surface)',
+              background: 'rgba(255,255,255,0.55)',
+              backdropFilter: 'blur(12px)',
+              boxShadow: '0 2px 12px rgba(15,12,30,0.07)',
               overflow: 'hidden',
             }}
           >
