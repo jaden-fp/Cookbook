@@ -357,7 +357,7 @@ export default function PantryPage() {
       </div>
 
       {/* Add ingredient form */}
-      <div className="animate-fade-up delay-1 mb-8" style={{ position: 'relative' }}>
+      <div className="animate-fade-up delay-1 mb-8" style={{ position: 'relative', zIndex: 10 }}>
         <form onSubmit={handleAdd}>
           {/* Single-row pill form */}
           <div
