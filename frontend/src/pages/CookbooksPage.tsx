@@ -5,7 +5,7 @@ import CookbookCard from '../components/CookbookCard';
 import { getCookbooks, createCookbook } from '../api';
 import type { Cookbook } from '../types';
 
-type SortOption = 'newest' | 'oldest' | 'az' | 'za';
+type SortOption = 'az' | 'newest' | 'oldest';
 
 function sortCookbooks(cookbooks: Cookbook[], sort: SortOption): Cookbook[] {
   const sorted = [...cookbooks];
