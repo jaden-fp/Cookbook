@@ -904,7 +904,7 @@ export default function PantryPage() {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
