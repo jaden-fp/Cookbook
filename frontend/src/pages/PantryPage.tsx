@@ -579,7 +579,7 @@ export default function PantryPage() {
               >
                 {/* Circle checkbox */}
                 <button
-                  onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
+                  onClick={async () => { const u = await updatePantryItem(item.id, { needs_purchase: 0 }); setItems(prev => prev.map(p => p.id === u.id ? u : p)); }}
                   title="Mark as bought"
                   className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200"
                   style={{
