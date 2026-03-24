@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { getPantryItems, addPantryItem, updatePantryItem, deletePantryItem } from '../api';
 import type { PantryItem } from '../types';
 
