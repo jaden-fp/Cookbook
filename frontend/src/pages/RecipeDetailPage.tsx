@@ -867,7 +867,7 @@ export default function RecipeDetailPage() {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
