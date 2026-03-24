@@ -72,10 +72,7 @@ export default function AllRecipesPage() {
       </div>
 
       <BottomSheet open={showImportSheet} onClose={() => setShowImportSheet(false)} title="Import Recipe">
-        <ImportBar onImportComplete={() => {
-          setShowImportSheet(false);
-          getRecipes().then(setRecipes);
-        }} />
+        <ImportBar />
       </BottomSheet>
 
       {/* Divider + sort row */}
