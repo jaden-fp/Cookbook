@@ -29,9 +29,10 @@ const tabs = [
     icon: (active: boolean) => (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         strokeWidth={active ? 2.2 : 1.7} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8 2h8"/>
-        <path d="M7 4h10l1 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6l1-2z"/>
-        <path d="M6 9h12"/>
+        {/* Shopping bag */}
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
       </svg>
     ),
   },
