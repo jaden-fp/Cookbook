@@ -5,9 +5,24 @@ import CookbookCard from '../components/CookbookCard';
 import { getCookbooks, createCookbook } from '../api';
 import type { Cookbook } from '../types';
 
+type SortOption = 'newest' | 'oldest' | 'az' | 'za';
+
+function sortCookbooks(cookbooks: Cookbook[], sort: SortOption): Cookbook[] {
+  const sorted = [...cookbooks];
+  switch (sort) {
+    case 'newest': return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    case 'oldest': return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    case 'az':     return sorted.sort((a, b) => a.name.localeCompare(b.name));
+    case 'za':     return sorted.sort((a, b) => b.name.localeCompare(a.name));
+  }
+}
+
 export default function CookbooksPage() {
   const [cookbooks, setCookbooks] = useState<Cookbook[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<SortOption>(
+    () => (localStorage.getItem('cookbooks-sort') as SortOption) ?? 'newest'
+  );
   const [showCreate, setShowCreate] = useState(false);
   const [createName, setCreateName] = useState('');
   const [creating, setCreating] = useState(false);
