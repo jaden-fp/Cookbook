@@ -20,7 +20,7 @@ export default function NavBar() {
             src="/logo.png"
             alt="Logo"
             style={{
-              height: '174px',
+              height: '148px',
               width: 'auto',
               display: 'block',
               transform: 'translateY(36px)',
