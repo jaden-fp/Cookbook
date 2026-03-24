@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { importRecipe } from '../api';
+import RecipeImportLoader from './RecipeImportLoader';
 
 const IMPORT_MESSAGES = [
   'Fetching recipe page…',
