@@ -526,8 +526,8 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
+        {/* Tabs + Scale */}
+        <div className="mb-6 animate-fade-up delay-2 flex items-end justify-between" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
           <div className="flex gap-0">
             {(['ingredients', 'instructions'] as Tab[]).map(t => (
               <button
