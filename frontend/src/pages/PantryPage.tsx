@@ -486,7 +486,7 @@ export default function PantryPage() {
               top: 'calc(100% + 4px)',
               left: 0,
               right: 0,
-              zIndex: 50,
+              zIndex: 200,
               background: 'var(--surface)',
               border: '1.5px solid var(--border-strong)',
               borderRadius: '12px',
