@@ -621,7 +621,7 @@ export default function PantryPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(item)}
-                    className="w-7 h-7 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                    className="w-7 h-7 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
                     style={{ color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
