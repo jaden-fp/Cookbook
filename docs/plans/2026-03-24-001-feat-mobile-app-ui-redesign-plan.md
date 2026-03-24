@@ -226,8 +226,8 @@ Tasks:
 **Goal:** All modals feel native
 
 Tasks:
-- [ ] Convert `BakedModal` / rating flow to bottom sheet
-- [ ] Convert "Add Recipes to Cookbook" modal to bottom sheet
+- [x] Convert `BakedModal` / rating flow to bottom sheet (via Modal.tsx → BottomSheet)
+- [x] Convert "Add Recipes to Cookbook" modal to bottom sheet
 - [ ] Convert Quick Add Pantry to bottom sheet
 - [ ] Fix `onMouseEnter`/`onMouseLeave` patterns → CSS-based hover + `active:` touch states
 - [ ] Verify all tap targets ≥ 44px
