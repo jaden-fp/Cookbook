@@ -4,7 +4,7 @@ import RecipeTile from '../components/RecipeTile';
 import { getRecipes } from '../api';
 import type { Recipe } from '../types';
 
-type SortOption = 'newest' | 'oldest' | 'az' | 'za' | 'rating';
+type SortOption = 'az' | 'newest' | 'oldest' | 'rating';
 
 function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
   const sorted = [...recipes];
