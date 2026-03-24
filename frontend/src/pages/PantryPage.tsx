@@ -605,7 +605,7 @@ export default function PantryPage() {
 
                 <div className="flex items-center gap-1 shrink-0">
                   <button
-                    onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
+                    onClick={async () => { const u = await updatePantryItem(item.id, { needs_purchase: 0 }); setItems(prev => prev.map(p => p.id === u.id ? u : p)); }}
                     className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
                     style={{
                       background: 'rgba(0,196,180,0.1)',
