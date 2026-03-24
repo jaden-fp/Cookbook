@@ -199,6 +199,6 @@ export default function RecipeImportLoader({ url }: Props) {
           </div>
         </div>
       </div>
-    </>
+    </>, document.body
   );
 }
