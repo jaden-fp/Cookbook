@@ -140,6 +140,13 @@ export default function PantryPage() {
   const [boughtUnit, setBoughtUnit] = useState('');
   const [buyingSaving, setBuyingSaving] = useState(false);
 
+  // Edit item modal
+  const [editItem, setEditItem] = useState<PantryItem | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editQty, setEditQty] = useState('');
+  const [editUnit, setEditUnit] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
+
   useEffect(() => {
     getPantryItems().then(setItems).finally(() => setLoading(false));
   }, []);
