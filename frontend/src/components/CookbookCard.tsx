@@ -173,7 +173,8 @@ export default function CookbookCard({ cookbook, onUpdate }: Props) {
       {showPicker && (
         <div ref={pickerRef} className="absolute animate-scale-in"
           style={{
-            top: '42px', right: 0, zIndex: 30,
+            top: '42px', right: 0, left: 'auto', zIndex: 30,
+            maxWidth: 'calc(100vw - 32px)',
             background: 'var(--surface)',
             border: '1px solid var(--border-strong)',
             borderRadius: 'var(--radius-md)',
