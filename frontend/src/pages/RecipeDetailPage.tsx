@@ -694,7 +694,7 @@ export default function RecipeDetailPage() {
       )}
 
       {/* Edit modal */}
-      {showEdit && (
+      {showEdit && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           style={{ background: 'rgba(15,12,30,0.45)' }}
