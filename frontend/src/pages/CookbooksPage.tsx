@@ -128,40 +128,30 @@ export default function CookbooksPage() {
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
         style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
       >
-        <div className="flex items-center gap-3">
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-            {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
-          </p>
-          {!loading && cookbooks.length > 0 && (
-            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-              <select
-                value={sort}
-                onChange={e => {
-                  const val = e.target.value as SortOption;
-                  setSort(val);
-                  localStorage.setItem('cookbooks-sort', val);
-                }}
-                style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', padding: '5px 30px 5px 12px', cursor: 'pointer', outline: 'none', appearance: 'none' }}
-              >
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="az">A → Z</option>
-                <option value="za">Z → A</option>
-              </select>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ position: 'absolute', right: '10px', pointerEvents: 'none', color: 'var(--text-muted)' }}>
-                <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          )}
-        </div>
-        <Link
-          to="/recipes"
-          style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, textDecoration: 'none', transition: 'color 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
-        >
-          View all recipes →
-        </Link>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+          {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
+        </p>
+        {!loading && cookbooks.length > 0 && (
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <select
+              value={sort}
+              onChange={e => {
+                const val = e.target.value as SortOption;
+                setSort(val);
+                localStorage.setItem('cookbooks-sort', val);
+              }}
+              style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', padding: '5px 30px 5px 12px', cursor: 'pointer', outline: 'none', appearance: 'none' }}
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+            </select>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ position: 'absolute', right: '10px', pointerEvents: 'none', color: 'var(--text-muted)' }}>
+              <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        )}
       </div>
 
       {/* Content */}
