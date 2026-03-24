@@ -54,6 +54,8 @@ export default function ImportBar({ onSuccess }: Props) {
   }
 
   return (
+    <>
+    {importing && <RecipeImportLoader url={url} />}
     <div className="w-full">
       <form onSubmit={handleUrlImport} className="relative flex items-stretch overflow-hidden"
         style={{
