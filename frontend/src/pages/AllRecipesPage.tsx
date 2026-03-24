@@ -83,13 +83,15 @@ export default function AllRecipesPage() {
               fontFamily: 'var(--font-body)',
               fontSize: '0.8125rem',
               fontWeight: 500,
-              color: 'var(--text)',
-              background: 'var(--surface)',
-              border: '1px solid var(--border-strong)',
+              color: 'var(--text-muted)',
+              background: 'transparent',
+              border: 'none',
               borderRadius: 'var(--radius-sm)',
-              padding: '5px 10px',
+              padding: '4px 0',
               cursor: 'pointer',
               outline: 'none',
+              appearance: 'none',
+              WebkitAppearance: 'none',
             }}
           >
             <option value="newest">Newest first</option>
