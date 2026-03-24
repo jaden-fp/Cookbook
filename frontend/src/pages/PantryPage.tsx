@@ -161,9 +161,9 @@ export default function PantryPage() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = (showQuickAdd || boughtItem) ? 'hidden' : '';
+    document.body.style.overflow = (showQuickAdd || boughtItem || editItem) ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [showQuickAdd, boughtItem]);
+  }, [showQuickAdd, boughtItem, editItem]);
 
   const inStock = items.filter(i => i.needs_purchase === 0).sort((a, b) => a.name.localeCompare(b.name));
   const shoppingList = items.filter(i => i.needs_purchase === 1);
