@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import ImportBar from '../components/ImportBar';
+import BottomSheet from '../components/BottomSheet';
 import RecipeTile from '../components/RecipeTile';
 import { getRecipes } from '../api';
+import { useFAB } from '../context/FABContext';
 import type { Recipe } from '../types';
 
 type SortOption = 'az' | 'newest' | 'oldest' | 'rating';
