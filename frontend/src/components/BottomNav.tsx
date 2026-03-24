@@ -18,7 +18,12 @@ const tabs = [
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 11l19-9-9 19-2-8-8-2z"/>
+        {/* Fork */}
+        <path d="M7 2v4a2 2 0 0 0 4 0V2"/>
+        <line x1="9" y1="6" x2="9" y2="22"/>
+        {/* Knife */}
+        <line x1="15" y1="8" x2="15" y2="22"/>
+        <path d="M15 2v6h4a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1h-4z"/>
       </svg>
     ),
   },
@@ -28,9 +33,10 @@ const tabs = [
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 0 1-8 0"/>
+        {/* Mason jar */}
+        <path d="M8 2h8"/>
+        <path d="M7 4h10l1 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6l1-2z"/>
+        <path d="M6 9h12"/>
       </svg>
     ),
   },
