@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
+import BottomNav from './components/BottomNav';
 import CookbooksPage from './pages/CookbooksPage';
 import AllRecipesPage from './pages/AllRecipesPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/recipes/:id" element={<RecipeDetailPage />} />
           <Route path="/pantry" element={<PantryPage />} />
         </Routes>
+        <BottomNav />
       </div>
     </BrowserRouter>
   );
