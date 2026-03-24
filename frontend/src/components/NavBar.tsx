@@ -4,17 +4,40 @@ export default function NavBar() {
   const { pathname } = useLocation();
   const isActive = (to: string) => pathname.startsWith(to);
 
+  const logoHeight = 174;
+  const navHeight = 72;
+
   return (
     <nav className="sticky top-0 z-40"
       style={{
         background: 'rgba(246,245,255,0.88)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border)',
-        height: '190px',
+        height: `${navHeight}px`,
+        overflow: 'visible',
       }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
-        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo.png" alt="Logo" style={{ height: '174px', width: 'auto', display: 'block' }} />
+        <Link
+          to="/cookbooks"
+          style={{
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            position: 'relative',
+            height: `${navHeight}px`,
+          }}
+        >
+          <img
+            src="/logo.png"
+            alt="Logo"
+            style={{
+              height: `${logoHeight}px`,
+              width: 'auto',
+              display: 'block',
+              position: 'absolute',
+              top: `${(navHeight - logoHeight) / 2}px`,
+            }}
+          />
         </Link>
 
         <div className="flex items-center gap-1">
