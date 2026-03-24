@@ -67,8 +67,6 @@ export default function RecipeDetailPage() {
     setScale(s => Math.max(0.5, Math.min(10, parseFloat((s + delta).toFixed(2)))));
   }
 
-  const scaleLabel = `${scale}×`;
-
   function matchPantry(name: string): PantryItem | null {
     const n = name.toLowerCase().trim();
     for (const item of pantryItems) {
