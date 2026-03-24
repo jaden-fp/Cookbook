@@ -704,127 +704,96 @@ export default function PantryPage() {
 
 
       {/* Edit Item Modal */}
-      {editItem && createPortal(
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'rgba(15,12,30,0.45)' }}
-          onClick={e => e.target === e.currentTarget && setEditItem(null)}
-        >
-          <div
-            className="w-full max-w-xs animate-scale-in"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius-xl)',
-              border: '1px solid var(--border-strong)',
-              boxShadow: 'var(--shadow-xl)',
-            }}
-          >
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
-                Edit Item
-              </h2>
-              <button
-                onClick={() => setEditItem(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150"
-                style={{ color: 'var(--text-muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-              </button>
+      <BottomSheet open={!!editItem} onClose={() => setEditItem(null)} title="Edit Item">
+        <div className="space-y-3">
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Name
+            </label>
+            <input
+              type="text"
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              autoFocus
+              className="w-full transition-all duration-200"
+              style={{
+                border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                color: 'var(--text)', padding: '0.625rem 0.875rem',
+                outline: 'none', background: 'var(--bg-subtle)',
+              }}
+              onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+              onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Quantity
+              </label>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={editQty}
+                onChange={e => setEditQty(e.target.value)}
+                placeholder="—"
+                className="w-full transition-all duration-200"
+                style={{
+                  border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
+                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                  color: 'var(--text)', padding: '0.625rem 0.875rem',
+                  outline: 'none', background: 'var(--bg-subtle)',
+                }}
+                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+              />
             </div>
-
-            <div className="px-6 py-5 space-y-3">
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  autoFocus
-                  className="w-full transition-all duration-200"
-                  style={{
-                    border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
-                    fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: 'var(--text)', padding: '0.625rem 0.875rem',
-                    outline: 'none', background: 'var(--bg-subtle)',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                  onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Quantity
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={editQty}
-                    onChange={e => setEditQty(e.target.value)}
-                    placeholder="—"
-                    className="w-full transition-all duration-200"
-                    style={{
-                      border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
-                      fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                      color: 'var(--text)', padding: '0.625rem 0.875rem',
-                      outline: 'none', background: 'var(--bg-subtle)',
-                    }}
-                    onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                    onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Unit
-                  </label>
-                  <select
-                    value={editUnit}
-                    onChange={e => setEditUnit(e.target.value)}
-                    style={{
-                      border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
-                      fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                      color: 'var(--text)', padding: '0.625rem 0.75rem',
-                      outline: 'none', background: 'var(--bg-subtle)', height: '42px',
-                    }}
-                  >
-                    {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-1">
-                <button
-                  onClick={() => { handleDelete(editItem!); setEditItem(null); }}
-                  className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
-                  style={{ color: '#e05555', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(224,85,85,0.08)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={handleEditSave}
-                  disabled={!editName.trim() || editSaving}
-                  className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
-                  style={{
-                    background: 'var(--accent)', fontFamily: 'var(--font-body)',
-                    borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-                  }}
-                  onMouseEnter={e => { if (editName.trim() && !editSaving) e.currentTarget.style.background = '#D94E7A'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-                >
-                  {editSaving ? 'Saving…' : 'Save'}
-                </button>
-              </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Unit
+              </label>
+              <select
+                value={editUnit}
+                onChange={e => setEditUnit(e.target.value)}
+                style={{
+                  border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
+                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                  color: 'var(--text)', padding: '0.625rem 0.75rem',
+                  outline: 'none', background: 'var(--bg-subtle)', height: '42px',
+                }}
+              >
+                {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
+              </select>
             </div>
           </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <button
+              onClick={() => { if (editItem) handleDelete(editItem); setEditItem(null); }}
+              className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
+              style={{ color: '#e05555', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(224,85,85,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              Delete
+            </button>
+            <button
+              onClick={handleEditSave}
+              disabled={!editName.trim() || editSaving}
+              className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
+              style={{
+                background: 'var(--accent)', fontFamily: 'var(--font-body)',
+                borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
+              }}
+              onMouseEnter={e => { if (editName.trim() && !editSaving) e.currentTarget.style.background = '#D94E7A'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+            >
+              {editSaving ? 'Saving…' : 'Save'}
+            </button>
+          </div>
         </div>
-      , document.body)}
+      </BottomSheet>
 
       {/* Quick Add Modal */}
       {showQuickAdd && createPortal(
