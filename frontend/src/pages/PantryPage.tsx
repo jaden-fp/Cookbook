@@ -582,7 +582,7 @@ export default function PantryPage() {
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', marginTop: '1px' }}>
                       {item.quantity > 0
                         ? <span style={{ color: 'var(--text-muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
-                        : <span style={{ color: '#FFC107', fontWeight: 500 }}>no quantity set</span>
+                        : <span style={{ color: 'var(--text-muted)' }}>—</span>
                       }
                     </p>
                   </div>
