@@ -130,5 +130,6 @@ export default function ImportBar({ onSuccess }: Props) {
         )}
       </div>
     </div>
+    </>
   );
 }
