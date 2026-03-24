@@ -660,6 +660,29 @@ export default function PantryPage() {
                     </svg>
                   </button>
 
+                  {item.quantity > 0 && (
+                    <div
+                      className="inline-flex items-center"
+                      style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', height: '30px' }}
+                    >
+                      <button
+                        onClick={() => handleAdjustQty(item, -1)}
+                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0, paddingBottom: '1px' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                      >−</button>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text)', padding: '0 8px', whiteSpace: 'nowrap', borderLeft: '1px solid var(--border-strong)', borderRight: '1px solid var(--border-strong)' }}>
+                        {item.quantity}{item.unit ? ` ${item.unit}` : ''}
+                      </span>
+                      <button
+                        onClick={() => handleAdjustQty(item, 1)}
+                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0, paddingBottom: '1px' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                      >+</button>
+                    </div>
+                  )}
+
                   <button
                     onClick={() => handleNeedToBuy(item)}
                     className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
