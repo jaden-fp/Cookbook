@@ -292,11 +292,11 @@ export default function PantryPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-20">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-20">
         <div className="skeleton h-8 w-48 rounded-lg mb-8" />
-        <div className="space-y-3">
+        <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="skeleton h-20 rounded-xl" />
+            <div key={i} className="skeleton h-16 rounded-xl" />
           ))}
         </div>
       </div>
@@ -304,7 +304,7 @@ export default function PantryPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-20">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-20">
 
       {/* Header */}
       <div className="mb-8 animate-fade-up">
@@ -321,7 +321,7 @@ export default function PantryPage() {
         </p>
         <h1 style={{
           fontFamily: 'var(--font-display)',
-          fontWeight: 600,
+          fontWeight: 700,
           fontSize: 'clamp(2.25rem, 5vw, 3.25rem)',
           color: 'var(--text)',
           letterSpacing: '-0.02em',
@@ -330,23 +330,25 @@ export default function PantryPage() {
         }}>
           My Pantry
         </h1>
-        <div style={{ width: '40px', height: '2px', background: 'var(--accent)', borderRadius: '2px' }} />
+        <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
       {/* Add ingredient form */}
-      <div className="animate-fade-up delay-1 mb-6">
+      <div className="animate-fade-up delay-1 mb-8">
         <form onSubmit={handleAdd}>
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
-
-            {/* Name */}
-            <div className="flex-1" style={{ minWidth: '160px', position: 'relative' }}>
-              <label style={{
-                display: 'block', fontSize: '0.75rem', fontWeight: 600,
-                color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
-                marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em',
-              }}>
-                Ingredient
-              </label>
+          {/* Single-row pill form */}
+          <div
+            className="flex items-stretch overflow-hidden"
+            style={{
+              borderRadius: '999px',
+              border: '1.5px solid var(--border-strong)',
+              background: 'var(--surface)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            {/* Name input — takes up all remaining space */}
+            <div style={{ flex: 1, position: 'relative' }}>
+              <label style={{ display: 'none' }}>Ingredient</label>
               <input
                 ref={nameRef}
                 type="text"
