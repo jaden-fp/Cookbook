@@ -462,7 +462,7 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Scale control */}
-        <div className="flex items-center gap-3 mb-7 animate-fade-up delay-1">
+        <div className="flex items-center gap-3 mb-7 animate-fade-up delay-1 justify-end">
           <span
             className="text-xs font-semibold uppercase tracking-wider"
             style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.1em' }}
