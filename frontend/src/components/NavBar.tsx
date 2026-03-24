@@ -13,16 +13,17 @@ export default function NavBar() {
         overflow: 'visible',
         position: 'relative',
       }}>
-      <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center gap-2 sm:justify-between">
         <Link to="/cookbooks" className="shrink-0" style={{ textDecoration: 'none' }}>
           <img
             src="/logo.png"
             alt="Logo"
             className="nav-logo"
+            style={{ flexShrink: 0 }}
           />
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
           {[
             { to: '/cookbooks', label: 'Cookbooks' },
             { to: '/recipes',   label: 'Recipes' },
