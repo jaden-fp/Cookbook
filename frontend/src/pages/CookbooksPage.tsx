@@ -199,89 +199,58 @@ export default function CookbooksPage() {
       )}
 
       {/* Create modal */}
-      {showCreate && createPortal(
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'rgba(15,12,30,0.45)' }}
-          onClick={e => e.target === e.currentTarget && setShowCreate(false)}
-        >
-          <div
-            className="w-full max-w-xs animate-scale-in"
+      <BottomSheet open={showCreate} onClose={() => setShowCreate(false)} title="New Cookbook">
+        <form onSubmit={handleCreate} className="space-y-4">
+          <input
+            ref={inputRef}
+            type="text"
+            value={createName}
+            onChange={e => setCreateName(e.target.value)}
+            placeholder="e.g. Weeknight Dinners"
+            className="w-full transition-all duration-200"
             style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius-xl)',
-              border: '1px solid var(--border-strong)',
-              boxShadow: 'var(--shadow-xl)',
+              border: '1.5px solid var(--border-strong)',
+              borderRadius: 'var(--radius-sm)',
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              color: 'var(--text)',
+              padding: '0.625rem 0.875rem',
+              outline: 'none',
+              background: 'var(--bg-subtle)',
             }}
-          >
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.375rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>
-                New Cookbook
-              </h2>
-              <button
-                onClick={() => setShowCreate(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150"
-                style={{ color: 'var(--text-muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-              </button>
-            </div>
-
-            <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">
-              <input
-                ref={inputRef}
-                type="text"
-                value={createName}
-                onChange={e => setCreateName(e.target.value)}
-                placeholder="e.g. Weeknight Dinners"
-                className="w-full transition-all duration-200"
-                style={{
-                  border: '1.5px solid var(--border-strong)',
-                  borderRadius: 'var(--radius-sm)',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.9375rem',
-                  color: 'var(--text)',
-                  padding: '0.625rem 0.875rem',
-                  outline: 'none',
-                  background: 'var(--bg-subtle)',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-              />
-              <div className="flex gap-2 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowCreate(false)}
-                  className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
-                  style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!createName.trim() || creating}
-                  className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
-                  style={{
-                    background: 'var(--accent)',
-                    fontFamily: 'var(--font-body)',
-                    borderRadius: 'var(--radius-sm)',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={e => { if (createName.trim() && !creating) e.currentTarget.style.background = '#D94E7A'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-                >
-                  {creating ? 'Creating…' : 'Create'}
-                </button>
-              </div>
-            </form>
+            onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
+            onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              type="button"
+              onClick={() => setShowCreate(false)}
+              className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
+              style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!createName.trim() || creating}
+              className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
+              style={{
+                background: 'var(--accent)',
+                fontFamily: 'var(--font-body)',
+                borderRadius: 'var(--radius-sm)',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={e => { if (createName.trim() && !creating) e.currentTarget.style.background = '#D94E7A'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+            >
+              {creating ? 'Creating…' : 'Create'}
+            </button>
           </div>
-        </div>
-      , document.body)}
+        </form>
+      </BottomSheet>
     </div>
   );
 }
