@@ -532,20 +532,24 @@ export default function RecipeDetailPage() {
           </div>
 
           {/* Scale control */}
-          <div className="flex items-center gap-1.5 pb-4">
-            <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--accent-dim)' }}>
+          <div className="flex items-center pb-4">
+            <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
-                style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px', lineHeight: 1, transition: 'color 0.15s', display: 'flex', alignItems: 'center', paddingBottom: '7px' }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+                className="flex items-center justify-center transition-colors duration-150"
+                style={{ width: '2rem', height: '2rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
               >−</button>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text)', minWidth: '28px', textAlign: 'center', userSelect: 'none' }}>{scale}×</span>
+              <div style={{ width: '1px', height: '1.25rem', background: 'var(--border-strong)' }} />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text)', minWidth: '38px', textAlign: 'center', userSelect: 'none', padding: '0 4px' }}>{scale}×</span>
+              <div style={{ width: '1px', height: '1.25rem', background: 'var(--border-strong)' }} />
               <button
                 onClick={() => adjustScale(0.5)}
-                style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px 10px', lineHeight: 1, transition: 'color 0.15s', display: 'flex', alignItems: 'center', paddingBottom: '7px' }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+                className="flex items-center justify-center transition-colors duration-150"
+                style={{ width: '2rem', height: '2rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
               >+</button>
             </div>
           </div>
