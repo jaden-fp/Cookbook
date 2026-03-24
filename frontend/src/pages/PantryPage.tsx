@@ -633,100 +633,123 @@ export default function PantryPage() {
             </p>
           </div>
         ) : (
-          <div
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            {inStock.map((item, i) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 group"
-                style={{
-                  padding: '13px 16px',
-                  borderBottom: i < inStock.length - 1 ? '1px solid var(--border)' : 'none',
-                }}
-              >
-                {/* Name */}
-                <p className="min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
-                  {item.name}
-                </p>
-
-                {/* Qty stepper with count inside — only when quantity is set */}
-                {item.quantity > 0 && (
+          <>
+            {/* Tracked items (with quantity) — card grid */}
+            {inStock.filter(i => i.quantity > 0).length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
+                {inStock.filter(i => i.quantity > 0).map(item => (
                   <div
-                    className="inline-flex items-center shrink-0 ml-2"
-                    style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                    key={item.id}
+                    className="group flex flex-col"
+                    style={{
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '14px',
+                      padding: '14px 14px 12px',
+                      boxShadow: 'var(--shadow-sm)',
+                    }}
                   >
-                    <button
-                      onClick={() => handleAdjustQty(item, -1)}
-                      className="flex items-center justify-center transition-colors duration-150"
-                      style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                    >
-                      −
-                    </button>
-                    <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500,
-                      color: 'var(--text)', padding: '0 10px', whiteSpace: 'nowrap',
-                      borderLeft: '1px solid var(--border-strong)', borderRight: '1px solid var(--border-strong)',
-                    }}>
-                      {item.quantity}{item.unit ? ` ${item.unit}` : ''}
-                    </span>
-                    <button
-                      onClick={() => handleAdjustQty(item, 1)}
-                      className="flex items-center justify-center transition-colors duration-150"
-                      style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                    >
-                      +
-                    </button>
+                    {/* Top row: name + edit */}
+                    <div className="flex items-start justify-between gap-1 mb-3">
+                      <p className="min-w-0 leading-tight" style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.875rem', color: 'var(--text)', wordBreak: 'break-word' }}>
+                        {item.name}
+                      </p>
+                      <button
+                        onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(String(item.quantity)); setEditUnit(item.unit); }}
+                        className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                        style={{ width: '22px', height: '22px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)', marginTop: '-2px' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Quantity — prominent */}
+                    <div className="flex-1 flex items-center mb-3">
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.625rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>
+                        {item.quantity}
+                      </span>
+                      {item.unit && (
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '5px', marginTop: '4px' }}>
+                          {item.unit}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Bottom row: stepper + list button */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div
+                        className="inline-flex items-center"
+                        style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                      >
+                        <button
+                          onClick={() => handleAdjustQty(item, -1)}
+                          className="flex items-center justify-center transition-colors duration-150"
+                          style={{ width: '26px', height: '26px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        >−</button>
+                        <div style={{ width: '1px', height: '14px', background: 'var(--border-strong)' }} />
+                        <button
+                          onClick={() => handleAdjustQty(item, 1)}
+                          className="flex items-center justify-center transition-colors duration-150"
+                          style={{ width: '26px', height: '26px', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        >+</button>
+                      </div>
+                      <button
+                        onClick={() => handleNeedToBuy(item)}
+                        className="text-xs font-semibold px-2.5 py-1 rounded-full transition-all duration-200"
+                        style={{ background: 'rgba(0,196,180,0.1)', color: '#00A89A', border: 'none', fontFamily: 'var(--font-body)', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
+                      >+ List</button>
+                    </div>
                   </div>
-                )}
-
-                {/* Spacer */}
-                <div className="flex-1" />
-
-                {/* Edit — icon button */}
-                <button
-                  onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
-                  title="Edit item"
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
-                  style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                </button>
-
-                {/* Add to Shopping List — teal pill button */}
-                <button
-                  onClick={() => handleNeedToBuy(item)}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 shrink-0"
-                  style={{
-                    background: 'rgba(0,196,180,0.1)',
-                    color: '#00A89A',
-                    border: 'none',
-                    fontFamily: 'var(--font-body)',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
-                >
-                  + List
-                </button>
-
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+
+            {/* Simple items (no quantity) — list */}
+            {inStock.filter(i => i.quantity === 0).length > 0 && (
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+                {inStock.filter(i => i.quantity === 0).map((item, i, arr) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 group"
+                    style={{ padding: '13px 16px', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}
+                  >
+                    <p className="flex-1 min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
+                      {item.name}
+                    </p>
+                    <button
+                      onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(''); setEditUnit(item.unit); }}
+                      title="Edit item"
+                      className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                      style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleNeedToBuy(item)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 shrink-0"
+                      style={{ background: 'rgba(0,196,180,0.1)', color: '#00A89A', border: 'none', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
+                    >+ List</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </section>
 
