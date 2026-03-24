@@ -10,10 +10,9 @@ type SortOption = 'az' | 'newest' | 'oldest';
 function sortCookbooks(cookbooks: Cookbook[], sort: SortOption): Cookbook[] {
   const sorted = [...cookbooks];
   switch (sort) {
+    case 'az':     return sorted.sort((a, b) => a.name.localeCompare(b.name));
     case 'newest': return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     case 'oldest': return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-    case 'az':     return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    case 'za':     return sorted.sort((a, b) => b.name.localeCompare(a.name));
   }
 }
 
