@@ -109,12 +109,18 @@ export default function RecipeTile({ recipe }: Props) {
             {recipe.title}
           </h3>
           {(recipe.prep_time || recipe.cook_time) && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-body)', fontWeight: 400 }}>
-              {[
-                recipe.prep_time && `${recipe.prep_time} prep`,
-                recipe.cook_time && `${recipe.cook_time} cook`,
-              ].filter(Boolean).join(' · ')}
-            </p>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-body)', fontWeight: 400 }}>
+              <span className="hidden sm:block">
+                {[
+                  recipe.prep_time && `${recipe.prep_time} prep`,
+                  recipe.cook_time && `${recipe.cook_time} cook`,
+                ].filter(Boolean).join(' · ')}
+              </span>
+              <span className="sm:hidden">
+                {recipe.prep_time && <div>{recipe.prep_time} prep</div>}
+                {recipe.cook_time && <div>{recipe.cook_time} cook</div>}
+              </span>
+            </div>
           )}
         </div>
       </Link>
