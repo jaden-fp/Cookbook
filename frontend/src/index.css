@@ -2,8 +2,8 @@
 
 /* ─── Design Tokens ───────────────────────────────────────────── */
 :root {
-  --bg:           #F6F5FF;
-  --bg-subtle:    #EEEDF8;
+  --bg:           #FFF5F8;
+  --bg-subtle:    #FFE8F0;
   --surface:      #FFFFFF;
   --surface-hover:#F4F3FD;
   --border:       rgba(15,12,30,0.07);
