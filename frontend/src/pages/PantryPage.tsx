@@ -315,7 +315,7 @@ export default function PantryPage() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-12 sm:pt-24 pb-20">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-24 pb-24 sm:pb-16">
         <div className="skeleton h-8 w-48 rounded-lg mb-8" />
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -327,7 +327,7 @@ export default function PantryPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-12 sm:pt-24 pb-20">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-24 pb-24 sm:pb-16">
 
       {/* Header */}
       <div className="mb-8 animate-fade-up">
