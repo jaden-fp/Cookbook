@@ -540,6 +540,72 @@ export default function PantryPage() {
 
       <div style={{ borderBottom: '1px solid var(--border-strong)', marginBottom: '24px' }} />
 
+      {/* Shopping List */}
+      {shoppingList.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>
+              Shopping List
+            </h2>
+            <span
+              className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: 'var(--accent)', color: 'white', fontFamily: 'var(--font-body)' }}
+            >
+              {shoppingList.length}
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {shoppingList.map(item => (
+              <div
+                key={item.id}
+                className="rounded-xl p-4 flex items-center justify-between gap-4"
+                style={{ background: 'var(--surface-hover)', border: '1px solid var(--border-strong)' }}
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 01-8 0" />
+                  </svg>
+                  <div>
+                    <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem' }}>
+                      {item.name}
+                    </p>
+                    {item.unit && (
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '1px' }}>
+                        {item.unit}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => { setBoughtItem(item); setBoughtQty(''); setBoughtUnit(item.unit); }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white transition-all duration-200"
+                    style={{ background: 'var(--bg-subtle)', fontFamily: 'var(--font-body)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#38BABA'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+                  >
+                    Mark as Bought
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item)}
+                    className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
+                    style={{ color: 'rgba(81,42,24,0.3)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* In Stock */}
       <section className="mb-10">
         <div className="flex items-center gap-2 mb-4">
