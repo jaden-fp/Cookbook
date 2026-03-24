@@ -137,6 +137,29 @@ export default function RecipeDetailPage() {
     }
   }
 
+  function openEdit() {
+    if (!recipe) return;
+    setEditTitle(recipe.title);
+    setEditDescription(recipe.description ?? '');
+    setShowEdit(true);
+  }
+
+  async function handleSaveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!id || !recipe || saving) return;
+    setSaving(true);
+    try {
+      const updated = await updateRecipe(id, {
+        title: editTitle.trim() || recipe.title,
+        description: editDescription.trim() || undefined,
+      });
+      setRecipe(updated);
+      setShowEdit(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) {
     return (
       <div>
