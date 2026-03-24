@@ -86,6 +86,7 @@ export default function AllRecipesPage() {
         {!loading && recipes.length > 0 && (
           <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
             <select
+              className="sort-select"
               value={sort}
               onChange={e => {
                 const val = e.target.value as SortOption;
@@ -94,13 +95,11 @@ export default function AllRecipesPage() {
               }}
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: '0.8125rem',
                 fontWeight: 500,
                 color: 'var(--text)',
                 background: 'var(--surface)',
                 border: '1.5px solid var(--border-strong)',
                 borderRadius: '999px',
-                padding: '5px 30px 5px 12px',
                 cursor: 'pointer',
                 outline: 'none',
                 appearance: 'none',
