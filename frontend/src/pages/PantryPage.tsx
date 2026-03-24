@@ -681,41 +681,56 @@ export default function PantryPage() {
                   {item.name}
                 </p>
 
-                {/* Qty badge */}
+                {/* Qty badge + stepper — only when quantity is set */}
                 {item.quantity > 0 && (
-                  <span style={{
-                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)',
-                    flexShrink: 0,
-                  }}>
-                    {item.quantity}{item.unit ? ` ${item.unit}` : ''}
-                  </span>
+                  <>
+                    <span style={{
+                      fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)',
+                      flexShrink: 0,
+                    }}>
+                      {item.quantity}{item.unit ? ` ${item.unit}` : ''}
+                    </span>
+
+                    <div
+                      className="inline-flex items-center shrink-0"
+                      style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                    >
+                      <button
+                        onClick={() => handleAdjustQty(item, -1)}
+                        className="flex items-center justify-center transition-colors duration-150"
+                        style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                      >
+                        −
+                      </button>
+                      <div style={{ width: '1px', height: '16px', background: 'var(--border-strong)', flexShrink: 0 }} />
+                      <button
+                        onClick={() => handleAdjustQty(item, 1)}
+                        className="flex items-center justify-center transition-colors duration-150"
+                        style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </>
                 )}
 
-                {/* Stepper */}
-                <div
-                  className="inline-flex items-center shrink-0"
-                  style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                {/* Edit — icon button, visible on hover */}
+                <button
+                  onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
+                  title="Edit item"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                 >
-                  <button
-                    onClick={() => handleAdjustQty(item, -1)}
-                    className="flex items-center justify-center transition-colors duration-150"
-                    style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                  >
-                    −
-                  </button>
-                  <div style={{ width: '1px', height: '16px', background: 'var(--border-strong)', flexShrink: 0 }} />
-                  <button
-                    onClick={() => handleAdjustQty(item, 1)}
-                    className="flex items-center justify-center transition-colors duration-150"
-                    style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                  >
-                    +
-                  </button>
-                </div>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
 
                 {/* Need to Buy — icon button, visible on hover */}
                 <button
