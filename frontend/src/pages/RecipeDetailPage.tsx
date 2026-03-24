@@ -484,7 +484,7 @@ export default function RecipeDetailPage() {
           </div>
 
           {/* Scale control */}
-          <div className="flex items-center gap-2 pb-2">
+          <div className="flex items-center gap-2 pb-3">
             <span className="text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.08em' }}>Scale</span>
             <div className="inline-flex items-center" style={{ border: '1px solid rgba(255,255,255,0.6)', borderRadius: '999px', background: 'rgba(255,255,255,0.55)', backdropFilter: 'blur(12px)', boxShadow: '0 2px 12px rgba(15,12,30,0.07)', overflow: 'hidden' }}>
               <button onClick={() => adjustScale(-0.5)} className="transition-colors duration-150" style={{ width: '1.75rem', height: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1, paddingBottom: '3px' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>−</button>
