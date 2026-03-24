@@ -519,11 +519,9 @@ export default function PantryPage() {
           </div>
         </form>
 
-        {addError && (
-          <p className="mt-2 text-sm" style={{ color: '#C0392B', fontFamily: 'var(--font-body)' }}>
-            {addError}
-          </p>
-        )}
+        <p style={{ minHeight: '20px', marginTop: '6px', fontSize: '0.875rem', color: '#C0392B', fontFamily: 'var(--font-body)', visibility: addError ? 'visible' : 'hidden' }}>
+          {addError ?? ' '}
+        </p>
 
         <div className="mt-3">
           <button
