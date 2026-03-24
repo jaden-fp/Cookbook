@@ -711,7 +711,7 @@ export default function PantryPage() {
 
 
       {/* Quick Add Modal */}
-      {showQuickAdd && (
+      {showQuickAdd && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           style={{ background: 'var(--text-muted)' }}
