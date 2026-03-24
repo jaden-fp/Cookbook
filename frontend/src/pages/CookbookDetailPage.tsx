@@ -247,7 +247,7 @@ export default function CookbookDetailPage() {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 py-10">
         <div className="skeleton h-8 w-48 rounded-lg mb-8" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="overflow-hidden" style={{ borderRadius: 'var(--radius-lg)', background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <div className="skeleton" style={{ height: '190px' }} />
@@ -375,7 +375,7 @@ export default function CookbookDetailPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {recipes.map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
               <RecipeTile recipe={r} />
