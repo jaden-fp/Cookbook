@@ -719,18 +719,21 @@ export default function PantryPage() {
                   </svg>
                 </button>
 
-                {/* Add to Shopping List — always visible */}
+                {/* Add to Shopping List — teal pill button */}
                 <button
                   onClick={() => handleNeedToBuy(item)}
-                  title="Add to shopping list"
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200"
-                  style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 shrink-0"
+                  style={{
+                    background: 'rgba(0,196,180,0.1)',
+                    color: '#00A89A',
+                    border: 'none',
+                    fontFamily: 'var(--font-body)',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
-                  </svg>
+                  + List
                 </button>
 
                 {/* Delete — icon button */}
