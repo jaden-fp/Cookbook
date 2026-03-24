@@ -10,7 +10,7 @@ export default function NavBar() {
         background: 'rgba(246,245,255,0.88)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border)',
-        height: '62px',
+        height: '76px',
       }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
         <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
