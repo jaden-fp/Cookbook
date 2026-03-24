@@ -718,11 +718,11 @@ export default function PantryPage() {
                   </>
                 )}
 
-                {/* Edit — icon button, visible on hover */}
+                {/* Edit — icon button */}
                 <button
                   onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
                   title="Edit item"
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
                   style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
@@ -732,11 +732,11 @@ export default function PantryPage() {
                   </svg>
                 </button>
 
-                {/* Need to Buy — icon button, visible on hover */}
+                {/* Need to Buy — icon button */}
                 <button
                   onClick={() => handleNeedToBuy(item)}
                   title="Move to shopping list"
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
                   style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
@@ -746,10 +746,10 @@ export default function PantryPage() {
                   </svg>
                 </button>
 
-                {/* Delete — icon button, visible on hover */}
+                {/* Delete — icon button */}
                 <button
                   onClick={() => handleDelete(item)}
-                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
                   style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
