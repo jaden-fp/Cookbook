@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import RecipeTile from '../components/RecipeTile';
+import BottomSheet from '../components/BottomSheet';
 import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook } from '../api';
 import type { Recipe, Cookbook } from '../types';
 
