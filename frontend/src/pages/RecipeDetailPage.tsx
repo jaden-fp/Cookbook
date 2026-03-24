@@ -28,10 +28,18 @@ export default function RecipeDetailPage() {
   const [scale, setScale] = useState(1);
   const [showBaked, setShowBaked] = useState(false);
   const [showCookbook, setShowCookbook] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [editTitle, setEditTitle] = useState('');
-  const [editDescription, setEditDescription] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [draft, setDraft] = useState<{
+    title: string;
+    description: string;
+    prep_time: string;
+    cook_time: string;
+    yield: string;
+    ingredient_groups: import('../types').IngredientGroup[];
+    instructions: string[];
+    equipment: string[];
+  } | null>(null);
 
   // Pantry
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
