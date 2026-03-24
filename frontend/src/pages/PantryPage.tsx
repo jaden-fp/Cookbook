@@ -671,14 +671,6 @@ export default function PantryPage() {
                   )}
 
                   <button
-                    onClick={() => handleNeedToBuy(item)}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
-                    style={{ background: 'rgba(0,196,180,0.1)', color: '#00A89A', border: 'none', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
-                  >+ List</button>
-
-                  <button
                     onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
                     title="Edit item"
                     className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
@@ -690,6 +682,14 @@ export default function PantryPage() {
                       <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
                   </button>
+
+                  <button
+                    onClick={() => handleNeedToBuy(item)}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
+                    style={{ background: 'rgba(0,196,180,0.1)', color: '#00A89A', border: 'none', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
+                  >+ List</button>
                 </div>
               </div>
             ))}
