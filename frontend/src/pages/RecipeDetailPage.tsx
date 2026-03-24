@@ -357,7 +357,7 @@ export default function RecipeDetailPage() {
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
-                ×
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
               </button>
             </div>
           )}
@@ -484,10 +484,10 @@ export default function RecipeDetailPage() {
               onClick={() => adjustScale(-0.5)}
               className="transition-colors duration-150"
               style={{
-                width: '2.25rem', height: '2.25rem',
+                width: '1.75rem', height: '1.75rem',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent', border: 'none', cursor: 'pointer',
-                color: 'var(--text-muted)', fontSize: '1.125rem', lineHeight: 1,
+                color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1,
                 paddingBottom: '1px',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; }}
@@ -512,10 +512,10 @@ export default function RecipeDetailPage() {
               onClick={() => adjustScale(0.5)}
               className="transition-colors duration-150"
               style={{
-                width: '2.25rem', height: '2.25rem',
+                width: '1.75rem', height: '1.75rem',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent', border: 'none', cursor: 'pointer',
-                color: 'var(--text-muted)', fontSize: '1.125rem', lineHeight: 1,
+                color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1,
                 paddingBottom: '1px',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = 'white'; }}
@@ -708,7 +708,7 @@ export default function RecipeDetailPage() {
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
               >
-                ×
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
               </button>
             </div>
 

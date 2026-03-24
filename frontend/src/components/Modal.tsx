@@ -48,12 +48,12 @@ export default function Modal({ onClose, children, title }: Props) {
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150 text-lg leading-none"
+            className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150"
             style={{ color: 'var(--text-muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
           >
-            ×
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
           </button>
         </div>
         <div className="p-6 overflow-y-auto">{children}</div>
