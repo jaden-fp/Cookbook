@@ -215,8 +215,29 @@ export default function RecipeDetailPage() {
           style={{ height: '65%', background: 'linear-gradient(to top, rgba(15,12,30,0.72) 0%, rgba(15,12,30,0.2) 55%, transparent 100%)' }}
         />
 
-        {/* Delete — top-right */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* Edit + Delete — top-right */}
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          {/* Edit button */}
+          <button
+            onClick={openEdit}
+            title="Edit recipe"
+            className="flex items-center justify-center rounded-full transition-all duration-200"
+            style={{
+              width: '2.25rem', height: '2.25rem',
+              background: 'rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(6px)',
+              color: 'rgba(255,255,255,0.7)',
+              border: 'none', cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = 'white'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </button>
+
           {!confirmDelete ? (
             <button
               onClick={() => setConfirmDelete(true)}
