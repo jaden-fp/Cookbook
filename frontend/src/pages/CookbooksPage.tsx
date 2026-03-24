@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
 import ImportBar from '../components/ImportBar';
 import CookbookCard from '../components/CookbookCard';
 import { getCookbooks, createCookbook } from '../api';
