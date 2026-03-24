@@ -195,32 +195,32 @@ Also replace `onMouseEnter`/`onMouseLeave` interactive states with CSS:
 **Goal:** Bottom nav live, desktop nav unchanged
 
 Tasks:
-- [ ] Create `frontend/src/components/BottomNav.tsx` with 3 tabs + icons + active state
-- [ ] Create `frontend/src/hooks/useIsMobile.ts` (`window.matchMedia('(max-width: 639px)')` with resize listener)
-- [ ] Update `frontend/src/App.tsx`: render `<BottomNav>` below routes (mobile only via CSS)
-- [ ] Make `<NavBar>` `hidden sm:flex` (desktop only)
-- [ ] Update all page containers: `pb-24 sm:pb-16`, `pt-4 sm:pt-24`
-- [ ] Add `safe-area-inset-bottom` CSS variable usage in `index.css`
+- [x] Create `frontend/src/components/BottomNav.tsx` with 3 tabs + icons + active state
+- [x] Create `frontend/src/hooks/useIsMobile.ts` (`window.matchMedia('(max-width: 639px)')` with resize listener)
+- [x] Update `frontend/src/App.tsx`: render `<BottomNav>` below routes (mobile only via CSS)
+- [x] Make `<NavBar>` `hidden sm:flex` (desktop only)
+- [x] Update all page containers: `pb-24 sm:pb-16`, `pt-4 sm:pt-24`
+- [x] Add `safe-area-inset-bottom` CSS variable usage in `index.css`
 
 ### Phase 2 — Bottom Sheet Component
 **Goal:** Reusable sheet primitive, converted create-cookbook modal
 
 Tasks:
-- [ ] Create `frontend/src/components/BottomSheet.tsx` with mobile slide-up / desktop center variants
-- [ ] Add `slideUp` keyframe to `index.css`
-- [ ] Convert `CookbooksPage` create dialog to use `<BottomSheet>`
-- [ ] Convert `PantryPage` edit item modal to use `<BottomSheet>`
-- [ ] Update `Modal.tsx` to support sheet variant (or keep separate)
+- [x] Create `frontend/src/components/BottomSheet.tsx` with mobile slide-up / desktop center variants
+- [x] Add `slideUp` keyframe to `index.css`
+- [x] Convert `CookbooksPage` create dialog to use `<BottomSheet>`
+- [x] Convert `PantryPage` edit item modal to use `<BottomSheet>`
+- [x] Update `Modal.tsx` to support sheet variant (or keep separate)
 
 ### Phase 3 — FAB + Import Sheet
 **Goal:** Primary actions accessible via thumb
 
 Tasks:
-- [ ] Create `frontend/src/components/FAB.tsx`
-- [ ] Create `frontend/src/context/FABContext.tsx` (or use route-based callback pattern)
-- [ ] Wrap `<ImportBar>` content in a bottom sheet triggered by FAB on `/recipes` and `/cookbooks`
-- [ ] Wrap "Add Ingredient" form in a bottom sheet triggered by FAB on `/pantry`
-- [ ] Hide existing inline `<ImportBar>` on mobile (`hidden sm:block`)
+- [x] Create `frontend/src/components/FAB.tsx`
+- [x] Create `frontend/src/context/FABContext.tsx` (or use route-based callback pattern)
+- [x] Wrap `<ImportBar>` content in a bottom sheet triggered by FAB on `/recipes` and `/cookbooks`
+- [x] Wrap "Add Ingredient" form in a bottom sheet triggered by FAB on `/pantry`
+- [x] Hide existing inline `<ImportBar>` on mobile (`hidden sm:block`)
 
 ### Phase 4 — Remaining Modal Conversions + Polish
 **Goal:** All modals feel native
