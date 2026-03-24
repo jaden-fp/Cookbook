@@ -43,7 +43,16 @@ export async function rateRecipe(
 
 export async function updateRecipe(
   id: string,
-  updates: { title?: string; description?: string }
+  updates: {
+    title?: string;
+    description?: string;
+    prep_time?: string;
+    cook_time?: string;
+    yield?: string;
+    ingredient_groups?: import('./types').IngredientGroup[];
+    instructions?: string[];
+    equipment?: string[];
+  }
 ): Promise<Recipe> {
   const res = await fetch(`${BASE}/recipes/${id}`, {
     method: 'PATCH',
