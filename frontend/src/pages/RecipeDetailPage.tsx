@@ -324,19 +324,40 @@ export default function RecipeDetailPage() {
             </Link>
             <span style={{ color: 'rgba(255,251,233,0.35)', fontSize: '0.75rem' }}>/</span>
           </div>
-          <h1
-            className="text-white animate-fade-up"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.75rem, 4.5vw, 2.75rem)',
-              fontWeight: 600,
-              lineHeight: 1.15,
-              letterSpacing: '-0.02em',
-              textShadow: '0 2px 20px rgba(0,0,0,0.35)',
-            }}
-          >
-            {recipe.title}
-          </h1>
+          {isEditing && draft ? (
+            <input
+              type="text"
+              value={draft.title}
+              onChange={e => setDraft(d => d ? { ...d, title: e.target.value } : d)}
+              className="w-full text-white"
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                fontWeight: 600,
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                background: 'rgba(255,255,255,0.12)',
+                border: '1.5px solid rgba(255,255,255,0.4)',
+                borderRadius: '10px',
+                padding: '8px 14px',
+                outline: 'none',
+              }}
+            />
+          ) : (
+            <h1
+              className="text-white animate-fade-up"
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.75rem, 4.5vw, 2.75rem)',
+                fontWeight: 600,
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                textShadow: '0 2px 20px rgba(0,0,0,0.35)',
+              }}
+            >
+              {recipe.title}
+            </h1>
+          )}
         </div>
       </div>
 
