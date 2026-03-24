@@ -525,17 +525,6 @@ export default function PantryPage() {
           {addError ?? ' '}
         </p>
 
-        <div className="mt-3">
-          <button
-            onClick={() => { setShowQuickAdd(true); setQuickSelected(new Set()); }}
-            className="text-sm transition-colors duration-200"
-            style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)', fontWeight: 500 }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#D94E7A'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-          >
-            ✦ Quick add common baking ingredients
-          </button>
-        </div>
       </div>
 
       <div style={{ borderBottom: '1px solid var(--border-strong)', marginBottom: '24px' }} />
