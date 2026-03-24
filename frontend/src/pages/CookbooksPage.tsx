@@ -124,8 +124,8 @@ export default function CookbooksPage() {
         <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
-      {/* Import bar */}
-      <div className="mb-4 animate-fade-up delay-1">
+      {/* Import bar — desktop only */}
+      <div className="hidden sm:block mb-4 animate-fade-up delay-1">
         <ImportBar />
       </div>
 
