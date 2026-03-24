@@ -59,7 +59,7 @@ export default function AllRecipesPage() {
       </div>
 
       {/* Import bar */}
-      <div className="mb-10 animate-fade-up delay-1">
+      <div className="mb-4 animate-fade-up delay-1">
         <ImportBar />
       </div>
 
