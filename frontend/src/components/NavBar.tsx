@@ -39,7 +39,7 @@ export default function NavBar() {
                   textDecoration: 'none',
                   padding: '6px 14px',
                   borderRadius: '999px',
-                  background: 'transparent',
+                  background: active ? 'rgba(255,255,255,0.25)' : 'transparent',
                   transition: 'all 0.15s ease',
                 }}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; } }}
