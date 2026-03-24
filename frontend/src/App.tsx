@@ -20,6 +20,7 @@ export default function App() {
           <Route path="/recipes/:id" element={<RecipeDetailPage />} />
           <Route path="/pantry" element={<PantryPage />} />
         </Routes>
+        </div>
       </div>
     </BrowserRouter>
   );
