@@ -110,7 +110,7 @@ export default function ImportBar({ onSuccess }: Props) {
               <span className="import-dots shrink-0"><span /><span /><span /></span>
               Importing
             </>
-          ) : 'Import Recipe'}
+          ) : <><span className="hidden sm:inline">Import Recipe</span><span className="sm:hidden">Import</span></>}
         </button>
       </form>
 
