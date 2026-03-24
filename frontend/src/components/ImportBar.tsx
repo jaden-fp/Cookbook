@@ -111,7 +111,7 @@ export default function ImportBar({ onSuccess }: Props) {
         </button>
       </form>
 
-      <div style={{ minHeight: '32px', marginTop: '10px' }}>
+      <div style={{ minHeight: '20px', marginTop: '4px' }}>
         {importing && (
           <div className="flex items-center gap-2 justify-center" key={importMsgIdx}>
             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
