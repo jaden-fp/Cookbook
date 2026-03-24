@@ -294,7 +294,7 @@ export default function CookbooksPage() {
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
