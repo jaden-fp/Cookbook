@@ -70,34 +70,52 @@ export default function RecipeImportLoader({ url }: Props) {
         }
       `}</style>
 
+      {/* Full-screen backdrop */}
       <div
-        className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10"
-        style={{
-          background: 'rgba(255,245,248,0.88)',
-          backdropFilter: 'blur(18px)',
-          animation: 'loader-fadein 0.3s ease',
-        }}
+        className="fixed inset-0 z-[9998]"
+        style={{ background: 'rgba(15,12,30,0.35)', backdropFilter: 'blur(6px)', animation: 'loader-fadein 0.3s ease' }}
+      />
+
+      {/* Card */}
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-6"
+        style={{ pointerEvents: 'none' }}
       >
-        {/* Floating particles */}
-        {FLOATERS.map((ch, i) => (
-          <span
-            key={i}
-            aria-hidden
-            style={{
-              position: 'absolute',
-              left: `${8 + i * 11.5}%`,
-              bottom: `${18 + (i % 4) * 12}%`,
-              fontSize: i % 2 === 0 ? '0.875rem' : '0.5rem',
-              color: 'var(--accent)',
-              opacity: 0,
-              animation: `loader-float ${2.8 + i * 0.35}s ease-in infinite`,
-              animationDelay: `${i * 0.55}s`,
-              pointerEvents: 'none',
-            }}
-          >
-            {ch}
-          </span>
-        ))}
+        <div
+          className="flex flex-col items-center gap-8"
+          style={{
+            background: 'var(--surface)',
+            borderRadius: '24px',
+            border: '1.5px solid var(--border-strong)',
+            boxShadow: '0 24px 64px rgba(15,12,30,0.18)',
+            padding: '48px 40px 40px',
+            width: '100%',
+            maxWidth: '380px',
+            position: 'relative',
+            overflow: 'hidden',
+            pointerEvents: 'auto',
+          }}
+        >
+          {/* Floating particles inside card */}
+          {FLOATERS.map((ch, i) => (
+            <span
+              key={i}
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: `${6 + i * 12}%`,
+                bottom: `${10 + (i % 4) * 10}%`,
+                fontSize: i % 2 === 0 ? '0.75rem' : '0.4rem',
+                color: 'var(--accent)',
+                opacity: 0,
+                animation: `loader-float ${2.8 + i * 0.35}s ease-in infinite`,
+                animationDelay: `${i * 0.55}s`,
+                pointerEvents: 'none',
+              }}
+            >
+              {ch}
+            </span>
+          ))}
 
         {/* Bowl + pulse ring */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
