@@ -137,7 +137,7 @@ export default function RecipeDetailPage() {
     return (
       <div>
         <div className="skeleton w-full" style={{ height: '50vh' }} />
-        <div className="max-w-3xl mx-auto px-6 py-8 space-y-4">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-4">
           <div className="skeleton h-10 w-2/3 rounded-xl" />
           <div className="skeleton h-4 w-full rounded-lg" />
           <div className="skeleton h-4 w-5/6 rounded-lg" />
