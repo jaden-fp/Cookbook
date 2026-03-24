@@ -161,8 +161,7 @@ export default function CookbooksPage() {
           onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
         >
           View all recipes →
-          </Link>
-        </div>
+        </Link>
       </div>
 
       {/* Content */}
