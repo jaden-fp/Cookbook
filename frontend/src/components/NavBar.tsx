@@ -13,13 +13,8 @@ export default function NavBar() {
         height: '62px',
       }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
-        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '7px' }}>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1 }}>
-            Cox Cookie Co.
-          </span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--accent)', letterSpacing: '0' }}>
-            recipes
-          </span>
+        <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/logo.png" alt="Logo" style={{ height: '36px', width: 'auto', display: 'block' }} />
         </Link>
 
         <div className="flex items-center gap-1">
