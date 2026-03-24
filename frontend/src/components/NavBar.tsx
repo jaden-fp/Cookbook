@@ -35,11 +35,11 @@ export default function NavBar() {
                   fontFamily: 'var(--font-body)',
                   fontWeight: 600,
                   fontSize: '0.875rem',
-                  color: active ? 'var(--accent)' : 'var(--text-muted)',
+                  color: active ? 'white' : 'rgba(255,255,255,0.7)',
                   textDecoration: 'none',
                   padding: '6px 14px',
                   borderRadius: '999px',
-                  background: active ? 'var(--accent-dim)' : 'transparent',
+                  background: active ? 'rgba(255,255,255,0.2)' : 'transparent',
                   transition: 'all 0.15s ease',
                 }}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--bg-subtle)'; } }}
