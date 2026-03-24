@@ -500,8 +500,8 @@ export default function RecipeDetailPage() {
                 minWidth: '3rem', textAlign: 'center',
                 fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 700,
                 color: scale !== 1 ? 'var(--accent)' : 'var(--text)',
-                borderLeft: '1px solid var(--border-strong)',
-                borderRight: '1px solid var(--border-strong)',
+                borderLeft: '1px solid rgba(255,255,255,0.6)',
+                borderRight: '1px solid rgba(255,255,255,0.6)',
                 padding: '0 0.25rem', lineHeight: '2.25rem',
                 letterSpacing: '-0.01em',
               }}
