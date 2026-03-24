@@ -334,7 +334,7 @@ export default function PantryPage() {
       </div>
 
       {/* Add ingredient form */}
-      <div className="animate-fade-up delay-1 mb-8">
+      <div className="animate-fade-up delay-1 mb-8" style={{ position: 'relative' }}>
         <form onSubmit={handleAdd}>
           {/* Single-row pill form */}
           <div
@@ -347,7 +347,7 @@ export default function PantryPage() {
             }}
           >
             {/* Name input — takes up all remaining space */}
-            <div style={{ flex: 1, position: 'relative' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <label style={{ display: 'none' }}>Ingredient</label>
               <input
                 ref={nameRef}
