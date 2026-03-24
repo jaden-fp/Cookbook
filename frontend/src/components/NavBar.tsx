@@ -14,7 +14,7 @@ export default function NavBar() {
         position: 'relative',
       }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
-        <Link to="/cookbooks" style={{ textDecoration: 'none' }}>
+        <Link to="/cookbooks" className="shrink-0" style={{ textDecoration: 'none' }}>
           <img
             src="/logo.png"
             alt="Logo"
