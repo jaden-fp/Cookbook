@@ -611,15 +611,15 @@ export default function PantryPage() {
       )}
 
       {/* In Stock */}
-      <section className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>
+      <section className="mb-10 animate-fade-up delay-3">
+        <div className="flex items-center gap-2 mb-3">
+          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             In Stock
           </h2>
           {inStock.length > 0 && (
             <span
-              className="text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: 'var(--surface-hover)', color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
+              style={{ background: 'var(--accent-dim)', color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
             >
               {inStock.length}
             </span>
@@ -627,95 +627,95 @@ export default function PantryPage() {
         </div>
 
         {inStock.length === 0 ? (
-          <div className="py-10 text-center rounded-2xl" style={{ border: '1.5px dashed var(--border-strong)' }}>
+          <div className="py-12 text-center rounded-2xl" style={{ border: '1.5px dashed var(--border-strong)' }}>
             <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
-              No ingredients in stock yet. Add some above!
+              No ingredients in stock yet — add some above!
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {inStock.map(item => (
+          <div
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            {inStock.map((item, i) => (
               <div
                 key={item.id}
-                className="rounded-xl p-4 transition-all duration-200"
+                className="flex items-center gap-3 group"
                 style={{
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border-strong)',
-                  boxShadow: '0 1px 4px rgba(81,42,24,0.06)',
+                  padding: '13px 16px',
+                  borderBottom: i < inStock.length - 1 ? '1px solid var(--border)' : 'none',
                 }}
               >
-                {/* Name header */}
-                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem', marginBottom: '10px' }}>
+                {/* Name */}
+                <p className="flex-1 min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
                   {item.name}
                 </p>
 
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' }}>
-                    {item.quantity > 0
-                      ? <span style={{ color: 'var(--text-muted)' }}>{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
-                      : <span style={{ color: 'var(--text-muted)' }}>—</span>
-                    }
-                  </p>
+                {/* Qty badge */}
+                {item.quantity > 0 && (
+                  <span style={{
+                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)',
+                    flexShrink: 0,
+                  }}>
+                    {item.quantity}{item.unit ? ` ${item.unit}` : ''}
+                  </span>
+                )}
 
-                  <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                    {/* Qty stepper */}
-                    <div
-                      className="inline-flex items-center rounded-full overflow-hidden"
-                      style={{ border: '1.5px solid var(--border-strong)', background: 'var(--surface)' }}
-                    >
-                      <button
-                        onClick={() => handleAdjustQty(item, -1)}
-                        className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--surface-hover)' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                      >
-                        −
-                      </button>
-                      <span
-                        className="text-sm font-bold text-center"
-                        style={{
-                          minWidth: '2.5rem', color: 'var(--text)', fontFamily: 'var(--font-body)',
-                          borderLeft: '1px solid var(--border-strong)', borderRight: '1px solid var(--border-strong)',
-                          padding: '0.25rem',
-                        }}
-                      >
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleAdjustQty(item, 1)}
-                        className="flex items-center justify-center transition-colors duration-150"
-                        style={{ width: '2rem', height: '2rem', color: 'var(--text)', fontSize: '1rem', background: 'var(--surface-hover)' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--border-strong)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    {/* Need to Buy */}
-                    <button
-                      onClick={() => handleNeedToBuy(item)}
-                      className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
-                      style={{ border: '1.5px solid var(--accent)', color: 'var(--accent)', fontFamily: 'var(--font-body)', background: 'var(--surface)' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
-                    >
-                      Need to Buy
-                    </button>
-
-                    {/* Delete */}
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="w-7 h-7 flex items-center justify-center rounded-full text-lg leading-none transition-colors duration-200"
-                      style={{ color: 'rgba(81,42,24,0.3)' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(81,42,24,0.3)'; }}
-                    >
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-                    </button>
-                  </div>
+                {/* Stepper */}
+                <div
+                  className="inline-flex items-center shrink-0"
+                  style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden' }}
+                >
+                  <button
+                    onClick={() => handleAdjustQty(item, -1)}
+                    className="flex items-center justify-center transition-colors duration-150"
+                    style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >
+                    −
+                  </button>
+                  <div style={{ width: '1px', height: '16px', background: 'var(--border-strong)', flexShrink: 0 }} />
+                  <button
+                    onClick={() => handleAdjustQty(item, 1)}
+                    className="flex items-center justify-center transition-colors duration-150"
+                    style={{ width: '28px', height: '28px', color: 'var(--text-muted)', fontSize: '1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >
+                    +
+                  </button>
                 </div>
+
+                {/* Need to Buy — icon button, visible on hover */}
+                <button
+                  onClick={() => handleNeedToBuy(item)}
+                  title="Move to shopping list"
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+                  </svg>
+                </button>
+
+                {/* Delete — icon button, visible on hover */}
+                <button
+                  onClick={() => handleDelete(item)}
+                  className="shrink-0 flex items-center justify-center rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                >
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+                </button>
               </div>
             ))}
           </div>
