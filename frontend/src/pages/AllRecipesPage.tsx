@@ -29,7 +29,7 @@ export default function AllRecipesPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 lg:px-12 pt-12 pb-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 sm:pt-12 pb-16">
 
       {/* Page header */}
       <div className="mb-10 animate-fade-up">
