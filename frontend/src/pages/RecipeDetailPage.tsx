@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe } from '../api';
+import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe } from '../api';
 import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
 import BakedModal from '../components/BakedModal';
