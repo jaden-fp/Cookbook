@@ -24,10 +24,17 @@ export default function AllRecipesPage() {
   const [sort, setSort] = useState<SortOption>(
     () => (localStorage.getItem('recipes-sort') as SortOption) ?? 'newest'
   );
+  const [showImportSheet, setShowImportSheet] = useState(false);
+  const { setAction } = useFAB();
 
   useEffect(() => {
     getRecipes().then(setRecipes).finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    setAction(() => setShowImportSheet(true));
+    return () => setAction(null);
+  }, [setAction]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-4 sm:pt-24 pb-24 sm:pb-16">
