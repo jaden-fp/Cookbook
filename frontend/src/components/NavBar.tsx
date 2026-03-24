@@ -14,7 +14,7 @@ export default function NavBar() {
       }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
         <Link to="/cookbooks" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo.png" alt="Logo" style={{ height: '36px', width: 'auto', display: 'block' }} />
+          <img src="/logo.png" alt="Logo" style={{ height: '58px', width: 'auto', display: 'block' }} />
         </Link>
 
         <div className="flex items-center gap-1">
