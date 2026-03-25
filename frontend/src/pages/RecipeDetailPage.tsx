@@ -741,30 +741,6 @@ export default function RecipeDetailPage() {
           )}
         </div>
 
-        {/* Scale control — mobile only, ingredients tab only */}
-        {tab === 'ingredients' && (
-          <div className="flex sm:hidden items-center justify-end mb-4 animate-fade-up delay-2">
-            <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
-              <button
-                onClick={() => adjustScale(-0.5)}
-                className="flex items-center justify-center transition-colors duration-150"
-                style={{ width: '2rem', height: '2rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              >−</button>
-              <div style={{ width: '1px', height: '1.25rem', background: 'var(--border-strong)' }} />
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text)', minWidth: '38px', textAlign: 'center', userSelect: 'none', padding: '0 4px' }}>{scale}×</span>
-              <div style={{ width: '1px', height: '1.25rem', background: 'var(--border-strong)' }} />
-              <button
-                onClick={() => adjustScale(0.5)}
-                className="flex items-center justify-center transition-colors duration-150"
-                style={{ width: '2rem', height: '2rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              >+</button>
-            </div>
-          </div>
-        )}
 
         {/* Tabs + Scale (inline on desktop, stacked on mobile) */}
         <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
