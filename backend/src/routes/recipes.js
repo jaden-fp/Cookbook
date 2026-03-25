@@ -108,10 +108,18 @@ Also extract: all instructions as steps, equipment list, prep time, cook time, y
       return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
     };
 
-    const ingredientGroups = (extracted.ingredient_groups || []).map((group) => ({
-      ...group,
-      group_name: normalizeGroupName(group.group_name, extracted.title),
-    }));
+    const NON_INGREDIENT_GROUPS = /^(tips?|notes?|chef'?s?\s*notes?|baker'?s?\s*notes?|advice|hints?)$/i;
+
+    const ingredientGroups = (extracted.ingredient_groups || [])
+      .filter(group => !NON_INGREDIENT_GROUPS.test((group.group_name || '').trim()))
+      .map((group) => ({
+        ...group,
+        group_name: normalizeGroupName(group.group_name, extracted.title),
+        ingredients: (group.ingredients || []).map(ing => ({
+          ...ing,
+          notes: ing.notes && ing.notes.trim() ? ing.notes.trim() : null,
+        })),
+      }));
 
     const doc = await fsAdd('recipes', {
       title: extracted.title || 'Untitled Recipe',
