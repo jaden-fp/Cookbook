@@ -6,7 +6,7 @@ const MIXING_PUNS = [
   "I told my dough a joke. It didn't rise to the occasion.",
   "I tried to make a belt out of bread. Total waist of dough.",
   "I burned my Hawaiian pizza. Should've used aloha temperature.",
-  "My therapist told me to stop bottling things up. Now I bake instead.",
+  "Knead I say more?",
   "Flour is just wheat that got its life together.",
   "The dough isn't sticky — it's just emotionally clingy.",
   "Unsalted butter is just butter that gave up.",
