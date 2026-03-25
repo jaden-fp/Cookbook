@@ -244,13 +244,20 @@ export default function RecipeDetailPage() {
       {/* Hero */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ height: '48vh', minHeight: 300, maxHeight: 560 }}
+        style={{ height: '52vh', minHeight: 320, maxHeight: 640 }}
       >
         {recipe.image_url ? (
           <img
             src={recipe.image_url}
             alt={recipe.title}
-            className="w-full h-full object-cover"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         ) : (
