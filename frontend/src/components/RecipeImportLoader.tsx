@@ -383,34 +383,6 @@ function CakeStack({ showLayer1, showCream1, showFrosting, showSprinkles }: Cake
 function PunBubble({ text, visible }: { text: string; visible: boolean }) {
   return (
     <div style={{ position: 'relative', width: '100%', maxWidth: '310px' }}>
-      {/* Upward-pointing tail — border triangle */}
-      <div style={{
-        position: 'absolute',
-        top: '-9px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: 0,
-        height: 0,
-        borderLeft: '9px solid transparent',
-        borderRight: '9px solid transparent',
-        borderBottom: '9px solid var(--border-strong)',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
-      {/* Fill triangle (covers border inner) */}
-      <div style={{
-        position: 'absolute',
-        top: '-7px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: 0,
-        height: 0,
-        borderLeft: '8px solid transparent',
-        borderRight: '8px solid transparent',
-        borderBottom: '8px solid var(--bg-subtle)',
-        zIndex: 2,
-        pointerEvents: 'none',
-      }} />
       {/* Bubble body */}
       <div style={{
         position: 'relative',
