@@ -648,7 +648,7 @@ export default function RecipeImportLoader({ url }: Props) {
         setPunIndex(i => (i + 1) % PUNS_BY_STAGE[currentStage].length);
         setPunVisible(true);
       }, 400);
-    }, 2800);
+    }, 4000);
     return () => clearInterval(id);
   }, [currentStage]);
   const ovenProgress = stage === 1 ? ((progress - 33) / 34) * 100
