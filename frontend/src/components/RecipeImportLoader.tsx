@@ -344,7 +344,7 @@ export default function RecipeImportLoader({ url }: Props) {
 
           {/* ── STAGE PROGRESS DOTS ────────────────────────────── */}
           <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            {['🥣','🌀','🔥','🎂'].map((icon, i) => (
+            {['🥣','🌀','🔥','🎂'].map((_icon, i) => (
               <div key={i} title={['Prep','Mixing','Baking','Done!'][i]} style={{
                 height: '7px',
                 width: i === stage ? '26px' : '7px',
