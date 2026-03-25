@@ -692,6 +692,11 @@ export default function RecipeDetailPage() {
               </button>
             </div>
           </div>
+
+          {/* Bake history */}
+          {(recipe.bake_log?.length ?? 0) > 0 && (
+            <BakeHistory entries={recipe.bake_log!} />
+          )}
         </div>
 
         {/* Scale control — mobile only, ingredients tab only */}
