@@ -128,7 +128,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 /* ─── Sort select ─────────────────────────────────────────────── */
 .sort-select { font-size: 0.8125rem; padding: 5px 30px 5px 12px; }
 @media (max-width: 639px) {
-  .sort-select { font-size: 0.6875rem; padding: 3px 22px 3px 8px; }
+  .sort-select { font-size: 0.625rem; padding: 2px 18px 2px 7px; }
 }
 
 /* ─── Responsive nav logo ─────────────────────────────────────── */
