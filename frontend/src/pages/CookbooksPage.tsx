@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import ImportBar from '../components/ImportBar';
 import BottomSheet from '../components/BottomSheet';
 import CookbookCard from '../components/CookbookCard';
-import { getCookbooks, createCookbook } from '../api';
+import { getCookbooks, createCookbook, deleteCookbook } from '../api';
 import { useFAB } from '../context/FABContext';
 import type { Cookbook } from '../types';
 
