@@ -90,7 +90,7 @@ export default function RecipeDetailPage() {
   // Pantry
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [showPantryModal, setShowPantryModal] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [, setBannerDismissed] = useState(false);
   const [addingToList, setAddingToList] = useState<Set<string>>(new Set());
   const [addingAll, setAddingAll] = useState(false);
 
