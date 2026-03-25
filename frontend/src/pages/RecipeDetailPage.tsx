@@ -357,7 +357,7 @@ export default function RecipeDetailPage() {
             />
           ) : (
             <h1
-              className="text-white animate-fade-up"
+              className="text-white animate-fade-up inline-flex items-end gap-2"
               style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(1.75rem, 4.5vw, 2.75rem)',
@@ -368,6 +368,28 @@ export default function RecipeDetailPage() {
               }}
             >
               {recipe.title}
+              {recipe.source_url && (
+                <a
+                  href={recipe.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    color: 'rgba(255,255,255,0.45)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    marginBottom: '4px',
+                    transition: 'color 0.15s ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.9)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
+                >
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
             </h1>
           )}
         </div>
