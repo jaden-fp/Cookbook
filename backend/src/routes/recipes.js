@@ -68,6 +68,17 @@ router.post('/import', async (req, res) => {
       return res.status(422).json({ error: 'Could not extract recipe data from that URL' });
     }
 
+    const normalizeGroupName = (name) => {
+      if (!name || !name.trim()) return 'Ingredients';
+      const cleaned = name.trim().replace(/^for\s+(the|a|an)\s+/i, '').replace(/^for\s+/i, '');
+      return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    };
+
+    const ingredientGroups = (extracted.ingredient_groups || []).map((group) => ({
+      ...group,
+      group_name: normalizeGroupName(group.group_name),
+    }));
+
     const doc = await fsAdd('recipes', {
       title: extracted.title || 'Untitled Recipe',
       description: extracted.description || null,
