@@ -380,6 +380,7 @@ export default function RecipeDetailPage() {
                     alignItems: 'center',
                     flexShrink: 0,
                     marginBottom: '4px',
+                    marginLeft: '4px',
                     transition: 'color 0.15s ease',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.9)'; }}
