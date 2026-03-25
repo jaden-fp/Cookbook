@@ -344,9 +344,10 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
   return createPortal(
     <div
       className="fixed inset-0 z-[100] flex flex-col"
-      style={{ background: 'var(--bg)', touchAction: 'none' }}
+      style={{ background: 'var(--bg)', touchAction: 'pan-y' }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      onPointerDown={() => getAudioCtx()}
     >
       <style>{`
         @keyframes stepIn {
