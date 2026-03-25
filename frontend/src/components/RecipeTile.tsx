@@ -3,6 +3,25 @@ import { Link } from 'react-router-dom';
 import type { Recipe } from '../types';
 import CookbookModal from './CookbookModal';
 
+function parseMinutes(timeStr: string): number {
+  if (!timeStr) return 0;
+  let mins = 0;
+  const hrMatch = timeStr.match(/(\d+)\s*(?:hr|hour|hours)/i);
+  const minMatch = timeStr.match(/(\d+)\s*(?:min|minute|minutes)/i);
+  if (hrMatch) mins += parseInt(hrMatch[1]) * 60;
+  if (minMatch) mins += parseInt(minMatch[1]);
+  if (!hrMatch && !minMatch) { const n = parseInt(timeStr); if (!isNaN(n)) mins = n; }
+  return mins;
+}
+
+function formatMinutes(mins: number): string {
+  if (mins <= 0) return '';
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
+}
+
 interface Props {
   recipe: Recipe;
 }
