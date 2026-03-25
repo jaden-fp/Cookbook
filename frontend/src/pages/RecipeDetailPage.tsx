@@ -374,13 +374,40 @@ export default function RecipeDetailPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={e => e.stopPropagation()}
+                  className="hidden sm:inline-flex items-center justify-center"
                   style={{
-                    color: 'rgba(255,255,255,0.45)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
+                    flexShrink: 0,
+                    marginBottom: '6px',
+                    marginLeft: '12px',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.12)',
+                    border: '1.5px solid rgba(255,255,255,0.25)',
+                    backdropFilter: 'blur(6px)',
+                    color: 'rgba(255,255,255,0.6)',
+                    transition: 'background 0.15s ease, color 0.15s ease, border-color 0.15s ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+                >
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
+              {recipe.source_url && (
+                <a
+                  href={recipe.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="sm:hidden inline-flex items-center"
+                  style={{
                     flexShrink: 0,
                     marginBottom: '4px',
-                    marginLeft: '4px',
+                    marginLeft: '8px',
+                    color: 'rgba(255,255,255,0.45)',
                     transition: 'color 0.15s ease',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.9)'; }}
