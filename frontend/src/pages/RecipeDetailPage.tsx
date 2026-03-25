@@ -335,34 +335,7 @@ export default function RecipeDetailPage() {
 
         {/* Breadcrumb + Title */}
         <div className="absolute inset-x-0 bottom-0 px-4 sm:px-6 pb-8 max-w-3xl mx-auto">
-          <div className="flex items-center justify-between gap-1.5 mb-3">
-            <div />
-            {recipe.source_url && (
-              <a
-                href={recipe.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-medium transition-colors duration-200"
-                style={{
-                  color: 'rgba(255,251,233,0.6)',
-                  fontFamily: 'var(--font-body)',
-                  textDecoration: 'none',
-                  background: 'rgba(0,0,0,0.25)',
-                  backdropFilter: 'blur(4px)',
-                  borderRadius: '999px',
-                  padding: '4px 10px',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.95)'; e.currentTarget.style.background = 'rgba(0,0,0,0.4)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,251,233,0.6)'; e.currentTarget.style.background = 'rgba(0,0,0,0.25)'; }}
-              >
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                Source
-              </a>
-            )}
-          </div>
+          <div className="mb-3" />
           {isEditing && draft ? (
             <input
               type="text"
