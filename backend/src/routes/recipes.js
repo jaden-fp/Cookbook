@@ -120,6 +120,42 @@ router.post('/import', async (req, res) => {
   }
 });
 
+// POST /api/recipes/migrate-group-names — one-time fix for existing recipes
+router.post('/migrate-group-names', async (_req, res) => {
+  const migrateGroupName = (name, recipeTitle) => {
+    let cleaned = (name || '').trim();
+    cleaned = cleaned.replace(/^ingredients\s+for\s+(the|a|an)\s+/i, '');
+    cleaned = cleaned.replace(/^ingredients\s+for\s+/i, '');
+    cleaned = cleaned.replace(/^ingredients$/i, '').trim();
+    cleaned = cleaned.replace(/^for\s+(the|a|an)\s+/i, '');
+    cleaned = cleaned.replace(/^for\s+/i, '');
+    cleaned = cleaned.trim();
+
+    if (recipeTitle && (!cleaned || cleaned.toLowerCase() === recipeTitle.toLowerCase().trim())) {
+      const words = recipeTitle.trim().split(/\s+/);
+      return words[words.length - 1];
+    }
+
+    if (!cleaned) return null;
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  };
+
+  const recipes = await fsQuery('recipes', {});
+  let updated = 0;
+  for (const recipe of recipes) {
+    const groups = (recipe.ingredient_groups || []).map(g => ({
+      ...g,
+      group_name: migrateGroupName(g.group_name, recipe.title),
+    }));
+    const changed = groups.some((g, i) => g.group_name !== (recipe.ingredient_groups[i]?.group_name ?? null));
+    if (changed) {
+      await fsUpdate('recipes', recipe.id, { ingredient_groups: groups });
+      updated++;
+    }
+  }
+  res.json({ total: recipes.length, updated });
+});
+
 // GET /api/recipes
 router.get('/', async (_req, res) => {
   const docs = await fsQuery('recipes', { orderBy: 'created_at', orderDir: 'DESCENDING' });
