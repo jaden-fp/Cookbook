@@ -551,11 +551,11 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
           style={{
             height: '64px',
             background: isLast
-              ? 'linear-gradient(135deg, #3DAD6B, #2E8B57)'
+              ? 'linear-gradient(135deg, #00C4B4, #009E90)'
               : 'linear-gradient(135deg, var(--accent), #D94E7A)',
             border: 'none', color: 'white', cursor: 'pointer',
             fontFamily: 'var(--font-body)', fontSize: '1.0625rem', letterSpacing: '-0.01em',
-            boxShadow: isLast ? '0 4px 20px rgba(61,173,107,0.35)' : '0 4px 20px var(--accent-glow)',
+            boxShadow: isLast ? '0 4px 20px rgba(0,196,180,0.35)' : '0 4px 20px var(--accent-glow)',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; }}
