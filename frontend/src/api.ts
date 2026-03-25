@@ -127,6 +127,10 @@ export async function updateCookbook(
   return res.json();
 }
 
+export async function deleteCookbook(id: string): Promise<void> {
+  await fetch(`${BASE}/cookbooks/${id}`, { method: 'DELETE' });
+}
+
 export async function getCookbook(id: string): Promise<Cookbook> {
   const res = await fetch(`${BASE}/cookbooks/${id}`);
   return res.json();
