@@ -682,9 +682,59 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        {/* Scale control — above tabs, hidden on nutrition tab */}
+        {/* Tabs + Scale (inline on desktop, stacked on mobile) */}
+        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
+          <div className="flex items-end justify-between">
+            <div className="flex gap-0">
+              {(['ingredients', 'instructions', 'nutrition'] as Tab[]).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: tab === t ? '2.5px solid var(--accent)' : '2.5px solid transparent',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* Scale control — desktop only, hidden on nutrition tab */}
+            {tab !== 'nutrition' && (
+              <div className="hidden sm:flex items-center pb-3">
+                <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
+                  <button
+                    onClick={() => adjustScale(-0.5)}
+                    className="flex items-center justify-center transition-colors duration-150"
+                    style={{ width: '2rem', height: '2rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >−</button>
+                  <div style={{ width: '1px', height: '1.25rem', background: 'var(--border-strong)' }} />
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text)', minWidth: '38px', textAlign: 'center', userSelect: 'none', padding: '0 4px' }}>{scale}×</span>
+                  <div style={{ width: '1px', height: '1.25rem', background: 'var(--border-strong)' }} />
+                  <button
+                    onClick={() => adjustScale(0.5)}
+                    className="flex items-center justify-center transition-colors duration-150"
+                    style={{ width: '2rem', height: '2rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >+</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Scale control — mobile only, hidden on nutrition tab */}
         {tab !== 'nutrition' && (
-          <div className="flex items-center justify-end mb-4 animate-fade-up delay-2">
+          <div className="flex sm:hidden items-center justify-end mb-4 animate-fade-up delay-2">
             <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
@@ -706,29 +756,6 @@ export default function RecipeDetailPage() {
             </div>
           </div>
         )}
-
-        {/* Tabs */}
-        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
-          <div className="flex gap-0">
-            {(['ingredients', 'instructions', 'nutrition'] as Tab[]).map(t => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: tab === t ? '2.5px solid var(--accent)' : '2.5px solid transparent',
-                  cursor: 'pointer',
-                }}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Ingredients tab */}
         {tab === 'ingredients' && (
