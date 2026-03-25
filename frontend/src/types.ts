@@ -10,6 +10,11 @@ export interface IngredientGroup {
   ingredients: Ingredient[];
 }
 
+export interface BakeEntry {
+  date: string;
+  notes?: string | null;
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -24,6 +29,7 @@ export interface Recipe {
   equipment: string[];
   rating?: number | null;
   review?: string | null;
+  bake_log?: BakeEntry[];
   created_at: string;
 }
 
