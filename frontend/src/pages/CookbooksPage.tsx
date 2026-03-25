@@ -202,10 +202,17 @@ export default function CookbooksPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {sortCookbooks(cookbooks, sort).map((cb, i) => (
             <div key={cb.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-              <CookbookCard cookbook={cb} onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))} />
+              <CookbookCard
+                cookbook={cb}
+                onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))}
+                onDelete={async id => {
+                  await deleteCookbook(id);
+                  setCookbooks(prev => prev.filter(c => c.id !== id));
+                }}
+              />
             </div>
           ))}
-          <div className="hidden sm:block"><CreateTile /></div>
+          <div><CreateTile /></div>
         </div>
       )}
 
