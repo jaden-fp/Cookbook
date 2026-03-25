@@ -16,8 +16,26 @@ router.post('/import', async (req, res) => {
         url,
         formats: ['extract'],
         extract: {
-          prompt:
-            'Extract the full recipe including all ingredient groups with subtitles, all instructions, equipment list, prep time, cook time, yield, description, and the main recipe image URL.',
+          prompt: `Extract the full recipe from this page.
+
+INGREDIENT PARSING RULES — follow exactly:
+- "amount" = only the numeric quantity (e.g. "1/2", "2", "1 1/4", "3/4"). Never include the unit or ingredient name here.
+- "unit" = only the measurement unit (e.g. "cup", "tablespoon", "teaspoon", "oz", "g"). Leave empty string "" if there is no unit.
+- "name" = only the ingredient name, lowercase, no quantity or unit (e.g. "unsalted butter", "light brown sugar", "all-purpose flour").
+- "notes" = any parenthetical or descriptive note about the ingredient (e.g. "room temperature", "packed", "roughly chopped"). Set to null if none.
+
+EXAMPLE: "1/2 cup + 2 tablespoons unsalted butter, softened"
+→ amount: "1/2 cup + 2 tablespoons", unit: "", name: "unsalted butter", notes: "softened"
+
+EXAMPLE: "2 large eggs, room temperature"
+→ amount: "2", unit: "", name: "large eggs", notes: "room temperature"
+
+EXAMPLE: "3/4 cup all-purpose flour"
+→ amount: "3/4", unit: "cup", name: "all-purpose flour", notes: null
+
+Only include actual ingredient groups (e.g. "For the Cookies", "For the Frosting"). Do NOT include tips, chef notes, or advice sections as ingredient groups.
+
+Also extract: all instructions as steps, equipment list, prep time, cook time, yield/servings, description, and the main recipe image URL.`,
           schema: {
             type: 'object',
             properties: {
