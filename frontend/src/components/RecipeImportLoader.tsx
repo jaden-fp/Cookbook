@@ -18,7 +18,7 @@ const MIXING_PUNS = [
   "The eggs were cage-free. The puns are not.",
   "The recipe said to mix until smooth. We've been at it for eleven minutes.",
   "Every cookie is a little different. Like children, but edible.",
-  "Measuring by weight is an act of respect to everyone who comes after you.",
+  "Why did the baker quit? He kneaded a break.",
 ];
 
 // Stage 1: Oven (33–67%)
