@@ -1118,43 +1118,6 @@ export default function RecipeDetailPage() {
         <CookbookModal recipeId={recipe.id} onClose={() => setShowCookbook(false)} />
       )}
 
-      {/* Sticky edit save bar */}
-      {isEditing && createPortal(
-        <div
-          className="fixed bottom-0 inset-x-0 z-40 flex items-center justify-between gap-4 animate-fade-up"
-          style={{
-            background: 'var(--surface)',
-            borderTop: '1px solid var(--border-strong)',
-            boxShadow: '0 -4px 24px rgba(15,12,30,0.1)',
-            padding: '14px 24px',
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            Editing recipe
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={cancelEdit}
-              className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
-              style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSaveEdit}
-              disabled={!draft?.title.trim() || saving}
-              className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
-              style={{ background: 'var(--accent)', fontFamily: 'var(--font-body)', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { if (draft?.title.trim() && !saving) e.currentTarget.style.background = '#D94E7A'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-            >
-              {saving ? 'Saving…' : 'Save Changes'}
-            </button>
-          </div>
-        </div>
-      , document.body)}
 
       {/* Pantry check modal */}
       {showPantryModal && createPortal(
