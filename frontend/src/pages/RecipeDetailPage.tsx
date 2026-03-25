@@ -613,7 +613,7 @@ export default function RecipeDetailPage() {
                 onClick={() => setShowBaked(true)}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-all duration-200"
                 style={
-                  recipe.rating
+                  (recipe.bake_log?.length ?? 0) > 0
                     ? {
                         background: 'var(--accent-dim)',
                         border: '1.5px solid var(--accent)',
@@ -632,14 +632,14 @@ export default function RecipeDetailPage() {
                       }
                 }
                 onMouseEnter={e => {
-                  if (!recipe.rating) {
+                  if (!recipe.bake_log?.length) {
                     e.currentTarget.style.borderColor = 'var(--accent)';
                     e.currentTarget.style.color = 'var(--accent)';
                     e.currentTarget.style.background = 'var(--accent-dim)';
                   }
                 }}
                 onMouseLeave={e => {
-                  if (!recipe.rating) {
+                  if (!recipe.bake_log?.length) {
                     e.currentTarget.style.borderColor = 'var(--border-strong)';
                     e.currentTarget.style.color = 'var(--text)';
                     e.currentTarget.style.background = 'var(--surface)';
