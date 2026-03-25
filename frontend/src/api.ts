@@ -79,6 +79,16 @@ export async function setRecipeCookbooks(
   });
 }
 
+export async function logBake(id: string, date: string, notes?: string): Promise<Recipe> {
+  const res = await fetch(`${BASE}/recipes/${id}/bakes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ date, notes }),
+  });
+  if (!res.ok) throw new Error('Failed to log bake');
+  return res.json();
+}
+
 export async function deleteRecipe(id: string): Promise<void> {
   await fetch(`${BASE}/recipes/${id}`, { method: 'DELETE' });
 }
