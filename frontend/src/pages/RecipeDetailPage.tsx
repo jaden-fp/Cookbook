@@ -684,10 +684,7 @@ export default function RecipeDetailPage() {
 
         {/* Scale control — above tabs, hidden on nutrition tab */}
         {tab !== 'nutrition' && (
-          <div className="flex items-center justify-between mb-4 animate-fade-up delay-2">
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-              Recipe scale
-            </span>
+          <div className="flex items-center justify-end mb-4 animate-fade-up delay-2">
             <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
