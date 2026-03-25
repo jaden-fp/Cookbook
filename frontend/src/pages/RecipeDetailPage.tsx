@@ -1002,6 +1002,13 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Modals */}
+      {showBaking && (
+        <BakingMode
+          recipe={recipe}
+          onClose={() => setShowBaking(false)}
+          onRate={() => setShowBaked(true)}
+        />
+      )}
       {showBaked && (
         <BakedModal recipe={recipe} onClose={() => setShowBaked(false)} onSave={setRecipe} />
       )}
