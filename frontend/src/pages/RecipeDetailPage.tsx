@@ -553,6 +553,29 @@ export default function RecipeDetailPage() {
               )}
             </button>
 
+            {/* Start Baking */}
+            {recipe.instructions.length > 0 && (
+              <button
+                onClick={() => setShowBaking(true)}
+                className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
+                style={{
+                  background: 'var(--bg-subtle)',
+                  border: '1.5px solid var(--border-strong)',
+                  color: 'var(--text)',
+                  borderRadius: 'var(--radius-md)',
+                  fontFamily: 'var(--font-body)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-dim)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Start Baking
+              </button>
+            )}
+
             {/* Secondary row */}
             <div className="flex gap-2">
               <button
