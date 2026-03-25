@@ -155,6 +155,19 @@ router.patch('/:id', async (req, res) => {
   res.json({ id: doc.id, ...doc.data() });
 });
 
+// POST /api/recipes/:id/bakes — log a bake entry
+router.post('/:id/bakes', async (req, res) => {
+  const { date, notes } = req.body;
+  if (!date) return res.status(400).json({ error: 'Date is required' });
+  const ref = db.collection('recipes').doc(req.params.id);
+  const doc = await ref.get();
+  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
+  const existing = doc.data().bake_log || [];
+  await ref.update({ bake_log: [...existing, { date, notes: notes || null }] });
+  const updated = await ref.get();
+  res.json({ id: updated.id, ...updated.data() });
+});
+
 // DELETE /api/recipes/:id
 router.delete('/:id', async (req, res) => {
   await db.collection('recipes').doc(req.params.id).delete();
