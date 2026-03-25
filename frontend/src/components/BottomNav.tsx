@@ -75,7 +75,7 @@ export default function BottomNav() {
               className="flex-1 flex flex-col items-center justify-center gap-[3px]"
               style={{
                 textDecoration: 'none',
-                color: active ? 'var(--accent)' : 'var(--text-muted)',
+                color: active ? 'var(--accent)' : '#9CA3AF',
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.625rem',
                 fontWeight: active ? 700 : 500,
