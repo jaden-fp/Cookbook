@@ -556,7 +556,7 @@ export default function RecipeDetailPage() {
                 You may be missing some ingredients.
                 <button
                   onClick={() => setShowPantryModal(true)}
-                  style={{ display: 'block', color: 'var(--teal)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.875rem', marginTop: '2px' }}
+                  style={{ display: 'block', color: 'var(--teal)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-body)', fontSize: '0.8125rem', marginTop: '2px' }}
                 >
                   See what's needed →
                 </button>
