@@ -1,1 +1,3 @@
-export { default } from '../_handler.js';
+export default function handler(req, res) {
+  res.json({ ok: true, url: req.url });
+}
