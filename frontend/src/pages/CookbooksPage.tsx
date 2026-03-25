@@ -216,6 +216,11 @@ export default function CookbooksPage() {
         </div>
       )}
 
+      {/* Import modal — mobile FAB */}
+      <BottomSheet open={showImport} onClose={() => setShowImport(false)} title="Import Recipe">
+        <ImportBar onSuccess={() => setShowImport(false)} />
+      </BottomSheet>
+
       {/* Create modal */}
       <BottomSheet open={showCreate} onClose={() => setShowCreate(false)} title="New Cookbook">
         <form onSubmit={handleCreate} className="space-y-4">
