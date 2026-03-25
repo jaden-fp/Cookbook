@@ -68,15 +68,31 @@ router.post('/import', async (req, res) => {
       return res.status(422).json({ error: 'Could not extract recipe data from that URL' });
     }
 
-    const normalizeGroupName = (name) => {
-      if (!name || !name.trim()) return 'Ingredients';
-      const cleaned = name.trim().replace(/^for\s+(the|a|an)\s+/i, '').replace(/^for\s+/i, '');
+    const normalizeGroupName = (name, recipeTitle) => {
+      let cleaned = (name || '').trim();
+      // Strip "Ingredients for the/a/an X" or "Ingredients for X"
+      cleaned = cleaned.replace(/^ingredients\s+for\s+(the|a|an)\s+/i, '');
+      cleaned = cleaned.replace(/^ingredients\s+for\s+/i, '');
+      // Strip lone "Ingredients"
+      cleaned = cleaned.replace(/^ingredients$/i, '').trim();
+      // Strip "for the/a/an X" or "for X"
+      cleaned = cleaned.replace(/^for\s+(the|a|an)\s+/i, '');
+      cleaned = cleaned.replace(/^for\s+/i, '');
+      cleaned = cleaned.trim();
+
+      // If result is empty or matches the full recipe title, use just the last word of the title
+      if (recipeTitle && (!cleaned || cleaned.toLowerCase() === recipeTitle.toLowerCase().trim())) {
+        const words = recipeTitle.trim().split(/\s+/);
+        return words[words.length - 1];
+      }
+
+      if (!cleaned) return null;
       return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
     };
 
     const ingredientGroups = (extracted.ingredient_groups || []).map((group) => ({
       ...group,
-      group_name: normalizeGroupName(group.group_name),
+      group_name: normalizeGroupName(group.group_name, extracted.title),
     }));
 
     const doc = await fsAdd('recipes', {
