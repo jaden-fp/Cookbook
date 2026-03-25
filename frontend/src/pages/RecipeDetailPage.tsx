@@ -538,7 +538,7 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* Pantry banner */}
-          {hasMissingOrLow && !bannerDismissed && (
+          {hasMissingOrLow && (
             <div
               className="flex items-center gap-3 rounded-xl mb-5"
               style={{
@@ -552,7 +552,7 @@ export default function RecipeDetailPage() {
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
-              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)', whiteSpace: 'nowrap' }}>
                 You may be missing some ingredients.{' '}
                 <button
                   onClick={() => setShowPantryModal(true)}
@@ -561,15 +561,6 @@ export default function RecipeDetailPage() {
                   See what's needed →
                 </button>
               </span>
-              <button
-                onClick={() => setBannerDismissed(true)}
-                className="w-6 h-6 flex items-center justify-center rounded-full text-base leading-none transition-colors shrink-0"
-                style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-              </button>
             </div>
           )}
 
