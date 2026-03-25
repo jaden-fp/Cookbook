@@ -360,9 +360,23 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
           borderBottom: '1px solid var(--border)',
         }}
       >
+        <span style={{
+          fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+          fontWeight: 600, color: 'var(--text-muted)',
+        }}>
+          {step + 1} / {steps.length}
+        </span>
+
+        <span className="text-center" style={{
+          fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700,
+          letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)',
+        }}>
+          Start Baking
+        </span>
+
         <button
           onClick={onClose}
-          className="flex items-center justify-center rounded-full transition-all duration-150"
+          className="flex items-center justify-center rounded-full transition-all duration-150 ml-auto"
           style={{
             width: '2.25rem', height: '2.25rem',
             background: 'var(--bg-subtle)',
@@ -376,20 +390,6 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
             <path d="M1 1l10 10M11 1L1 11"/>
           </svg>
         </button>
-
-        <span className="text-center" style={{
-          fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700,
-          letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)',
-        }}>
-          Start Baking
-        </span>
-
-        <span className="text-right" style={{
-          fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
-          fontWeight: 600, color: 'var(--text-muted)',
-        }}>
-          {step + 1} / {steps.length}
-        </span>
       </div>
 
       {/* Step label */}
