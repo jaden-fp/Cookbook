@@ -8,7 +8,7 @@ export default function FAB() {
   return (
     <button
       onClick={action}
-      className="sm:hidden fixed z-40"
+      className="flex sm:hidden fixed z-40 items-center justify-center"
       style={{
         bottom: 'calc(58px + env(safe-area-inset-bottom) + 26px)',
         right: '20px',
@@ -19,9 +19,6 @@ export default function FAB() {
         border: 'none',
         color: 'white',
         cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         boxShadow: 'var(--shadow-lg)',
         WebkitTapHighlightColor: 'transparent',
         transition: 'transform 0.15s ease, box-shadow 0.15s ease',
