@@ -29,6 +29,7 @@ export default function RecipeDetailPage() {
   const [tab, setTab] = useState<Tab>('ingredients');
   const [scale, setScale] = useState(1);
   const [showBaked, setShowBaked] = useState(false);
+  const [showBaking, setShowBaking] = useState(false);
   const [showCookbook, setShowCookbook] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
