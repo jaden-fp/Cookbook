@@ -439,39 +439,113 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
           {currentStep}
         </p>
 
-        {/* Timer buttons */}
+        {/* Timer start buttons */}
         {timers.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-5">
-            {timers.map((t, i) => {
-              const isActive = timer !== null;
-              const isDone = timer?.done;
-              return (
+            {timers.map((t, i) => (
+              <button
+                key={i}
+                onClick={() => startTimer(t)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl transition-all duration-200"
+                style={{
+                  fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 600,
+                  color: 'var(--accent)',
+                  background: 'var(--accent-dim)',
+                  border: '1.5px solid rgba(244,102,150,0.3)',
+                  cursor: 'pointer',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                {t.label} timer
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Active timer overlay panel */}
+        {timer && (
+          <div
+            className="mt-5 rounded-3xl overflow-hidden animate-scale-in"
+            style={{
+              background: timer.done
+                ? 'linear-gradient(135deg, rgba(61,173,107,0.12), rgba(61,173,107,0.06))'
+                : 'linear-gradient(135deg, rgba(244,102,150,0.12), rgba(244,102,150,0.06))',
+              border: `1.5px solid ${timer.done ? 'rgba(61,173,107,0.35)' : 'rgba(244,102,150,0.3)'}`,
+              padding: '20px',
+            }}
+          >
+            {/* Countdown */}
+            <div className="text-center mb-4">
+              <div
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(3rem, 14vw, 4.5rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.04em',
+                  lineHeight: 1,
+                  color: timer.done ? '#3DAD6B' : 'var(--accent)',
+                  animation: timer.running && !timer.done ? 'timerPulse 1.5s ease-in-out infinite' : 'none',
+                }}
+              >
+                {timer.done ? '✓ Done!' : fmtTime(timer.remaining)}
+              </div>
+              {!timer.done && (
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginTop: '4px' }}>
+                  {timer.running ? 'Tap to pause' : 'Paused'}
+                </div>
+              )}
+            </div>
+
+            {/* Progress bar */}
+            {!timer.done && (
+              <div style={{ height: '4px', background: 'rgba(244,102,150,0.15)', borderRadius: '2px', marginBottom: '16px' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${((timer.total - timer.remaining) / timer.total) * 100}%`,
+                  background: 'linear-gradient(90deg, var(--accent), #D94E7A)',
+                  borderRadius: '2px',
+                  transition: 'width 1s linear',
+                }} />
+              </div>
+            )}
+
+            {/* Controls */}
+            <div className="flex gap-2">
+              {!timer.done && (
                 <button
-                  key={i}
-                  onClick={() => { if (isActive && !isDone) toggleTimer(); else startTimer(t); }}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-2xl transition-all duration-200"
+                  onClick={toggleTimer}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold transition-all duration-200"
                   style={{
-                    fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 600,
-                    color: isDone ? '#3DAD6B' : 'var(--accent)',
-                    background: isDone ? 'rgba(61,173,107,0.08)' : 'var(--accent-dim)',
-                    border: `1.5px solid ${isDone ? 'rgba(61,173,107,0.35)' : 'rgba(244,102,150,0.3)'}`,
-                    cursor: 'pointer',
-                    animation: isActive && timer?.running && !isDone ? 'timerPulse 1.5s ease-in-out infinite' : 'none',
+                    background: 'var(--accent)', color: 'white', border: 'none', cursor: 'pointer',
+                    fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                  </svg>
-                  {isDone
-                    ? '✓ Done!'
-                    : isActive && timer?.running
-                    ? fmtTime(timer!.remaining)
-                    : isActive && !timer?.running
-                    ? `Paused — ${fmtTime(timer!.remaining)}`
-                    : `${t.label} timer`}
+                  {timer.running ? (
+                    <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause</>
+                  ) : (
+                    <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume</>
+                  )}
                 </button>
-              );
-            })}
+              )}
+              <button
+                onClick={() => setTimer(null)}
+                className="flex items-center justify-center py-3 rounded-2xl transition-all duration-200"
+                style={{
+                  width: timer.done ? '100%' : '48px',
+                  background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
+                  color: 'var(--text-muted)', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontWeight: 600,
+                }}
+              >
+                {timer.done ? 'Dismiss' : (
+                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M1 1l10 10M11 1L1 11"/>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         )}
 
