@@ -35,7 +35,7 @@ export default function CookbooksPage() {
   }, []);
 
   useEffect(() => {
-    setAction(() => setShowCreate(true));
+    setAction(() => setShowImport(true));
     return () => setAction(null);
   }, [setAction]);
 
