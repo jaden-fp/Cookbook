@@ -141,7 +141,8 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
   const isLast = step === steps.length - 1;
   const pct = ((step + 1) / steps.length) * 100;
   const currentStep = steps[step] ?? '';
-  const timers = detectTimers(currentStep);
+  const isMicrowave = /microwave/i.test(currentStep);
+  const timers = isMicrowave ? [] : detectTimers(currentStep);
   const relatedIngredients = stepIngredients(currentStep, recipe);
 
   useEffect(() => {
