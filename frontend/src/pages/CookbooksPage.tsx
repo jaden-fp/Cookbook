@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import ImportBar from '../components/ImportBar';
 import BottomSheet from '../components/BottomSheet';
 import CookbookCard from '../components/CookbookCard';
-import { getCookbooks, createCookbook } from '../api';
+import { getCookbooks, createCookbook, deleteCookbook } from '../api';
 import { useFAB } from '../context/FABContext';
 import type { Cookbook } from '../types';
 
@@ -24,6 +24,7 @@ export default function CookbooksPage() {
     () => (localStorage.getItem('cookbooks-sort') as SortOption) ?? 'newest'
   );
   const [showCreate, setShowCreate] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [createName, setCreateName] = useState('');
   const [creating, setCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +35,7 @@ export default function CookbooksPage() {
   }, []);
 
   useEffect(() => {
-    setAction(() => setShowCreate(true));
+    setAction(() => setShowImport(true));
     return () => setAction(null);
   }, [setAction]);
 
@@ -201,12 +202,24 @@ export default function CookbooksPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {sortCookbooks(cookbooks, sort).map((cb, i) => (
             <div key={cb.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-              <CookbookCard cookbook={cb} onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))} />
+              <CookbookCard
+                cookbook={cb}
+                onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))}
+                onDelete={async id => {
+                  await deleteCookbook(id);
+                  setCookbooks(prev => prev.filter(c => c.id !== id));
+                }}
+              />
             </div>
           ))}
-          <div className="hidden sm:block"><CreateTile /></div>
+          <div><CreateTile /></div>
         </div>
       )}
+
+      {/* Import modal — mobile FAB */}
+      <BottomSheet open={showImport} onClose={() => setShowImport(false)} title="Import Recipe">
+        <ImportBar onSuccess={() => setShowImport(false)} />
+      </BottomSheet>
 
       {/* Create modal */}
       <BottomSheet open={showCreate} onClose={() => setShowCreate(false)} title="New Cookbook">
