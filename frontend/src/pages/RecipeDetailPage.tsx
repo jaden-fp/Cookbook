@@ -822,14 +822,37 @@ export default function RecipeDetailPage() {
                       >Remove group</button>
                     )}
                   </div>
-                ) : group.group_name ? (
+                ) : (
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)' }}>
-                      {group.group_name}
-                    </span>
+                    {group.group_name && (
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] shrink-0" style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)' }}>
+                        {group.group_name}
+                      </span>
+                    )}
                     <div className="flex-1 h-px" style={{ background: 'var(--border-strong)' }} />
+                    {gi === 0 && (
+                      <div className="flex items-center shrink-0" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
+                        <button
+                          onClick={() => adjustScale(-0.5)}
+                          className="flex items-center justify-center transition-colors duration-150"
+                          style={{ width: '1.75rem', height: '1.75rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        >−</button>
+                        <div style={{ width: '1px', height: '1rem', background: 'var(--border-strong)' }} />
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text)', minWidth: '34px', textAlign: 'center', userSelect: 'none', padding: '0 3px' }}>{scale}×</span>
+                        <div style={{ width: '1px', height: '1rem', background: 'var(--border-strong)' }} />
+                        <button
+                          onClick={() => adjustScale(0.5)}
+                          className="flex items-center justify-center transition-colors duration-150"
+                          style={{ width: '1.75rem', height: '1.75rem', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', paddingBottom: '2px' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        >+</button>
+                      </div>
+                    )}
                   </div>
-                ) : null}
+                )}
 
                 {isEditing && draft ? (
                   <div className="space-y-2">
