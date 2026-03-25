@@ -684,30 +684,12 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        {/* Tabs + Scale */}
-        <div className="mb-6 animate-fade-up delay-2 flex items-end justify-between" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
-          <div className="flex gap-0">
-            {(['ingredients', 'instructions', 'nutrition'] as Tab[]).map(t => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: tab === t ? '2.5px solid var(--accent)' : '2.5px solid transparent',
-                  cursor: 'pointer',
-                }}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          {/* Scale control — hidden on nutrition tab */}
-          <div className={`flex items-center pb-4 ${tab === 'nutrition' ? 'invisible' : ''}`}>
+        {/* Scale control — above tabs, hidden on nutrition tab */}
+        {tab !== 'nutrition' && (
+          <div className="flex items-center justify-between mb-4 animate-fade-up delay-2">
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+              Recipe scale
+            </span>
             <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
@@ -727,6 +709,29 @@ export default function RecipeDetailPage() {
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
               >+</button>
             </div>
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
+          <div className="flex gap-0">
+            {(['ingredients', 'instructions', 'nutrition'] as Tab[]).map(t => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: tab === t ? '2.5px solid var(--accent)' : '2.5px solid transparent',
+                  cursor: 'pointer',
+                }}
+              >
+                {t}
+              </button>
+            ))}
           </div>
         </div>
 
