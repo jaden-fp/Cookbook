@@ -630,9 +630,10 @@ function LoadingBar({ progress }: { progress: number }) {
 interface Props { url?: string; }
 
 export default function RecipeImportLoader({ url }: Props) {
-  const [punIndex, setPunIndex] = useState(() => Math.floor(Math.random() * PUNS.length));
+  const [punIndex, setPunIndex] = useState(0);
   const [punVisible, setPunVisible] = useState(true);
   const [elapsed, setElapsed] = useState(0);
+  const [currentStage, setCurrentStage] = useState(0);
 
   useEffect(() => {
     const start = Date.now();
@@ -640,22 +641,34 @@ export default function RecipeImportLoader({ url }: Props) {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      setPunVisible(false);
-      setTimeout(() => {
-        setPunIndex(i => (i + 1) % PUNS.length);
-        setPunVisible(true);
-      }, 400);
-    }, 2000);
-    return () => clearInterval(id);
-  }, []);
-
   // Progress: 0–99 over 12 s
   const progress = Math.min((elapsed / 12000) * 100, 99);
 
   // Stage thresholds
-  const stage        = progress < 33 ? 0 : progress < 67 ? 1 : 2;
+  const stage = progress < 33 ? 0 : progress < 67 ? 1 : 2;
+
+  // When stage changes, immediately swap to a random pun from the new stage's pool
+  useEffect(() => {
+    if (stage === currentStage) return;
+    setCurrentStage(stage);
+    setPunVisible(false);
+    setTimeout(() => {
+      setPunIndex(Math.floor(Math.random() * PUNS_BY_STAGE[stage].length));
+      setPunVisible(true);
+    }, 400);
+  }, [stage, currentStage]);
+
+  // Cycle through puns within the current stage
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPunVisible(false);
+      setTimeout(() => {
+        setPunIndex(i => (i + 1) % PUNS_BY_STAGE[currentStage].length);
+        setPunVisible(true);
+      }, 400);
+    }, 2800);
+    return () => clearInterval(id);
+  }, [currentStage]);
   const ovenProgress = stage === 1 ? ((progress - 33) / 34) * 100
                      : stage  >  1 ? 100 : 0;
 
