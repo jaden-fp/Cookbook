@@ -767,7 +767,7 @@ export default function RecipeImportLoader({ url }: Props) {
           </div>
 
           {/* ── Pun bubble (updates independently) ── */}
-          <PunBubble text={PUNS[punIndex]} visible={punVisible} />
+          <PunBubble text={PUNS_BY_STAGE[currentStage][punIndex]} visible={punVisible} />
 
           {/* ── Continuous loading bar ── */}
           <LoadingBar progress={progress} />
