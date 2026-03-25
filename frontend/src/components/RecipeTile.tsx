@@ -115,7 +115,7 @@ export default function RecipeTile({ recipe }: Props) {
         </div>
 
         {/* Text */}
-        <div style={{ padding: '14px 16px 14px' }}>
+        <div className="shrink-0" style={{ padding: '14px 16px 14px' }}>
           <h3 className="sm:line-clamp-2 leading-snug"
             style={{
               fontFamily: 'var(--font-display)',
