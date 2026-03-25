@@ -967,6 +967,15 @@ export default function RecipeDetailPage() {
         )}
       </div>
 
+      {/* Nutrition tab */}
+      {tab === 'nutrition' && (
+        <NutritionPanel
+          ingredientGroups={recipe.ingredient_groups}
+          yieldStr={recipe.yield}
+          scale={scale}
+        />
+      )}
+
       {/* Modals */}
       {showBaked && (
         <BakedModal recipe={recipe} onClose={() => setShowBaked(false)} onSave={setRecipe} />
