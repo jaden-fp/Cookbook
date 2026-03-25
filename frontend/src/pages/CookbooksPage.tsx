@@ -24,6 +24,7 @@ export default function CookbooksPage() {
     () => (localStorage.getItem('cookbooks-sort') as SortOption) ?? 'newest'
   );
   const [showCreate, setShowCreate] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [createName, setCreateName] = useState('');
   const [creating, setCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
