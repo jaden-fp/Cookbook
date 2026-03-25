@@ -85,8 +85,10 @@ export default function CookbooksPage() {
         e.currentTarget.style.background = 'transparent';
       }}
     >
-      <div className="w-8 h-8 rounded-full border border-current flex items-center justify-center mb-2 text-lg font-light">
-        +
+      <div className="w-8 h-8 rounded-full border border-current flex items-center justify-center mb-2">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+          <line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/>
+        </svg>
       </div>
       <span style={{ fontSize: '0.75rem', fontWeight: 500, fontFamily: 'var(--font-body)' }}>
         New Cookbook
