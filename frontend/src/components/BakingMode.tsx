@@ -130,7 +130,7 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
   const steps = recipe.instructions;
   const [step, setStep] = useState(0);
   const [timer, setTimer] = useState<TimerState | null>(null);
-  const [showIngredients, setShowIngredients] = useState(false);
+  const [showIngredients, setShowIngredients] = useState(true);
   const [finished, setFinished] = useState(false);
   const [stepKey, setStepKey] = useState(0);
 
