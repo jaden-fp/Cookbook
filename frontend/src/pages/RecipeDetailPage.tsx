@@ -693,6 +693,7 @@ export default function RecipeDetailPage() {
                       <path d="M20 6L9 17l-5-5"/>
                     </svg>
                     <span>Baked {recipe.bake_log!.length}×</span>
+                    {recipe.rating && <StarDisplay rating={recipe.rating} size="sm" />}
                   </>
                 ) : (
                   <>
