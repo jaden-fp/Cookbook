@@ -51,7 +51,7 @@ const DECORATING_PUNS = [
   "Salt on top of chocolate is not controversial. It's correct.",
   "A soggy bottom is a personal failure and we refuse.",
   "The sprinkles are non-negotiable at this point.",
-  "This is almost ready. The anticipation is part of the flavor.",
+  "The cake is not a lie. We checked.",
   "Inverting the cake is the most stressful two seconds in baking.",
   "The recipe said 'let cool completely.' We gave it three minutes.",
   "Edible glitter is just glamour you can digest.",
