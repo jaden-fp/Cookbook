@@ -36,7 +36,7 @@ export default function RecipeTile({ recipe }: Props) {
       )}
       <Link
         to={`/recipes/${recipe.id}`}
-        className="group relative flex flex-col overflow-hidden transition-all duration-300"
+        className="group relative block overflow-hidden transition-all duration-300"
         style={{
           borderRadius: 'var(--radius-lg)',
           background: 'var(--surface)',
