@@ -117,8 +117,11 @@ export default function RecipeTile({ recipe }: Props) {
                 ].filter(Boolean).join(' · ')}
               </span>
               <span className="sm:hidden">
-                {recipe.prep_time && <div>{recipe.prep_time} prep</div>}
-                {recipe.cook_time && <div>{recipe.cook_time} cook</div>}
+                {(() => {
+                  const totalMins = parseMinutes(recipe.prep_time ?? '') + parseMinutes(recipe.cook_time ?? '');
+                  const total = formatMinutes(totalMins);
+                  return total ? `${total} total` : null;
+                })()}
               </span>
             </div>
           )}
