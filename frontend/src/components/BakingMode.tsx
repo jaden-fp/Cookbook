@@ -179,7 +179,7 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
   useEffect(() => {
     clearInterval(intervalRef.current!);
     setTimer(null);
-    setShowIngredients(false);
+    setShowIngredients(true);
     setStepKey(k => k + 1);
   }, [step]);
 
