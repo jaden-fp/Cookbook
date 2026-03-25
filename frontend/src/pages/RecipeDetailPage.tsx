@@ -736,8 +736,8 @@ export default function RecipeDetailPage() {
               ))}
             </div>
 
-            {/* Scale control — desktop only, hidden on nutrition tab */}
-            {tab !== 'nutrition' && (
+            {/* Scale control — desktop only, ingredients tab only */}
+            {tab === 'ingredients' && (
               <div className="hidden sm:flex items-center pb-3">
                 <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
                   <button
