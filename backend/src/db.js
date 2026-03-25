@@ -12,3 +12,4 @@ if (!getApps().length) {
 }
 
 export const db = getFirestore();
+db.settings({ preferRest: true });
