@@ -13,6 +13,28 @@ import BakingMode from '../components/BakingMode';
 type Tab = 'ingredients' | 'instructions' | 'nutrition';
 type IngStatus = 'in-stock' | 'low' | 'missing';
 
+function parseMinutes(timeStr: string): number {
+  if (!timeStr) return 0;
+  let mins = 0;
+  const hrMatch = timeStr.match(/(\d+)\s*(?:hr|hour|hours)/i);
+  const minMatch = timeStr.match(/(\d+)\s*(?:min|minute|minutes)/i);
+  if (hrMatch) mins += parseInt(hrMatch[1]) * 60;
+  if (minMatch) mins += parseInt(minMatch[1]);
+  if (!hrMatch && !minMatch) {
+    const num = parseInt(timeStr);
+    if (!isNaN(num)) mins = num;
+  }
+  return mins;
+}
+
+function formatMinutes(mins: number): string {
+  if (mins <= 0) return '';
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
+}
+
 const STATUS_DOT: Record<IngStatus, string> = {
   'in-stock': '#6B9E6B',
   'low': '#00C4B4',
