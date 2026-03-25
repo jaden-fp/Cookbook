@@ -606,68 +606,44 @@ export default function RecipeDetailPage() {
 
           {/* Action buttons */}
           <div className="flex flex-col gap-2">
-            {/* Primary */}
-            <button
-              onClick={() => setShowBaked(true)}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
-              style={
-                recipe.rating
-                  ? {
-                      background: 'var(--accent-dim)',
-                      border: '1.5px solid var(--accent)',
-                      color: 'var(--accent)',
-                      borderRadius: 'var(--radius-md)',
-                      fontFamily: 'var(--font-body)',
-                      cursor: 'pointer',
-                    }
-                  : {
-                      background: 'var(--accent)',
-                      color: 'white',
-                      borderRadius: 'var(--radius-md)',
-                      fontFamily: 'var(--font-body)',
-                      boxShadow: '0 2px 12px var(--accent-glow)',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }
-              }
-              onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#D94E7A'; }}
-              onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = 'var(--accent)'; }}
-            >
-              {recipe.rating ? (
-                <><span>✓ Baked</span><StarDisplay rating={recipe.rating} size="sm" /></>
-              ) : (
-                'Mark as Baked'
-              )}
-            </button>
-
-            {/* Start Baking */}
-            {recipe.instructions.length > 0 && (
+            {/* Mark as Baked + Add to Cookbook: stacked on mobile, side-by-side on desktop */}
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
-                onClick={() => setShowBaking(true)}
-                className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
-                style={{
-                  background: 'var(--bg-subtle)',
-                  border: '1.5px solid var(--border-strong)',
-                  color: 'var(--text)',
-                  borderRadius: 'var(--radius-md)',
-                  fontFamily: 'var(--font-body)',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-dim)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+                onClick={() => setShowBaked(true)}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
+                style={
+                  recipe.rating
+                    ? {
+                        background: 'var(--accent-dim)',
+                        border: '1.5px solid var(--accent)',
+                        color: 'var(--accent)',
+                        borderRadius: 'var(--radius-md)',
+                        fontFamily: 'var(--font-body)',
+                        cursor: 'pointer',
+                      }
+                    : {
+                        background: 'var(--accent)',
+                        color: 'white',
+                        borderRadius: 'var(--radius-md)',
+                        fontFamily: 'var(--font-body)',
+                        boxShadow: '0 2px 12px var(--accent-glow)',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }
+                }
+                onMouseEnter={e => { if (!recipe.rating) e.currentTarget.style.background = '#D94E7A'; }}
+                onMouseLeave={e => { if (!recipe.rating) e.currentTarget.style.background = 'var(--accent)'; }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="5 3 19 12 5 21 5 3"/>
-                </svg>
-                Start Baking
+                {recipe.rating ? (
+                  <><span>✓ Baked</span><StarDisplay rating={recipe.rating} size="sm" /></>
+                ) : (
+                  'Mark as Baked'
+                )}
               </button>
-            )}
 
-            {/* Secondary row */}
-            <div className="flex gap-2">
               <button
                 onClick={() => setShowCookbook(true)}
-                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all duration-200"
+                className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
                 style={{
                   border: '1.5px solid var(--border-strong)',
                   color: 'var(--text)',
@@ -692,37 +668,30 @@ export default function RecipeDetailPage() {
                 </svg>
                 Add to Cookbook
               </button>
-
-              {recipe.source_url && (
-                <a
-                  href={recipe.source_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold transition-all duration-200"
-                  style={{
-                    border: '1.5px solid var(--border-strong)',
-                    color: 'var(--text-muted)',
-                    borderRadius: 'var(--radius-md)',
-                    fontFamily: 'var(--font-body)',
-                    textDecoration: 'none',
-                    background: 'var(--surface)',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'var(--text-secondary)';
-                    e.currentTarget.style.color = 'var(--text)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'var(--border-strong)';
-                    e.currentTarget.style.color = 'var(--text-muted)';
-                  }}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  Source
-                </a>
-              )}
             </div>
+
+            {/* Start Baking */}
+            {recipe.instructions.length > 0 && (
+              <button
+                onClick={() => setShowBaking(true)}
+                className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all duration-200"
+                style={{
+                  background: 'var(--bg-subtle)',
+                  border: '1.5px solid var(--border-strong)',
+                  color: 'var(--text)',
+                  borderRadius: 'var(--radius-md)',
+                  fontFamily: 'var(--font-body)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-dim)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Start Baking
+              </button>
+            )}
           </div>
         </div>
 
