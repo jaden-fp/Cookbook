@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe } from '../api';
+import type { BakeEntry } from '../types';
 import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
 import BakedModal from '../components/BakedModal';
