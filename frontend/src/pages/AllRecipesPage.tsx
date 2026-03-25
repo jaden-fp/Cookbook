@@ -37,10 +37,10 @@ export default function AllRecipesPage() {
   }, [setAction]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-4 sm:pt-24 pb-24 sm:pb-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-3 sm:pt-24 pb-24 sm:pb-16">
 
-      {/* Page header */}
-      <div className="mb-10 animate-fade-up">
+      {/* Page header — desktop only */}
+      <div className="hidden sm:block mb-10 animate-fade-up">
         <p style={{
           fontFamily: 'var(--font-body)',
           fontSize: '0.75rem',
