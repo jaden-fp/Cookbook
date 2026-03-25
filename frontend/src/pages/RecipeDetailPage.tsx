@@ -944,12 +944,12 @@ export default function RecipeDetailPage() {
                               {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
                             </span>{' '}
                             {ing.name}
-                            {ing.notes && (
+                            {ing.notes && ing.notes.trim() && (
                               <span
                                 className="ml-1"
                                 style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
                               >
-                                ({ing.notes})
+                                ({ing.notes.trim()})
                               </span>
                             )}
                           </span>
