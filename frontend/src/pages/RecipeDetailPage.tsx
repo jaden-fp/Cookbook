@@ -8,6 +8,7 @@ import BakedModal from '../components/BakedModal';
 import CookbookModal from '../components/CookbookModal';
 import { scaleAmount } from '../utils/scaleAmount';
 import NutritionPanel from '../components/NutritionPanel';
+import BakingMode from '../components/BakingMode';
 
 type Tab = 'ingredients' | 'instructions' | 'nutrition';
 type IngStatus = 'in-stock' | 'low' | 'missing';
