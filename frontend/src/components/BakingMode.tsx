@@ -16,7 +16,7 @@ function detectTimers(text: string): DetectedTimer[] {
   while ((match = pattern.exec(text)) !== null) {
     const lo = parseFloat(match[1]);
     const hi = match[2] ? parseFloat(match[2]) : lo;
-    const avg = (lo + hi) / 2;
+    const avg = lo; // use short end of range
     const unit = match[3].toLowerCase();
     let secs = 0;
     if (unit.startsWith('sec')) secs = avg;
