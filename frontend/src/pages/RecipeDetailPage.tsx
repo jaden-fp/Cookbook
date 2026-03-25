@@ -12,6 +12,47 @@ import NutritionPanel from '../components/NutritionPanel';
 import BakingMode from '../components/BakingMode';
 
 type Tab = 'ingredients' | 'instructions' | 'nutrition';
+
+function formatBakeDate(dateStr: string) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function BakeHistory({ entries }: { entries: BakeEntry[] }) {
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+  return (
+    <div className="mt-5 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
+      <div className="flex items-center gap-2 mb-3">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.08em' }}>
+          Bake History
+        </span>
+        <span className="text-xs font-semibold" style={{ color: 'var(--accent)', fontFamily: 'var(--font-body)', marginLeft: 'auto' }}>
+          {entries.length} {entries.length === 1 ? 'time' : 'times'}
+        </span>
+      </div>
+      <div className="space-y-2">
+        {sorted.map((entry, i) => (
+          <div key={i} className="flex items-start gap-3 py-2 px-3 rounded-xl" style={{ background: 'var(--bg-subtle)' }}>
+            <div className="shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style={{ background: 'var(--accent)' }} />
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
+                {formatBakeDate(entry.date)}
+              </span>
+              {entry.notes && (
+                <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
+                  {entry.notes}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 type IngStatus = 'in-stock' | 'low' | 'missing';
 
 
