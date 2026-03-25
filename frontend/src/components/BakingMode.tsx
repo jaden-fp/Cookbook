@@ -50,9 +50,27 @@ function stepIngredients(step: string, recipe: Recipe): string[] {
 
 // ── Audio beep ────────────────────────────────────────────────────────────
 
-function playBeep() {
+// Shared AudioContext — created and unlocked on first user gesture
+let sharedAudioCtx: AudioContext | null = null;
+
+function getAudioCtx(): AudioContext | null {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (!sharedAudioCtx) {
+      sharedAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (sharedAudioCtx.state === 'suspended') {
+      sharedAudioCtx.resume();
+    }
+    return sharedAudioCtx;
+  } catch {
+    return null;
+  }
+}
+
+function playBeep() {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
     const pattern = [880, 0, 880, 0, 1047];
     let time = ctx.currentTime;
     for (const freq of pattern) {
