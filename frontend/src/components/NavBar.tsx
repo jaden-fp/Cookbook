@@ -1,66 +1,59 @@
 import { Link, useLocation } from 'react-router-dom';
 
-const MAGENTA = '#C91686';
-
 export default function NavBar() {
   const { pathname } = useLocation();
-
   const isActive = (to: string) => pathname.startsWith(to);
 
   return (
-    <nav
-      className="sticky top-0 z-40"
+    <>
+    <nav className="hidden sm:block sticky top-0 z-40"
       style={{
-        background: MAGENTA,
+        background: '#F46696',
+        borderBottom: 'none',
         height: '72px',
-        boxShadow: `0 2px 16px rgba(201,22,134,0.3)`,
         overflow: 'visible',
-      }}
-    >
-      <div className="max-w-6xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
-        {/* Logo overflows below the nav bar */}
-        <img
-          src="/logo.png"
-          alt="Cox Cookie Co."
-          style={{
-            height: '172px',
-            width: 'auto',
-            position: 'relative',
-            top: '44px',
-            zIndex: 50,
-            filter: `drop-shadow(0 6px 16px rgba(201,22,134,0.4))`,
-          }}
-        />
+        position: 'relative',
+      }}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center gap-2 sm:justify-between">
+        <Link to="/cookbooks" className="shrink-0" style={{ textDecoration: 'none' }}>
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="nav-logo"
+            style={{ flexShrink: 0 }}
+          />
+        </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 ml-auto sm:ml-0">
           {[
             { to: '/cookbooks', label: 'Cookbooks' },
-            { to: '/recipes', label: 'All Recipes' },
-            { to: '/pantry', label: 'Pantry' },
-          ].map(({ to, label }) => (
-            <Link
-              key={to}
-              to={to}
-              className="relative px-4 py-2 text-sm transition-all duration-200"
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontWeight: 600,
-                color: isActive(to) ? 'white' : 'rgba(255,255,255,0.65)',
-                borderBottom: isActive(to) ? '2px solid white' : '2px solid transparent',
-                textDecoration: 'none',
-              }}
-              onMouseEnter={e => {
-                if (!isActive(to)) e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
-              }}
-              onMouseLeave={e => {
-                if (!isActive(to)) e.currentTarget.style.color = 'rgba(255,255,255,0.65)';
-              }}
-            >
-              {label}
-            </Link>
-          ))}
+            { to: '/recipes',   label: 'Recipes' },
+            { to: '/pantry',    label: 'Pantry' },
+          ].map(({ to, label }) => {
+            const active = isActive(to);
+            return (
+              <Link key={to} to={to}
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 600,
+                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                  color: active ? 'white' : 'rgba(255,255,255,0.7)',
+                  textDecoration: 'none',
+                  padding: '6px 10px',
+                  borderRadius: '999px',
+                  background: active ? 'rgba(255,255,255,0.25)' : 'transparent',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.background = 'transparent'; } }}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>
+    </>
   );
 }

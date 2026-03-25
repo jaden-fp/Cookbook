@@ -13,7 +13,7 @@ export default function StarPicker({ value, onChange }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         {Array.from({ length: 5 }, (_, i) => {
           const star = i + 1;
           const filled = star <= active;
@@ -26,12 +26,15 @@ export default function StarPicker({ value, onChange }: Props) {
               onMouseLeave={() => setHovered(0)}
               className="transition-all duration-150"
               style={{
-                fontSize: '2.5rem',
-                color: filled ? 'var(--color-gold)' : 'var(--color-warm-border)',
-                transform: hovered === star ? 'scale(1.15)' : 'scale(1)',
-                filter: filled ? 'drop-shadow(0 2px 6px rgba(212,168,67,0.45))' : 'none',
+                fontSize: '2.25rem',
+                color: filled ? 'var(--accent)' : 'rgba(15,12,30,0.12)',
+                transform: hovered === star ? 'scale(1.2)' : filled ? 'scale(1.05)' : 'scale(1)',
+                filter: filled ? 'drop-shadow(0 0 8px rgba(232,184,75,0.5))' : 'none',
                 lineHeight: 1,
-                padding: '2px',
+                padding: '2px 4px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
               ★
@@ -39,15 +42,12 @@ export default function StarPicker({ value, onChange }: Props) {
           );
         })}
       </div>
-      <p
-        className="text-sm transition-all duration-200"
-        style={{
-          fontFamily: 'var(--font-editorial)',
-          fontStyle: 'italic',
-          color: active ? 'var(--color-terra)' : 'var(--color-bark-muted)',
-          minHeight: '1.25rem',
-        }}
-      >
+      <p className="text-sm transition-all duration-200" style={{
+        fontFamily: 'var(--font-display)',
+        fontStyle: 'italic',
+        color: active ? 'var(--accent)' : 'var(--text-muted)',
+        minHeight: '1.25rem',
+      }}>
         {LABELS[active] || 'Select a rating'}
       </p>
     </div>

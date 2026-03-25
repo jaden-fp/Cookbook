@@ -135,6 +135,39 @@ router.get('/:id/cookbooks', async (req, res) => {
   res.json(cookbooks.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() })));
 });
 
+// PATCH /api/recipes/:id — update editable fields
+router.patch('/:id', async (req, res) => {
+  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment } = req.body;
+  const updates = {};
+  if (title !== undefined) updates.title = title;
+  if (description !== undefined) updates.description = description;
+  if (prep_time !== undefined) updates.prep_time = prep_time;
+  if (cook_time !== undefined) updates.cook_time = cook_time;
+  if (yieldAmount !== undefined) updates.yield = yieldAmount;
+  if (ingredient_groups !== undefined) updates.ingredient_groups = ingredient_groups;
+  if (instructions !== undefined) updates.instructions = instructions;
+  if (equipment !== undefined) updates.equipment = equipment;
+  if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
+  const ref = db.collection('recipes').doc(req.params.id);
+  await ref.update(updates);
+  const doc = await ref.get();
+  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
+  res.json({ id: doc.id, ...doc.data() });
+});
+
+// POST /api/recipes/:id/bakes — log a bake entry
+router.post('/:id/bakes', async (req, res) => {
+  const { date, notes } = req.body;
+  if (!date) return res.status(400).json({ error: 'Date is required' });
+  const ref = db.collection('recipes').doc(req.params.id);
+  const doc = await ref.get();
+  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
+  const existing = doc.data().bake_log || [];
+  await ref.update({ bake_log: [...existing, { date, notes: notes || null }] });
+  const updated = await ref.get();
+  res.json({ id: updated.id, ...updated.data() });
+});
+
 // DELETE /api/recipes/:id
 router.delete('/:id', async (req, res) => {
   await db.collection('recipes').doc(req.params.id).delete();

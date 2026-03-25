@@ -41,6 +41,28 @@ export async function rateRecipe(
   return res.json();
 }
 
+export async function updateRecipe(
+  id: string,
+  updates: {
+    title?: string;
+    description?: string;
+    prep_time?: string;
+    cook_time?: string;
+    yield?: string;
+    ingredient_groups?: import('./types').IngredientGroup[];
+    instructions?: string[];
+    equipment?: string[];
+  }
+): Promise<Recipe> {
+  const res = await fetch(`${BASE}/recipes/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error('Failed to update recipe');
+  return res.json();
+}
+
 export async function getRecipeCookbooks(id: string): Promise<Cookbook[]> {
   const res = await fetch(`${BASE}/recipes/${id}/cookbooks`);
   return res.json();
@@ -55,6 +77,16 @@ export async function setRecipeCookbooks(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cookbook_ids }),
   });
+}
+
+export async function logBake(id: string, date: string, notes?: string): Promise<Recipe> {
+  const res = await fetch(`${BASE}/recipes/${id}/bakes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ date, notes }),
+  });
+  if (!res.ok) throw new Error('Failed to log bake');
+  return res.json();
 }
 
 export async function deleteRecipe(id: string): Promise<void> {
@@ -142,7 +174,7 @@ export async function addPantryItem(data: {
 
 export async function updatePantryItem(
   id: string,
-  updates: { quantity?: number; unit?: string; needs_purchase?: number }
+  updates: { name?: string; quantity?: number; unit?: string; needs_purchase?: number }
 ): Promise<PantryItem> {
   const res = await fetch(`${BASE}/pantry/${id}`, {
     method: 'PATCH',

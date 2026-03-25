@@ -9,15 +9,7 @@ export default function StarDisplay({ rating, size = 'md' }: Props) {
   return (
     <span style={{ letterSpacing: '1px', display: 'inline-flex', gap: '1px' }}>
       {Array.from({ length: 5 }, (_, i) => (
-        <span
-          key={i}
-          style={{
-            fontSize,
-            color: i < rating ? '#FF61B4' : '#FFC3E8',
-          }}
-        >
-          ★
-        </span>
+        <span key={i} style={{ fontSize, color: i < rating ? 'var(--accent)' : 'rgba(15,12,30,0.12)' }}>★</span>
       ))}
     </span>
   );
