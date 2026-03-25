@@ -1020,6 +1020,60 @@ export default function RecipeDetailPage() {
         )}
       </div>
 
+      {/* Delete confirmation modal */}
+      {confirmDelete && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-6"
+          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setConfirmDelete(false)}
+        >
+          <div
+            className="w-full rounded-2xl overflow-hidden"
+            style={{ maxWidth: '360px', background: 'var(--surface)', boxShadow: '0 24px 60px rgba(0,0,0,0.2)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-6 text-center">
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ background: 'rgba(232,41,58,0.1)' }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8293A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                </svg>
+              </div>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--text)', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                Delete recipe?
+              </h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--text)' }}>{recipe.title}</strong> will be permanently deleted and cannot be recovered.
+              </p>
+            </div>
+            <div className="flex border-t" style={{ borderColor: 'var(--border)' }}>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="flex-1 py-4 text-sm font-semibold transition-colors duration-150"
+                style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', borderRight: '1px solid var(--border)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 py-4 text-sm font-semibold transition-colors duration-150"
+                style={{ fontFamily: 'var(--font-body)', color: '#E8293A', background: 'none', border: 'none', cursor: deleting ? 'default' : 'pointer', opacity: deleting ? 0.6 : 1 }}
+                onMouseEnter={e => { if (!deleting) e.currentTarget.style.background = 'rgba(232,41,58,0.06)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+              >
+                {deleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+
       {/* Modals */}
       {showBaking && (
         <BakingMode
