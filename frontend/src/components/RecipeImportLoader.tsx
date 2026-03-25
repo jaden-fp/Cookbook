@@ -57,8 +57,8 @@ const DECORATING_PUNS = [
   "Edible glitter is just glamour you can digest.",
   "What did the cake say to the fork? 'You want a piece of me?'",
   "Every slice is a fresh start. And also dessert.",
-  "Finishing a recipe is a form of self-care. Genuinely.",
-  "Worth the wait. We promise. Almost there.",
+  "I'm on a roll. A cinnamon roll.",
+  "The soufflé looked me dead in the eyes and fell. I respect the commitment.",
 ];
 
 const PUNS_BY_STAGE = [MIXING_PUNS, BAKING_PUNS, DECORATING_PUNS];
