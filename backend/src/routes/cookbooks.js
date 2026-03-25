@@ -1,26 +1,23 @@
 import { Router } from 'express';
-import { db } from '../db.js';
+import { fsAdd, fsGet, fsUpdate, fsDelete, fsQuery } from '../firestore.js';
 
 const router = Router();
 
-async function enrichCookbook(doc) {
-  const data = doc.data();
-  const recipesSnap = await db.collection('recipes')
-    .where('cookbook_ids', 'array-contains', doc.id)
-    .get();
-
-  const pinnedImages = data.pinned_images || [];
+async function enrichCookbook(cb) {
+  const recipes = await fsQuery('recipes', {
+    where: { field: 'cookbook_ids', op: 'ARRAY_CONTAINS', value: cb.id },
+  });
+  const pinnedImages = cb.pinned_images || [];
   const preview_images = pinnedImages.length > 0
     ? pinnedImages.slice(0, 3)
-    : recipesSnap.docs.map(r => r.data().image_url).filter(Boolean).slice(0, 3);
-
-  return { id: doc.id, ...data, recipe_count: recipesSnap.size, preview_images };
+    : recipes.map(r => r.image_url).filter(Boolean).slice(0, 3);
+  return { ...cb, recipe_count: recipes.length, preview_images };
 }
 
 // GET /api/cookbooks
 router.get('/', async (_req, res) => {
-  const snapshot = await db.collection('cookbooks').orderBy('created_at', 'desc').get();
-  const cookbooks = await Promise.all(snapshot.docs.map(enrichCookbook));
+  const docs = await fsQuery('cookbooks', { orderBy: 'created_at', orderDir: 'DESCENDING' });
+  const cookbooks = await Promise.all(docs.map(enrichCookbook));
   res.json(cookbooks);
 });
 
@@ -28,16 +25,14 @@ router.get('/', async (_req, res) => {
 router.post('/', async (req, res) => {
   const { name, color, icon } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
-
-  const docRef = await db.collection('cookbooks').add({
+  const doc = await fsAdd('cookbooks', {
     name: name.trim(),
     color: color ?? null,
     icon: icon ?? null,
     pinned_images: [],
     created_at: new Date().toISOString(),
   });
-  const doc = await docRef.get();
-  res.status(201).json({ id: doc.id, ...doc.data(), recipe_count: 0, preview_images: [] });
+  res.status(201).json({ ...doc, recipe_count: 0, preview_images: [] });
 });
 
 // PATCH /api/cookbooks/:id
@@ -49,34 +44,26 @@ router.patch('/:id', async (req, res) => {
   if (icon !== undefined) updates.icon = icon;
   if (pinned_images !== undefined) updates.pinned_images = pinned_images;
   if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
-
-  const ref = db.collection('cookbooks').doc(req.params.id);
-  await ref.update(updates);
-  const doc = await ref.get();
+  const doc = await fsUpdate('cookbooks', req.params.id, updates);
   res.json(await enrichCookbook(doc));
 });
 
 // GET /api/cookbooks/:id
 router.get('/:id', async (req, res) => {
-  const doc = await db.collection('cookbooks').doc(req.params.id).get();
-  if (!doc.exists) return res.status(404).json({ error: 'Cookbook not found' });
+  const doc = await fsGet('cookbooks', req.params.id);
+  if (!doc) return res.status(404).json({ error: 'Cookbook not found' });
   res.json(await enrichCookbook(doc));
 });
 
 // DELETE /api/cookbooks/:id
 router.delete('/:id', async (req, res) => {
-  const recipesSnap = await db.collection('recipes')
-    .where('cookbook_ids', 'array-contains', req.params.id)
-    .get();
-
-  const batch = db.batch();
-  recipesSnap.docs.forEach(doc => {
-    const newIds = (doc.data().cookbook_ids || []).filter(id => id !== req.params.id);
-    batch.update(doc.ref, { cookbook_ids: newIds });
+  const recipes = await fsQuery('recipes', {
+    where: { field: 'cookbook_ids', op: 'ARRAY_CONTAINS', value: req.params.id },
   });
-  batch.delete(db.collection('cookbooks').doc(req.params.id));
-  await batch.commit();
-
+  await Promise.all(recipes.map(r =>
+    fsUpdate('recipes', r.id, { cookbook_ids: (r.cookbook_ids || []).filter(id => id !== req.params.id) })
+  ));
+  await fsDelete('cookbooks', req.params.id);
   res.json({ ok: true });
 });
 
@@ -87,34 +74,26 @@ router.post('/:id/recipes', async (req, res) => {
     return res.status(400).json({ error: 'recipe_ids required' });
   }
   try {
-    const batch = db.batch();
-    for (const rid of recipe_ids) {
-      const ref = db.collection('recipes').doc(rid);
-      const doc = await ref.get();
-      if (doc.exists) {
-        const existing = doc.data().cookbook_ids || [];
-        if (!existing.includes(req.params.id)) {
-          batch.update(ref, { cookbook_ids: [...existing, req.params.id] });
-        }
+    await Promise.all(recipe_ids.map(async rid => {
+      const recipe = await fsGet('recipes', rid);
+      if (!recipe) return;
+      const existing = recipe.cookbook_ids || [];
+      if (!existing.includes(req.params.id)) {
+        await fsUpdate('recipes', rid, { cookbook_ids: [...existing, req.params.id] });
       }
-    }
-    await batch.commit();
+    }));
     res.json({ ok: true });
   } catch (err) {
-    console.error('Error adding recipes to cookbook:', err);
     res.status(500).json({ error: err.message || 'Failed to add recipes' });
   }
 });
 
 // GET /api/cookbooks/:id/recipes
 router.get('/:id/recipes', async (req, res) => {
-  const snapshot = await db.collection('recipes')
-    .where('cookbook_ids', 'array-contains', req.params.id)
-    .get();
-  const recipes = snapshot.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  res.json(recipes);
+  const recipes = await fsQuery('recipes', {
+    where: { field: 'cookbook_ids', op: 'ARRAY_CONTAINS', value: req.params.id },
+  });
+  res.json(recipes.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
 });
 
 export default router;

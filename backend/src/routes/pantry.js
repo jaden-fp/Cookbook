@@ -1,21 +1,20 @@
 import { Router } from 'express';
-import { db } from '../db.js';
+import { fsAdd, fsGet, fsUpdate, fsDelete, fsQuery } from '../firestore.js';
 
 const router = Router();
 
 // GET /api/pantry
 router.get('/', async (_req, res) => {
-  const snapshot = await db.collection('pantry_items').orderBy('name', 'asc').get();
-  res.json(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  const docs = await fsQuery('pantry_items', { orderBy: 'name', orderDir: 'ASCENDING' });
+  res.json(docs);
 });
 
 // POST /api/pantry
 router.post('/', async (req, res) => {
   const { name, quantity = 0, unit = '', needs_purchase = 0 } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
-
   const now = new Date().toISOString();
-  const docRef = await db.collection('pantry_items').add({
+  const doc = await fsAdd('pantry_items', {
     name: name.trim(),
     quantity,
     unit,
@@ -23,8 +22,7 @@ router.post('/', async (req, res) => {
     created_at: now,
     updated_at: now,
   });
-  const doc = await docRef.get();
-  res.status(201).json({ id: doc.id, ...doc.data() });
+  res.status(201).json(doc);
 });
 
 // PATCH /api/pantry/:id
@@ -35,17 +33,13 @@ router.patch('/:id', async (req, res) => {
   if (quantity !== undefined) updates.quantity = quantity;
   if (unit !== undefined) updates.unit = unit;
   if (needs_purchase !== undefined) updates.needs_purchase = needs_purchase ? 1 : 0;
-
-  const ref = db.collection('pantry_items').doc(req.params.id);
-  await ref.update(updates);
-  const doc = await ref.get();
-  if (!doc.exists) return res.status(404).json({ error: 'Not found' });
-  res.json({ id: doc.id, ...doc.data() });
+  const doc = await fsUpdate('pantry_items', req.params.id, updates);
+  res.json(doc);
 });
 
 // DELETE /api/pantry/:id
 router.delete('/:id', async (req, res) => {
-  await db.collection('pantry_items').doc(req.params.id).delete();
+  await fsDelete('pantry_items', req.params.id);
   res.json({ ok: true });
 });
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { db } from '../db.js';
+import { fsAdd, fsGet, fsUpdate, fsDelete, fsQuery } from '../firestore.js';
 
 const router = Router();
 
@@ -49,14 +49,8 @@ router.post('/import', async (req, res) => {
                   },
                 },
               },
-              instructions: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-              equipment: {
-                type: 'array',
-                items: { type: 'string' },
-              },
+              instructions: { type: 'array', items: { type: 'string' } },
+              equipment: { type: 'array', items: { type: 'string' } },
             },
           },
         },
@@ -74,7 +68,7 @@ router.post('/import', async (req, res) => {
       return res.status(422).json({ error: 'Could not extract recipe data from that URL' });
     }
 
-    const docRef = await db.collection('recipes').add({
+    const doc = await fsAdd('recipes', {
       title: extracted.title || 'Untitled Recipe',
       description: extracted.description || null,
       image_url: extracted.image_url || null,
@@ -87,12 +81,12 @@ router.post('/import', async (req, res) => {
       equipment: extracted.equipment || [],
       rating: null,
       review: null,
+      bake_log: [],
       cookbook_ids: [],
       created_at: new Date().toISOString(),
     });
 
-    const doc = await docRef.get();
-    res.json({ id: doc.id, ...doc.data() });
+    res.json(doc);
   } catch (err) {
     console.error('Import error:', err?.response?.data || err.message);
     res.status(500).json({ error: err?.response?.data?.error || err.message });
@@ -101,15 +95,15 @@ router.post('/import', async (req, res) => {
 
 // GET /api/recipes
 router.get('/', async (_req, res) => {
-  const snapshot = await db.collection('recipes').orderBy('created_at', 'desc').get();
-  res.json(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  const docs = await fsQuery('recipes', { orderBy: 'created_at', orderDir: 'DESCENDING' });
+  res.json(docs);
 });
 
 // GET /api/recipes/:id
 router.get('/:id', async (req, res) => {
-  const doc = await db.collection('recipes').doc(req.params.id).get();
-  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
-  res.json({ id: doc.id, ...doc.data() });
+  const doc = await fsGet('recipes', req.params.id);
+  if (!doc) return res.status(404).json({ error: 'Recipe not found' });
+  res.json(doc);
 });
 
 // PATCH /api/recipes/:id/rating
@@ -118,24 +112,32 @@ router.patch('/:id/rating', async (req, res) => {
   if (!rating || rating < 1 || rating > 5) {
     return res.status(400).json({ error: 'Rating must be 1–5' });
   }
-  const ref = db.collection('recipes').doc(req.params.id);
-  await ref.update({ rating, review: review || null });
-  const doc = await ref.get();
-  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
-  res.json({ id: doc.id, ...doc.data() });
+  const doc = await fsUpdate('recipes', req.params.id, { rating, review: review || null });
+  res.json(doc);
+});
+
+// POST /api/recipes/:id/bakes
+router.post('/:id/bakes', async (req, res) => {
+  const { date, notes } = req.body;
+  if (!date) return res.status(400).json({ error: 'Date is required' });
+  const existing = await fsGet('recipes', req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Recipe not found' });
+  const bake_log = [...(existing.bake_log || []), { date, notes: notes || null }];
+  const doc = await fsUpdate('recipes', req.params.id, { bake_log });
+  res.json(doc);
 });
 
 // GET /api/recipes/:id/cookbooks
 router.get('/:id/cookbooks', async (req, res) => {
-  const doc = await db.collection('recipes').doc(req.params.id).get();
-  if (!doc.exists) return res.json([]);
-  const cookbookIds = doc.data().cookbook_ids || [];
-  if (!cookbookIds.length) return res.json([]);
-  const cookbooks = await Promise.all(cookbookIds.map(id => db.collection('cookbooks').doc(id).get()));
-  res.json(cookbooks.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() })));
+  const recipe = await fsGet('recipes', req.params.id);
+  if (!recipe) return res.json([]);
+  const ids = recipe.cookbook_ids || [];
+  if (!ids.length) return res.json([]);
+  const cookbooks = await Promise.all(ids.map(id => fsGet('cookbooks', id)));
+  res.json(cookbooks.filter(Boolean));
 });
 
-// PATCH /api/recipes/:id — update editable fields
+// PATCH /api/recipes/:id
 router.patch('/:id', async (req, res) => {
   const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment } = req.body;
   const updates = {};
@@ -148,38 +150,20 @@ router.patch('/:id', async (req, res) => {
   if (instructions !== undefined) updates.instructions = instructions;
   if (equipment !== undefined) updates.equipment = equipment;
   if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
-  const ref = db.collection('recipes').doc(req.params.id);
-  await ref.update(updates);
-  const doc = await ref.get();
-  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
-  res.json({ id: doc.id, ...doc.data() });
-});
-
-// POST /api/recipes/:id/bakes — log a bake entry
-router.post('/:id/bakes', async (req, res) => {
-  const { date, notes } = req.body;
-  if (!date) return res.status(400).json({ error: 'Date is required' });
-  const ref = db.collection('recipes').doc(req.params.id);
-  const doc = await ref.get();
-  if (!doc.exists) return res.status(404).json({ error: 'Recipe not found' });
-  const existing = doc.data().bake_log || [];
-  await ref.update({ bake_log: [...existing, { date, notes: notes || null }] });
-  const updated = await ref.get();
-  res.json({ id: updated.id, ...updated.data() });
+  const doc = await fsUpdate('recipes', req.params.id, updates);
+  res.json(doc);
 });
 
 // DELETE /api/recipes/:id
 router.delete('/:id', async (req, res) => {
-  await db.collection('recipes').doc(req.params.id).delete();
+  await fsDelete('recipes', req.params.id);
   res.json({ ok: true });
 });
 
-// PUT /api/recipes/:id/cookbooks  — replace cookbook assignments
+// PUT /api/recipes/:id/cookbooks
 router.put('/:id/cookbooks', async (req, res) => {
   const { cookbook_ids } = req.body;
-  await db.collection('recipes').doc(req.params.id).update({
-    cookbook_ids: cookbook_ids || [],
-  });
+  await fsUpdate('recipes', req.params.id, { cookbook_ids: cookbook_ids || [] });
   res.json({ ok: true });
 });
 
