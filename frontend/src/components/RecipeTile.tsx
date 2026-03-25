@@ -124,6 +124,7 @@ export default function RecipeTile({ recipe }: Props) {
               color: 'var(--text)',
               letterSpacing: '-0.01em',
               marginBottom: '5px',
+              minHeight: 'calc(1.0625rem * 1.35 * 2)',
             }}>
             {recipe.title}
           </h3>
