@@ -1,0 +1,15 @@
+{
+  "name": "Cox Cookie Co.",
+  "short_name": "Cox Cookie Co.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF5F8",
+  "theme_color": "#F46696",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
