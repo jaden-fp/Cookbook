@@ -636,8 +636,8 @@ export default function RecipeDetailPage() {
             ))}
           </div>
 
-          {/* Scale control */}
-          <div className="flex items-center pb-4">
+          {/* Scale control — hidden on nutrition tab */}
+          <div className={`flex items-center pb-4 ${tab === 'nutrition' ? 'invisible' : ''}`}>
             <div className="flex items-center" style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', background: 'var(--surface)' }}>
               <button
                 onClick={() => adjustScale(-0.5)}
