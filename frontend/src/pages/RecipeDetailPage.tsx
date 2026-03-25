@@ -965,16 +965,16 @@ export default function RecipeDetailPage() {
             </ol>
           )
         )}
-      </div>
 
-      {/* Nutrition tab */}
-      {tab === 'nutrition' && (
-        <NutritionPanel
-          ingredientGroups={recipe.ingredient_groups}
-          yieldStr={recipe.yield}
-          scale={scale}
-        />
-      )}
+        {/* Nutrition tab */}
+        {tab === 'nutrition' && (
+          <NutritionPanel
+            ingredientGroups={recipe.ingredient_groups}
+            yieldStr={recipe.yield}
+            scale={scale}
+          />
+        )}
+      </div>
 
       {/* Modals */}
       {showBaked && (
