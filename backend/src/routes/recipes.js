@@ -87,7 +87,7 @@ router.post('/import', async (req, res) => {
       prep_time: extracted.prep_time || null,
       cook_time: extracted.cook_time || null,
       yield: extracted.yield || null,
-      ingredient_groups: extracted.ingredient_groups || [],
+      ingredient_groups: ingredientGroups,
       instructions: extracted.instructions || [],
       equipment: extracted.equipment || [],
       rating: null,
