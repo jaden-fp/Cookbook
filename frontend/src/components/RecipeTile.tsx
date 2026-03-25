@@ -115,8 +115,8 @@ export default function RecipeTile({ recipe }: Props) {
         </div>
 
         {/* Text */}
-        <div style={{ padding: '14px 16px 14px' }}>
-          <h3 className="line-clamp-2 leading-snug"
+        <div className="flex flex-col flex-1" style={{ padding: '14px 16px 14px' }}>
+          <h3 className="sm:line-clamp-2 leading-snug"
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: '1.0625rem',
@@ -127,6 +127,7 @@ export default function RecipeTile({ recipe }: Props) {
             }}>
             {recipe.title}
           </h3>
+          <div className="flex-1 sm:hidden" />
           {(recipe.prep_time || recipe.cook_time) && (
             <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-body)', fontWeight: 400 }}>
               <span className="hidden sm:block">
