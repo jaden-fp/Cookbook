@@ -15,7 +15,7 @@ const MIXING_PUNS = [
   "Room temperature eggs. It's not a suggestion. It's a warning.",
   "Some people find baking relaxing. Those people have never made croissants.",
   "Folding in the flour is just stirring for people who've been humbled.",
-  "There's no such thing as too much vanilla. That's a fact.",
+  "The eggs were cage-free. The puns are not.",
   "The recipe said to mix until smooth. We've been at it for eleven minutes.",
   "Every cookie is a little different. Like children, but edible.",
   "Measuring by weight is an act of respect to everyone who comes after you.",
