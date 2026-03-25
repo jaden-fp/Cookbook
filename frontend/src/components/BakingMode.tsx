@@ -352,27 +352,14 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
 
       {/* Top bar */}
       <div
-        className="flex items-center justify-between px-5 shrink-0"
+        className="grid items-center px-5 shrink-0"
         style={{
+          gridTemplateColumns: '2.25rem 1fr 2.25rem',
           paddingTop: 'calc(env(safe-area-inset-top) + 14px)',
           paddingBottom: '14px',
           borderBottom: '1px solid var(--border)',
         }}
       >
-        <span style={{
-          fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700,
-          letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)',
-        }}>
-          Start Baking
-        </span>
-
-        <span style={{
-          fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
-          fontWeight: 600, color: 'var(--text-muted)',
-        }}>
-          {step + 1} / {steps.length}
-        </span>
-
         <button
           onClick={onClose}
           className="flex items-center justify-center rounded-full transition-all duration-150"
@@ -389,6 +376,20 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
             <path d="M1 1l10 10M11 1L1 11"/>
           </svg>
         </button>
+
+        <span className="text-center" style={{
+          fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700,
+          letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)',
+        }}>
+          Start Baking
+        </span>
+
+        <span className="text-right" style={{
+          fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+          fontWeight: 600, color: 'var(--text-muted)',
+        }}>
+          {step + 1} / {steps.length}
+        </span>
       </div>
 
       {/* Step label */}
