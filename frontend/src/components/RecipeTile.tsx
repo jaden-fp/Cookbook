@@ -55,7 +55,7 @@ export default function RecipeTile({ recipe }: Props) {
         }}
       >
         {/* Image */}
-        <div className="relative overflow-hidden" style={{ height: '160px' }}>
+        <div className="relative overflow-hidden" style={{ height: '200px' }}>
           {recipe.image_url ? (
             <img
               src={recipe.image_url}
