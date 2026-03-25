@@ -55,7 +55,7 @@ const DECORATING_PUNS = [
   "Inverting the cake is the most stressful two seconds in baking.",
   "The recipe said 'let cool completely.' We gave it three minutes.",
   "Edible glitter is just glamour you can digest.",
-  "The presentation matters. We're eating with our eyes first.",
+  "What did the cake say to the fork? 'You want a piece of me?'",
   "Every slice is a fresh start. And also dessert.",
   "Finishing a recipe is a form of self-care. Genuinely.",
   "Worth the wait. We promise. Almost there.",
