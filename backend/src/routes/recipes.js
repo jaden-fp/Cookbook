@@ -228,7 +228,7 @@ router.get('/:id/cookbooks', async (req, res) => {
 
 // PATCH /api/recipes/:id
 router.patch('/:id', async (req, res) => {
-  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment } = req.body;
+  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment, image_url } = req.body;
   const updates = {};
   if (title !== undefined) updates.title = title;
   if (description !== undefined) updates.description = description;
@@ -238,6 +238,7 @@ router.patch('/:id', async (req, res) => {
   if (ingredient_groups !== undefined) updates.ingredient_groups = ingredient_groups;
   if (instructions !== undefined) updates.instructions = instructions;
   if (equipment !== undefined) updates.equipment = equipment;
+  if (image_url !== undefined) updates.image_url = image_url;
   if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
   const doc = await fsUpdate('recipes', req.params.id, updates);
   res.json(doc);
