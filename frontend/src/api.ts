@@ -52,6 +52,7 @@ export async function updateRecipe(
     ingredient_groups?: import('./types').IngredientGroup[];
     instructions?: string[];
     equipment?: string[];
+    image_url?: string | null;
   }
 ): Promise<Recipe> {
   const res = await fetch(`${BASE}/recipes/${id}`, {
