@@ -85,6 +85,7 @@ export default function RecipeDetailPage() {
     ingredient_groups: import('../types').IngredientGroup[];
     instructions: string[];
     equipment: string[];
+    image_url: string | null;
   } | null>(null);
 
   // Pantry
