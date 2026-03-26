@@ -202,8 +202,33 @@ export default function RecipeDetailPage() {
       ingredient_groups: JSON.parse(JSON.stringify(recipe.ingredient_groups)),
       instructions: [...recipe.instructions],
       equipment: [...recipe.equipment],
+      image_url: recipe.image_url ?? null,
     });
     setIsEditing(true);
+  }
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX = 1200;
+      let { width, height } = img;
+      if (width > MAX || height > MAX) {
+        const ratio = Math.min(MAX / width, MAX / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      URL.revokeObjectURL(url);
+      setDraft(d => d ? { ...d, image_url: dataUrl } : d);
+    };
+    img.src = url;
   }
 
   function cancelEdit() {
