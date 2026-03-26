@@ -249,6 +249,7 @@ export default function RecipeDetailPage() {
         ingredient_groups: draft.ingredient_groups,
         instructions: draft.instructions.filter(s => s.trim()),
         equipment: draft.equipment.filter(e => e.trim()),
+        image_url: draft.image_url !== recipe.image_url ? (draft.image_url ?? null) : undefined,
       });
       setRecipe(updated);
       setIsEditing(false);
