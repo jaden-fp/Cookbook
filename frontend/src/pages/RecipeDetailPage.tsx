@@ -318,8 +318,8 @@ export default function RecipeDetailPage() {
         {/* Image upload overlay — editing only */}
         {isEditing && (
           <label
-            className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
-            style={{ background: 'rgba(0,0,0,0.35)' }}
+            className="absolute inset-0 flex items-center justify-center cursor-pointer"
+            style={{ background: 'rgba(0,0,0,0.35)', zIndex: 5 }}
             title="Change image"
           >
             <input
