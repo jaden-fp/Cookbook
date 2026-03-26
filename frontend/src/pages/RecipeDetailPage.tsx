@@ -294,6 +294,26 @@ export default function RecipeDetailPage() {
           style={{ height: '65%', background: 'linear-gradient(to top, rgba(15,12,30,0.72) 0%, rgba(15,12,30,0.2) 55%, transparent 100%)' }}
         />
 
+        {/* Back arrow — top-left */}
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            onClick={() => navigate(-1)}
+            title="Go back"
+            className="flex items-center justify-center rounded-full transition-all duration-200"
+            style={{
+              width: '2.25rem', height: '2.25rem',
+              background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(6px)',
+              color: 'rgba(255,255,255,0.85)', border: 'none', cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = 'white'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+        </div>
+
         {/* Edit / Save / Delete — top-right */}
         <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
           {isEditing ? (
