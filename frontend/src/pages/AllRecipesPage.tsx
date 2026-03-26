@@ -55,7 +55,7 @@ export default function AllRecipesPage() {
         <h1 style={{
           fontFamily: 'var(--font-display)',
           fontWeight: 700,
-          fontSize: 'clamp(2.25rem, 5vw, 3.25rem)',
+          fontSize: 'clamp(1.75rem, 5vw, 3.25rem)',
           color: 'var(--text)',
           letterSpacing: '-0.02em',
           lineHeight: 1.1,
