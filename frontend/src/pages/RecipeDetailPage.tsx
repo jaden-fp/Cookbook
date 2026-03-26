@@ -294,9 +294,9 @@ export default function RecipeDetailPage() {
         className="relative w-full overflow-hidden"
         style={{ height: '52vh', minHeight: 320, maxHeight: 640 }}
       >
-        {recipe.image_url ? (
+        {(isEditing && draft ? draft.image_url : recipe.image_url) ? (
           <img
-            src={recipe.image_url}
+            src={(isEditing && draft ? draft.image_url : recipe.image_url)!}
             alt={recipe.title}
             style={{
               position: 'absolute',
@@ -313,6 +313,36 @@ export default function RecipeDetailPage() {
             className="w-full h-full"
             style={{ background: 'linear-gradient(135deg, var(--purple-lt) 0%, var(--teal-lt) 50%, var(--pink-lt) 100%)' }}
           />
+        )}
+
+        {/* Image upload overlay — editing only */}
+        {isEditing && (
+          <label
+            className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
+            style={{ background: 'rgba(0,0,0,0.35)' }}
+            title="Change image"
+          >
+            <input
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleImageUpload}
+            />
+            <div className="flex flex-col items-center gap-2">
+              <div
+                className="flex items-center justify-center rounded-full"
+                style={{ width: '3rem', height: '3rem', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', border: '1.5px solid rgba(255,255,255,0.4)' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+              <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.75rem', fontFamily: 'var(--font-body)', fontWeight: 500 }}>
+                Change photo
+              </span>
+            </div>
+          </label>
         )}
 
         {/* Bottom gradient */}
