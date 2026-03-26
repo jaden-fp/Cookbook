@@ -125,6 +125,11 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* ─── PWA standalone: extra bottom nav padding ────────────────── */
+@media (display-mode: standalone) {
+  .bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom) + 24px) !important; }
+}
+
 /* ─── Sort select ─────────────────────────────────────────────── */
 .sort-select { font-size: 0.8125rem; padding: 5px 30px 5px 12px; }
 @media (max-width: 639px) {
