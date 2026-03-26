@@ -44,7 +44,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="sm:hidden fixed left-0 right-0 z-50"
+      className="bottom-nav sm:hidden fixed left-0 right-0 z-50"
       style={{
         bottom: 0,
         paddingBottom: 'calc(env(safe-area-inset-bottom) + 10px)',
