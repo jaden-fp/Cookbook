@@ -104,27 +104,21 @@ export async function fsUploadImage(base64DataUrl, filename) {
   const { randomUUID } = await import('node:crypto');
   const downloadToken = randomUUID();
 
-  const boundary = '----FormBoundary' + randomUUID().replace(/-/g, '');
-  const metaJson = JSON.stringify({ contentType, metadata: { firebaseStorageDownloadTokens: downloadToken } });
-
-  const body = Buffer.concat([
-    Buffer.from(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metaJson}\r\n--${boundary}\r\nContent-Type: ${contentType}\r\n\r\n`),
-    buffer,
-    Buffer.from(`\r\n--${boundary}--`),
-  ]);
-
   const token = await getToken();
   const encodedName = encodeURIComponent(filename);
+  const encodedBucket = encodeURIComponent(bucket);
+
+  // Use Firebase Storage REST API (supports both appspot.com and firebasestorage.app buckets)
   const uploadRes = await fetch(
-    `https://storage.googleapis.com/upload/storage/v1/b/${encodeURIComponent(bucket)}/o?uploadType=multipart&name=${encodedName}`,
+    `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o?name=${encodedName}&uploadType=media`,
     {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': `multipart/related; boundary="${boundary}"`,
-        'Content-Length': String(body.length),
+        'Content-Type': contentType,
+        'X-Goog-Upload-Protocol': 'raw',
       },
-      body,
+      body: buffer,
     }
   );
 
@@ -133,7 +127,16 @@ export async function fsUploadImage(base64DataUrl, filename) {
     throw new Error(`Storage upload failed: ${err}`);
   }
 
-  const encodedBucket = encodeURIComponent(bucket);
+  // Set the download token so the URL works without Firebase auth
+  await fetch(
+    `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o/${encodedName}`,
+    {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ metadata: { firebaseStorageDownloadTokens: downloadToken } }),
+    }
+  );
+
   return `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o/${encodedName}?alt=media&token=${downloadToken}`;
 }
 
