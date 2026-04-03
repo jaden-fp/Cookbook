@@ -54,7 +54,7 @@ export default function SmartCookbookCard({ category, recipe_count, preview_imag
       setLoadingRecipes(true);
       try {
         const all = await getRecipes();
-        setRecipes(all.filter(r => r.ai_category === category));
+        setRecipes(category === 'Favs' ? all.filter(r => r.rating === 5) : all.filter(r => r.ai_category === category));
       } finally {
         setLoadingRecipes(false);
       }
