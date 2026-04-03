@@ -31,7 +31,11 @@ export default function SmartCookbookDetailPage() {
 
   useEffect(() => {
     getRecipes()
-      .then(all => setRecipes(all.filter(r => r.ai_category === decodedCategory)))
+      .then(all => setRecipes(
+        decodedCategory === 'Favs'
+          ? all.filter(r => r.rating === 5)
+          : all.filter(r => r.ai_category === decodedCategory)
+      ))
       .finally(() => setLoading(false));
   }, [decodedCategory]);
 
