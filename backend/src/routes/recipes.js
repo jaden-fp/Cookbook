@@ -280,6 +280,24 @@ router.delete('/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /api/recipes/categorize-all — categorize all recipes missing ai_category
+router.post('/categorize-all', async (req, res) => {
+  const recipes = await fsQuery('recipes', {});
+  const uncategorized = recipes.filter(r => !r.ai_category);
+  let done = 0;
+  let failed = 0;
+  for (const recipe of uncategorized) {
+    try {
+      const ai_category = await categorizeRecipe({ title: recipe.title, ingredient_groups: recipe.ingredient_groups });
+      await fsUpdate('recipes', recipe.id, { ai_category });
+      done++;
+    } catch {
+      failed++;
+    }
+  }
+  res.json({ total: uncategorized.length, done, failed });
+});
+
 // POST /api/recipes/:id/categorize — re-run AI categorization on an existing recipe
 router.post('/:id/categorize', async (req, res) => {
   const recipe = await fsGet('recipes', req.params.id);
