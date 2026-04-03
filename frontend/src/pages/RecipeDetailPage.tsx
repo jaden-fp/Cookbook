@@ -210,9 +210,9 @@ export default function RecipeDetailPage() {
 
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !id) return;
     const img = new Image();
-    const url = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
       const MAX = 1200;
       let { width, height } = img;
@@ -226,10 +226,18 @@ export default function RecipeDetailPage() {
       canvas.height = height;
       canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
       const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
-      URL.revokeObjectURL(url);
+      URL.revokeObjectURL(objectUrl);
+      // Show local preview immediately while uploading
       setDraft(d => d ? { ...d, image_url: dataUrl } : d);
+      // Upload to Firebase Storage and replace preview with permanent URL
+      uploadRecipeImage(id, dataUrl).then(permanentUrl => {
+        setDraft(d => d ? { ...d, image_url: permanentUrl } : d);
+        setRecipe(r => r ? { ...r, image_url: permanentUrl } : r);
+      }).catch(err => {
+        console.error('Image upload failed:', err.message);
+      });
     };
-    img.src = url;
+    img.src = objectUrl;
   }
 
   function cancelEdit() {
