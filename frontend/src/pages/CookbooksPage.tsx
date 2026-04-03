@@ -231,105 +231,67 @@ export default function CookbooksPage() {
             <div key={i} className="skeleton" style={{ borderRadius: 'var(--radius-lg)', aspectRatio: '1 / 1' }} />
           ))}
         </div>
-      ) : (
-        <>
-          {/* Smart Collections */}
-          {smartCookbooks.length > 0 && (
-            <div className="mb-10 animate-fade-up">
-              <div className="flex items-center gap-1.5 mb-4">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--accent)">
-                  <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z" />
-                  <path d="M19 3C19 3 19.5 5.5 21.5 6C19.5 6.5 19 9 19 9C19 9 18.5 6.5 16.5 6C18.5 5.5 19 3 19 3Z" />
-                  <path d="M5 17C5 17 5.5 19.5 7.5 20C5.5 20.5 5 23 5 23C5 23 4.5 20.5 2.5 20C4.5 19.5 5 17 5 17Z" />
-                </svg>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'var(--accent)',
-                }}>
-                  Smart Collections
-                </p>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {smartCookbooks.map((sc, i) => (
-                  <div key={sc.category} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-                    <SmartCookbookCard {...sc} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+      ) : (() => {
+        const visibleSmart = smartCookbooks.filter(sc => !hiddenCategories.includes(sc.category));
+        const sorted = sortCookbooks(cookbooks, sort);
 
-          {/* Manual Cookbooks */}
-          {(cookbooks.length > 0 || smartCookbooks.length === 0) && (
-            <>
-              {smartCookbooks.length > 0 && (
-                <div className="flex items-center gap-1.5 mb-4" style={{ borderTop: '1px solid var(--border)', paddingTop: '28px' }}>
-                  <p style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: 'var(--text-muted)',
-                  }}>
-                    My Cookbooks
-                  </p>
-                </div>
-              )}
-              {cookbooks.length === 0 ? (
-                <div className="text-center py-24 animate-fade-up">
-                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                    No cookbooks yet
-                  </p>
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-                    Create a cookbook to organise your saved recipes.
-                  </p>
-                  <button
-                    onClick={() => setShowCreate(true)}
-                    className="inline-flex items-center gap-2 transition-all duration-200"
-                    style={{
-                      background: 'var(--accent)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '999px',
-                      fontFamily: 'var(--font-body)',
-                      fontWeight: 600,
-                      fontSize: '0.875rem',
-                      padding: '10px 24px',
-                      cursor: 'pointer',
-                      letterSpacing: '-0.01em',
+        // Build merged list: A-Z mixes all by name; newest/oldest keeps manual order, smart appended alpha
+        type Entry = { type: 'smart'; data: SmartCookbook } | { type: 'manual'; data: typeof cookbooks[0] };
+        let entries: Entry[];
+        if (sort === 'az') {
+          entries = [
+            ...sorted.map(c => ({ type: 'manual' as const, data: c })),
+            ...visibleSmart.map(s => ({ type: 'smart' as const, data: s })),
+          ].sort((a, b) => {
+            const nameA = a.type === 'manual' ? a.data.name : a.data.category;
+            const nameB = b.type === 'manual' ? b.data.name : b.data.category;
+            return nameA.localeCompare(nameB);
+          });
+        } else {
+          entries = [
+            ...visibleSmart.map(s => ({ type: 'smart' as const, data: s })),
+            ...sorted.map(c => ({ type: 'manual' as const, data: c })),
+          ];
+        }
+
+        if (entries.length === 0) return (
+          <div className="text-center py-24 animate-fade-up">
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>No cookbooks yet</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '20px' }}>Create a cookbook to organise your saved recipes.</p>
+            <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-2 transition-all duration-200"
+              style={{ background: 'var(--accent)', color: 'white', border: 'none', borderRadius: '999px', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.875rem', padding: '10px 24px', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+            >+ Create Cookbook</button>
+          </div>
+        );
+
+        return (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {entries.map((entry, i) => (
+              <div key={entry.type === 'smart' ? `smart-${entry.data.category}` : entry.data.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
+                {entry.type === 'smart' ? (
+                  <SmartCookbookCard
+                    {...entry.data}
+                    onHide={cat => {
+                      const next = [...hiddenCategories, cat];
+                      setHiddenCategories(next);
+                      localStorage.setItem('hidden-smart-categories', JSON.stringify(next));
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-                  >
-                    + Create Cookbook
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                  {sortCookbooks(cookbooks, sort).map((cb, i) => (
-                    <div key={cb.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-                      <CookbookCard
-                        cookbook={cb}
-                        onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))}
-                        onDelete={async id => {
-                          await deleteCookbook(id);
-                          setCookbooks(prev => prev.filter(c => c.id !== id));
-                        }}
-                      />
-                    </div>
-                  ))}
-                  <div><CreateTile /></div>
-                </div>
-              )}
-            </>
-          )}
-        </>
-      )}
+                  />
+                ) : (
+                  <CookbookCard
+                    cookbook={entry.data}
+                    onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))}
+                    onDelete={async id => { await deleteCookbook(id); setCookbooks(prev => prev.filter(c => c.id !== id)); }}
+                  />
+                )}
+              </div>
+            ))}
+            <div><CreateTile /></div>
+          </div>
+        );
+      })()}
 
       {/* Import modal — mobile FAB */}
       <BottomSheet open={showImport} onClose={() => setShowImport(false)} title="Import Recipe">
