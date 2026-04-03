@@ -39,6 +39,9 @@ function deriveSmartCookbooks(recipes: import('../types').Recipe[]): SmartCookbo
 export default function CookbooksPage() {
   const [cookbooks, setCookbooks] = useState<Cookbook[]>([]);
   const [smartCookbooks, setSmartCookbooks] = useState<SmartCookbook[]>([]);
+  const [hiddenCategories, setHiddenCategories] = useState<string[]>(
+    () => JSON.parse(localStorage.getItem('hidden-smart-categories') ?? '[]')
+  );
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortOption>(
     () => (localStorage.getItem('cookbooks-sort') as SortOption) ?? 'newest'
