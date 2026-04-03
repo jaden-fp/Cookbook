@@ -49,6 +49,7 @@ export default function CookbooksPage() {
   const [creating, setCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { setAction } = useFAB();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     Promise.all([getCookbooks(), getRecipes()])
