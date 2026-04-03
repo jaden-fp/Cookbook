@@ -30,6 +30,7 @@ export interface Recipe {
   rating?: number | null;
   review?: string | null;
   bake_log?: BakeEntry[];
+  ai_category?: string | null;
   created_at: string;
 }
 
