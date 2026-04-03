@@ -163,6 +163,23 @@ export default function NutritionPanel({ ingredientGroups, yieldStr, scale }: Pr
 
         {/* Macros */}
         <div className="p-5 space-y-4">
+          {hasData && unmatched.length > 0 && (
+            <div
+              style={{
+                background: 'rgba(201,138,4,0.08)',
+                border: '1px solid rgba(201,138,4,0.28)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 12px',
+              }}
+            >
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: '#A36800', marginBottom: '4px' }}>
+                {unmatched.length} ingredient{unmatched.length > 1 ? 's' : ''} not counted
+              </p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', color: '#A36800', lineHeight: 1.5 }}>
+                {unmatched.map(u => u.name).join(' · ')}
+              </p>
+            </div>
+          )}
           {hasData ? (
             <>
               <NutrientBar
