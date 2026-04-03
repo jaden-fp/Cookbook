@@ -168,6 +168,9 @@ export interface IngredientNutrition {
   grams: number;
   matched: boolean;
   nutrition: NutrientPer100g;
+  ingredientName: string;  // just the ingredient name (not amount/unit)
+  amount: number;          // parsed amount (already scaled)
+  unit: string;            // normalised unit
 }
 
 export interface NutritionResult {
