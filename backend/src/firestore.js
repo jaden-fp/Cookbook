@@ -100,43 +100,18 @@ export async function fsUploadImage(base64DataUrl, filename) {
   const contentType = matches[1];
   const buffer = Buffer.from(matches[2], 'base64');
 
-  const bucket = process.env.FIREBASE_STORAGE_BUCKET || `${PROJECT_ID}.appspot.com`;
   const { randomUUID } = await import('node:crypto');
   const downloadToken = randomUUID();
 
-  const token = await getToken();
+  const { bucket } = await import('./db.js');
+  const file = bucket.file(filename);
+  await file.save(buffer, {
+    contentType,
+    metadata: { metadata: { firebaseStorageDownloadTokens: downloadToken } },
+  });
+
+  const encodedBucket = encodeURIComponent(bucket.name);
   const encodedName = encodeURIComponent(filename);
-  const encodedBucket = encodeURIComponent(bucket);
-
-  // Use Firebase Storage REST API (supports both appspot.com and firebasestorage.app buckets)
-  const uploadRes = await fetch(
-    `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o?name=${encodedName}&uploadType=media`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': contentType,
-        'X-Goog-Upload-Protocol': 'raw',
-      },
-      body: buffer,
-    }
-  );
-
-  if (!uploadRes.ok) {
-    const err = await uploadRes.text();
-    throw new Error(`Storage upload failed: ${err}`);
-  }
-
-  // Set the download token so the URL works without Firebase auth
-  await fetch(
-    `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o/${encodedName}`,
-    {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ metadata: { firebaseStorageDownloadTokens: downloadToken } }),
-    }
-  );
-
   return `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o/${encodedName}?alt=media&token=${downloadToken}`;
 }
 
