@@ -689,17 +689,17 @@ export default function RecipeDetailPage() {
                   {['Cookies', 'Muffins', 'Cakes', 'Breads', 'Pastries', 'Other'].map(cat => (
                     <button
                       key={cat}
-                      onClick={() => setRecipe(r => r ? { ...r, ai_category: cat } : r)}
+                      onClick={() => setDraft(d => d ? { ...d, ai_category: cat } : d)}
                       style={{
                         padding: '4px 12px',
                         borderRadius: '999px',
                         border: '1.5px solid',
-                        borderColor: recipe.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
-                        background: recipe.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
-                        color: recipe.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
+                        borderColor: draft?.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
+                        background: draft?.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
+                        color: draft?.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
                         fontFamily: 'var(--font-body)',
                         fontSize: '0.75rem',
-                        fontWeight: recipe.ai_category === cat ? 600 : 400,
+                        fontWeight: draft?.ai_category === cat ? 600 : 400,
                         cursor: 'pointer',
                       }}
                     >
