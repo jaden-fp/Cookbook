@@ -258,7 +258,7 @@ router.post('/:id/image', async (req, res) => {
 
 // PATCH /api/recipes/:id
 router.patch('/:id', async (req, res) => {
-  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment, image_url } = req.body;
+  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment, image_url, ai_category } = req.body;
   const updates = {};
   if (title !== undefined) updates.title = title;
   if (description !== undefined) updates.description = description;
