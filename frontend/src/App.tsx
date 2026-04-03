@@ -41,6 +41,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/cookbooks" replace />} />
             <Route path="/cookbooks" element={<CookbooksPage />} />
+            <Route path="/cookbooks/smart/:category" element={<SmartCookbookDetailPage />} />
             <Route path="/cookbooks/:id" element={<CookbookDetailPage />} />
             <Route path="/recipes" element={<AllRecipesPage />} />
             <Route path="/recipes/:id" element={<RecipeDetailPage />} />
