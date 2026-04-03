@@ -136,6 +136,12 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
   .sort-select { font-size: 0.625rem; padding: 2px 14px 2px 6px; }
 }
 
+/* ─── Sort button ─────────────────────────────────────────────── */
+.sort-btn { font-size: 0.8125rem; padding: 5px 12px; }
+@media (max-width: 639px) {
+  .sort-btn { font-size: 0.75rem; padding: 4px 10px; }
+}
+
 /* ─── Responsive nav logo ─────────────────────────────────────── */
 .nav-logo { height: 148px; width: auto; min-width: 0; flex-shrink: 0; display: block; transform: translateY(36px); object-fit: contain; }
 @media (max-width: 640px) {
