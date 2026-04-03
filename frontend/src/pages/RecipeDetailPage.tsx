@@ -678,6 +678,49 @@ export default function RecipeDetailPage() {
             </>
           ) : null}
 
+          {/* Category badge */}
+          {(recipe.ai_category || isEditing) && (
+            <div className="flex items-center gap-2 mb-5">
+              {isEditing ? (
+                <div className="flex flex-wrap gap-2">
+                  {['Cookies', 'Muffins', 'Cakes', 'Breads', 'Pastries', 'Other'].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setRecipe(r => r ? { ...r, ai_category: cat } : r)}
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: '999px',
+                        border: '1.5px solid',
+                        borderColor: recipe.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
+                        background: recipe.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
+                        color: recipe.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.75rem',
+                        fontWeight: recipe.ai_category === cat ? 600 : 400,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '5px',
+                  padding: '3px 10px', borderRadius: '999px',
+                  background: 'var(--accent-dim)', border: '1px solid var(--accent)',
+                  color: 'var(--accent)', fontFamily: 'var(--font-body)',
+                  fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+                }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
+                    <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+                  </svg>
+                  {recipe.ai_category}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Pantry banner */}
           {hasMissingOrLow && (
             <div
