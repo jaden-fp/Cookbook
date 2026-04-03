@@ -76,12 +76,53 @@ export default function AllRecipesPage() {
         <ImportBar />
       </BottomSheet>
 
+      {/* Search bar */}
+      {!loading && recipes.length > 0 && (
+        <div className="mb-4 animate-fade-up delay-2" style={{ position: 'relative' }}>
+          <svg
+            width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}
+          >
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            placeholder="Search recipes…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9rem',
+              color: 'var(--text)',
+              background: 'var(--surface)',
+              border: '1.5px solid var(--border-strong)',
+              borderRadius: '999px',
+              padding: '10px 16px 10px 38px',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', lineHeight: 1 }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Divider + sort row */}
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
         style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
       >
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-          {loading ? '' : `${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`}
+          {loading ? '' : search
+            ? `${recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())).length} of ${recipes.length} recipes`
+            : `${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`}
         </p>
 
         {!loading && recipes.length > 0 && (
