@@ -685,7 +685,7 @@ export default function RecipeDetailPage() {
           {(recipe.ai_category || isEditing) && (
             <div className="flex items-center gap-2 mb-5">
               {isEditing ? (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 items-center">
                   {['Cookies', 'Muffins', 'Cakes', 'Breads', 'Pastries', 'Other'].map(cat => (
                     <button
                       key={cat}
@@ -706,6 +706,31 @@ export default function RecipeDetailPage() {
                       {cat}
                     </button>
                   ))}
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const input = (e.currentTarget.elements.namedItem('custom') as HTMLInputElement);
+                      const val = input.value.trim();
+                      if (val) { setDraft(d => d ? { ...d, ai_category: val } : d); input.value = ''; }
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <input
+                      name="custom"
+                      placeholder="Custom…"
+                      defaultValue={draft?.ai_category && !['Cookies','Muffins','Cakes','Breads','Pastries','Other'].includes(draft.ai_category) ? draft.ai_category : ''}
+                      style={{
+                        padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)',
+                        fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
+                        background: 'var(--bg-subtle)', outline: 'none', width: '90px',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                      onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
+                    />
+                    <button type="submit" style={{ padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                      Set
+                    </button>
+                  </form>
                 </div>
               ) : (
                 <span style={{
