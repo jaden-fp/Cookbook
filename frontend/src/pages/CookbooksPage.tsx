@@ -190,9 +190,12 @@ export default function CookbooksPage() {
         style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
       >
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-          {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
+          {loading ? '' : (() => {
+            const total = cookbooks.length + smartCookbooks.filter(sc => !hiddenCategories.includes(sc.category)).length;
+            return `${total} ${total === 1 ? 'cookbook' : 'cookbooks'}`;
+          })()}
         </p>
-        {!loading && cookbooks.length > 0 && (
+        {!loading && (cookbooks.length > 0 || smartCookbooks.filter(sc => !hiddenCategories.includes(sc.category)).length > 0) && (
           <div ref={sortRef} style={{ position: 'relative' }}>
             <button
               ref={sortBtnRef}
