@@ -189,6 +189,23 @@ export default function CookbookDetailPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [sort, setSort] = useState<SortOption>('newest');
+  const [showSort, setShowSort] = useState(false);
+  const sortBtnRef = useRef<HTMLButtonElement>(null);
+  const sortMenuRef = useRef<HTMLDivElement>(null);
+  const [sortPos, setSortPos] = useState({ top: 0, right: 0 });
+
+  useEffect(() => {
+    if (!showSort) return;
+    const handler = (e: MouseEvent) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target as Node) &&
+          sortBtnRef.current && !sortBtnRef.current.contains(e.target as Node)) {
+        setShowSort(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showSort]);
 
   useEffect(() => {
     if (!id) return;
