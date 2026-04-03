@@ -208,12 +208,51 @@ export default function NutritionPanel({ ingredientGroups, yieldStr, scale }: Pr
                 padding: '10px 12px',
               }}
             >
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: '#A36800', marginBottom: '4px' }}>
-                {unmatched.length} ingredient{unmatched.length > 1 ? 's' : ''} not counted
-              </p>
+              <div className="flex items-center justify-between" style={{ marginBottom: '4px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: '#A36800' }}>
+                  {unmatched.length} ingredient{unmatched.length > 1 ? 's' : ''} not counted
+                </p>
+                {lookupState === 'idle' && (
+                  <button
+                    onClick={handleLookup}
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.6875rem',
+                      fontWeight: 600,
+                      color: 'var(--accent)',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '0',
+                      lineHeight: 1,
+                    }}
+                  >
+                    Look up
+                  </button>
+                )}
+                {lookupState === 'loading' && (
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', color: '#A36800', opacity: 0.7 }}>
+                    Looking up…
+                  </span>
+                )}
+              </div>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', color: '#A36800', lineHeight: 1.5 }}>
-                {unmatched.map(u => u.name).join(' · ')}
+                {lookupState === 'done'
+                  ? unmatched.map(u => {
+                      const n = lookedUp[u.name];
+                      const grams = estimateGrams(u.amount, u.unit);
+                      const est = n ? Math.round(n.calories * grams / 100) : null;
+                      return n === null
+                        ? `${u.ingredientName} (not found)`
+                        : `${u.ingredientName} (~${est} kcal)`;
+                    }).join(' · ')
+                  : unmatched.map(u => u.name).join(' · ')}
               </p>
+              {lookupState === 'done' && lookedUpCalories > 0 && (
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 600, color: '#A36800', marginTop: '6px' }}>
+                  +~{Math.round(lookedUpCalories)} kcal estimated
+                </p>
+              )}
             </div>
           )}
           {hasData ? (
