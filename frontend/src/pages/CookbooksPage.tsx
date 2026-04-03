@@ -184,14 +184,19 @@ export default function CookbooksPage() {
         {!loading && cookbooks.length > 0 && (
           <div ref={sortRef} style={{ position: 'relative' }}>
             <button
-              onClick={() => setShowSort(v => !v)}
+              ref={sortBtnRef}
+              onClick={() => {
+                const rect = sortBtnRef.current?.getBoundingClientRect();
+                if (rect) setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right });
+                setShowSort(v => !v);
+              }}
+              className="sort-btn"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '5px',
                 fontFamily: 'var(--font-body)', fontWeight: 500,
-                fontSize: '0.625rem', color: 'var(--text)',
-                background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
-                borderRadius: '999px', padding: '2px 10px 2px 8px',
-                cursor: 'pointer', outline: 'none',
+                color: 'var(--text)', background: 'var(--surface)',
+                border: '1.5px solid var(--border-strong)',
+                borderRadius: '999px', cursor: 'pointer', outline: 'none',
               }}
             >
               {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first' }[sort]}
@@ -199,20 +204,23 @@ export default function CookbooksPage() {
                 <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            {showSort && (
-              <div style={{
-                position: 'absolute', right: 0, top: 'calc(100% + 4px)', zIndex: 50,
-                background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
-                borderRadius: '10px', overflow: 'hidden', minWidth: '110px',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-              }}>
+            {showSort && createPortal(
+              <div ref={sortRef}
+                style={{
+                  position: 'absolute', top: sortPos.top, right: sortPos.right, zIndex: 9999,
+                  background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
+                  borderRadius: '10px', overflow: 'hidden', minWidth: '120px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                }}
+              >
                 {(['az', 'newest', 'oldest'] as SortOption[]).map(opt => (
                   <button
                     key={opt}
                     onClick={() => { setSort(opt); localStorage.setItem('cookbooks-sort', opt); setShowSort(false); }}
                     style={{
                       display: 'block', width: '100%', textAlign: 'left',
-                      padding: '8px 14px', border: 'none', background: opt === sort ? 'var(--accent-dim)' : 'transparent',
+                      padding: '8px 14px', border: 'none',
+                      background: opt === sort ? 'var(--accent-dim)' : 'transparent',
                       color: opt === sort ? 'var(--accent)' : 'var(--text)',
                       fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400,
                       fontSize: '0.8125rem', cursor: 'pointer',
@@ -221,7 +229,8 @@ export default function CookbooksPage() {
                     {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first' }[opt]}
                   </button>
                 ))}
-              </div>
+              </div>,
+              document.body
             )}
           </div>
         )}
