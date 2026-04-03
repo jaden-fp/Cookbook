@@ -175,7 +175,7 @@ export default function CookbooksPage() {
                 localStorage.setItem('cookbooks-sort', val);
               }}
               className="sort-select"
-              style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none', appearance: 'none' }}
+              style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: isMobile ? '0.625rem' : '0.8125rem', color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none', appearance: 'none' }}
             >
               <option value="az">A → Z</option>
               <option value="newest">Newest first</option>
