@@ -193,45 +193,94 @@ export default function CookbooksPage() {
             <div key={i} className="skeleton" style={{ borderRadius: 'var(--radius-lg)', aspectRatio: '1 / 1' }} />
           ))}
         </div>
-      ) : cookbooks.length === 0 ? (
-        <div className="text-center py-24 animate-fade-up">
-          <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-            No cookbooks yet
-          </p>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-            Create a cookbook to organise your saved recipes.
-          </p>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 transition-all duration-200"
-            style={{
-              background: 'var(--accent)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '999px',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 600,
-              fontSize: '0.875rem',
-              padding: '10px 24px',
-              cursor: 'pointer',
-              letterSpacing: '-0.01em',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-          >
-            + Create Cookbook
-          </button>
-        </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {sortCookbooks(cookbooks, sort).map((cb, i) => (
-            <div key={cb.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-              <CookbookCard
-                cookbook={cb}
-                onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))}
-                onDelete={async id => {
-                  await deleteCookbook(id);
-                  setCookbooks(prev => prev.filter(c => c.id !== id));
+        <>
+          {/* Smart Collections */}
+          {smartCookbooks.length > 0 && (
+            <div className="mb-10 animate-fade-up">
+              <div className="flex items-center gap-1.5 mb-4">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--accent)">
+                  <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z" />
+                  <path d="M19 3C19 3 19.5 5.5 21.5 6C19.5 6.5 19 9 19 9C19 9 18.5 6.5 16.5 6C18.5 5.5 19 3 19 3Z" />
+                  <path d="M5 17C5 17 5.5 19.5 7.5 20C5.5 20.5 5 23 5 23C5 23 4.5 20.5 2.5 20C4.5 19.5 5 17 5 17Z" />
+                </svg>
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'var(--accent)',
+                }}>
+                  Smart Collections
+                </p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {smartCookbooks.map((sc, i) => (
+                  <div key={sc.category} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
+                    <SmartCookbookCard {...sc} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Manual Cookbooks */}
+          {(cookbooks.length > 0 || smartCookbooks.length === 0) && (
+            <>
+              {smartCookbooks.length > 0 && (
+                <div className="flex items-center gap-1.5 mb-4" style={{ borderTop: '1px solid var(--border)', paddingTop: '28px' }}>
+                  <p style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-muted)',
+                  }}>
+                    My Cookbooks
+                  </p>
+                </div>
+              )}
+              {cookbooks.length === 0 ? (
+                <div className="text-center py-24 animate-fade-up">
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                    No cookbooks yet
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+                    Create a cookbook to organise your saved recipes.
+                  </p>
+                  <button
+                    onClick={() => setShowCreate(true)}
+                    className="inline-flex items-center gap-2 transition-all duration-200"
+                    style={{
+                      background: 'var(--accent)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '999px',
+                      fontFamily: 'var(--font-body)',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      padding: '10px 24px',
+                      cursor: 'pointer',
+                      letterSpacing: '-0.01em',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#D94E7A'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
+                  >
+                    + Create Cookbook
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {sortCookbooks(cookbooks, sort).map((cb, i) => (
+                    <div key={cb.id} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
+                      <CookbookCard
+                        cookbook={cb}
+                        onUpdate={updated => setCookbooks(prev => prev.map(c => c.id === updated.id ? updated : c))}
+                        onDelete={async id => {
+                          await deleteCookbook(id);
+                          setCookbooks(prev => prev.filter(c => c.id !== id));
                 }}
               />
             </div>
