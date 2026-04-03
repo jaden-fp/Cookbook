@@ -98,7 +98,7 @@ export default function CookbooksPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-4 sm:pt-24 pb-24 sm:pb-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-4 sm:pt-24 pb-32 sm:pb-16">
 
       {/* Header */}
       <div className="mb-10 animate-fade-up">
