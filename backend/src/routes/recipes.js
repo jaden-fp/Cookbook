@@ -262,6 +262,20 @@ router.delete('/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /api/recipes/:id/categorize — re-run AI categorization on an existing recipe
+router.post('/:id/categorize', async (req, res) => {
+  const recipe = await fsGet('recipes', req.params.id);
+  if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
+  try {
+    const ai_category = await categorizeRecipe({ title: recipe.title, ingredient_groups: recipe.ingredient_groups });
+    const doc = await fsUpdate('recipes', req.params.id, { ai_category });
+    res.json(doc);
+  } catch (err) {
+    console.error('Categorization failed:', err.message);
+    res.status(500).json({ error: 'Categorization failed' });
+  }
+});
+
 // PUT /api/recipes/:id/cookbooks
 router.put('/:id/cookbooks', async (req, res) => {
   const { cookbook_ids } = req.body;
