@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { fsAdd, fsGet, fsUpdate, fsDelete, fsQuery } from '../firestore.js';
+import { fsAdd, fsGet, fsUpdate, fsDelete, fsQuery, fsUploadImage } from '../firestore.js';
 import { categorizeRecipe } from '../categorize.js';
 
 const router = Router();
