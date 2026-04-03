@@ -281,12 +281,16 @@ export default function CookbooksPage() {
                         onDelete={async id => {
                           await deleteCookbook(id);
                           setCookbooks(prev => prev.filter(c => c.id !== id));
-                }}
-              />
-            </div>
-          ))}
-          <div><CreateTile /></div>
-        </div>
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <div><CreateTile /></div>
+                </div>
+              )}
+            </>
+          )}
+        </>
       )}
 
       {/* Import modal — mobile FAB */}
