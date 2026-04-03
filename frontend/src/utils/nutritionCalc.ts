@@ -240,6 +240,9 @@ export function calcNutrition(
       grams,
       matched,
       nutrition: contrib,
+      ingredientName: ing.name,
+      amount: parseAmount(ing.amount) * scale,
+      unit: normaliseUnit(ing.unit),
     });
   }
 
