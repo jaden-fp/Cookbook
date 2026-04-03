@@ -92,6 +92,51 @@ function fromDoc(doc) {
   return { id: doc.name.split('/').pop(), ...fromFields(doc.fields || {}) };
 }
 
+// ── Firebase Storage upload ───────────────────────────────────────────────────
+
+export async function fsUploadImage(base64DataUrl, filename) {
+  const matches = base64DataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!matches) throw new Error('Invalid data URL');
+  const contentType = matches[1];
+  const buffer = Buffer.from(matches[2], 'base64');
+
+  const bucket = process.env.FIREBASE_STORAGE_BUCKET || `${PROJECT_ID}.appspot.com`;
+  const { randomUUID } = await import('node:crypto');
+  const downloadToken = randomUUID();
+
+  const boundary = '----FormBoundary' + randomUUID().replace(/-/g, '');
+  const metaJson = JSON.stringify({ contentType, metadata: { firebaseStorageDownloadTokens: downloadToken } });
+
+  const body = Buffer.concat([
+    Buffer.from(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metaJson}\r\n--${boundary}\r\nContent-Type: ${contentType}\r\n\r\n`),
+    buffer,
+    Buffer.from(`\r\n--${boundary}--`),
+  ]);
+
+  const token = await getToken();
+  const encodedName = encodeURIComponent(filename);
+  const uploadRes = await fetch(
+    `https://storage.googleapis.com/upload/storage/v1/b/${encodeURIComponent(bucket)}/o?uploadType=multipart&name=${encodedName}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': `multipart/related; boundary="${boundary}"`,
+        'Content-Length': String(body.length),
+      },
+      body,
+    }
+  );
+
+  if (!uploadRes.ok) {
+    const err = await uploadRes.text();
+    throw new Error(`Storage upload failed: ${err}`);
+  }
+
+  const encodedBucket = encodeURIComponent(bucket);
+  return `https://firebasestorage.googleapis.com/v0/b/${encodedBucket}/o/${encodedName}?alt=media&token=${downloadToken}`;
+}
+
 // ── CRUD ──────────────────────────────────────────────────────────────────────
 
 export async function fsAdd(collection, data) {
