@@ -54,10 +54,23 @@ const DAILY: NutrientPer100g = {
   carbs: 275,
 };
 
+const GRAM_DEFAULTS: Record<string, number> = {
+  g: 1, kg: 1000, oz: 28.35, lb: 453.6,
+  ml: 1, l: 1000, floz: 29.57,
+  cup: 240, tbsp: 15, tsp: 5,
+  unit: 50, stick: 113, pinch: 0.3,
+};
+
+function estimateGrams(amount: number, unit: string): number {
+  return amount * (GRAM_DEFAULTS[unit] ?? 0);
+}
+
 export default function NutritionPanel({ ingredientGroups, yieldStr, scale }: Props) {
   const defaultServings = parseServings(yieldStr);
   const [servings, setServings] = useState<number>(defaultServings);
   const [showTotal, setShowTotal] = useState(false);
+  const [lookedUp, setLookedUp] = useState<Record<string, NutrientPer100g | null>>({});
+  const [lookupState, setLookupState] = useState<'idle' | 'loading' | 'done'>('idle');
 
   const result = calcNutrition(ingredientGroups, servings, scale);
   const display = showTotal ? result.total : result.perServing;
@@ -65,6 +78,28 @@ export default function NutritionPanel({ ingredientGroups, yieldStr, scale }: Pr
 
   const hasData = result.coveragePercent > 0;
   const unmatched = result.breakdown.filter(item => !item.matched);
+
+  async function handleLookup() {
+    setLookupState('loading');
+    const results: Record<string, NutrientPer100g | null> = {};
+    await Promise.all(
+      unmatched.map(async item => {
+        const data = await lookupNutrition(item.ingredientName);
+        results[item.name] = data ? data.nutrition : null;
+      })
+    );
+    setLookedUp(results);
+    setLookupState('done');
+  }
+
+  const lookedUpCalories = lookupState === 'done'
+    ? unmatched.reduce((sum, item) => {
+        const n = lookedUp[item.name];
+        if (!n) return sum;
+        const grams = estimateGrams(item.amount, item.unit);
+        return sum + (n.calories * grams / 100);
+      }, 0)
+    : 0;
 
   return (
     <div className="animate-fade-up space-y-4">
