@@ -375,7 +375,7 @@ export default function CookbookDetailPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
-          {recipes.map((r, i) => (
+          {sortRecipes(recipes, sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
               <RecipeTile recipe={r} />
             </div>
