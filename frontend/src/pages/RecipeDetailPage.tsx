@@ -86,6 +86,7 @@ export default function RecipeDetailPage() {
     instructions: string[];
     equipment: string[];
     image_url: string | null;
+    ai_category: string | null;
   } | null>(null);
 
   // Pantry
