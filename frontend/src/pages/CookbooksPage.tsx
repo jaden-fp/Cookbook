@@ -51,6 +51,8 @@ export default function CookbooksPage() {
   const [showImport, setShowImport] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
+  const sortBtnRef = useRef<HTMLButtonElement>(null);
+  const [sortPos, setSortPos] = useState({ top: 0, right: 0 });
   const [createName, setCreateName] = useState('');
   const [creating, setCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
