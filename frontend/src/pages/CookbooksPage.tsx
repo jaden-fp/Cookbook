@@ -28,13 +28,24 @@ function deriveSmartCookbooks(recipes: import('../types').Recipe[]): SmartCookbo
     if (!byCategory.has(r.ai_category)) byCategory.set(r.ai_category, []);
     if (r.image_url) byCategory.get(r.ai_category)!.push(r.image_url);
   }
-  return Array.from(byCategory.entries())
+  const result = Array.from(byCategory.entries())
     .map(([category, images]) => ({
       category,
       recipe_count: recipes.filter(r => r.ai_category === category).length,
       preview_images: images.slice(0, 3),
     }))
     .sort((a, b) => a.category.localeCompare(b.category));
+
+  const favs = recipes.filter(r => r.rating === 5);
+  if (favs.length > 0) {
+    result.unshift({
+      category: 'Favs',
+      recipe_count: favs.length,
+      preview_images: favs.filter(r => r.image_url).map(r => r.image_url!).slice(0, 3),
+    });
+  }
+
+  return result;
 }
 
 export default function CookbooksPage() {
