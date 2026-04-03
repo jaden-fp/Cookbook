@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { IngredientGroup } from '../types';
 import { calcNutrition, parseServings, getNutritionBadges } from '../utils/nutritionCalc';
 import type { NutrientPer100g } from '../utils/nutritionData';
+import { lookupNutrition } from '../api';
 
 interface Props {
   ingredientGroups: IngredientGroup[];
