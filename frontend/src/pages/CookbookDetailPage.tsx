@@ -285,9 +285,6 @@ export default function CookbookDetailPage() {
               {cookbook.name}
             </h1>
             <div style={{ width: '32px', height: '3px', background: 'var(--accent)', borderRadius: '2px', marginBottom: '8px' }} />
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-              {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
-            </p>
           </div>
 
           <button
