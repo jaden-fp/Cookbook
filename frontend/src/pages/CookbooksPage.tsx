@@ -19,8 +19,25 @@ function sortCookbooks(cookbooks: Cookbook[], sort: SortOption): Cookbook[] {
   }
 }
 
+function deriveSmartCookbooks(recipes: import('../types').Recipe[]): SmartCookbook[] {
+  const byCategory = new Map<string, string[]>();
+  for (const r of recipes) {
+    if (!r.ai_category) continue;
+    if (!byCategory.has(r.ai_category)) byCategory.set(r.ai_category, []);
+    if (r.image_url) byCategory.get(r.ai_category)!.push(r.image_url);
+  }
+  return Array.from(byCategory.entries())
+    .map(([category, images]) => ({
+      category,
+      recipe_count: recipes.filter(r => r.ai_category === category).length,
+      preview_images: images.slice(0, 3),
+    }))
+    .sort((a, b) => a.category.localeCompare(b.category));
+}
+
 export default function CookbooksPage() {
   const [cookbooks, setCookbooks] = useState<Cookbook[]>([]);
+  const [smartCookbooks, setSmartCookbooks] = useState<SmartCookbook[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortOption>(
     () => (localStorage.getItem('cookbooks-sort') as SortOption) ?? 'newest'
