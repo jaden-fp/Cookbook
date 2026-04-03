@@ -221,6 +221,7 @@ export default function PantryPage() {
         name: newName.trim(),
         quantity: parseFloat(newQty) || 0,
         unit: effectiveUnit,
+        needs_purchase: 1,
       });
       setItems(prev => [...prev, item]);
       setNewName('');
