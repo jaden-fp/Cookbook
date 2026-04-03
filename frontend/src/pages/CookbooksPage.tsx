@@ -50,7 +50,12 @@ export default function CookbooksPage() {
   const { setAction } = useFAB();
 
   useEffect(() => {
-    getCookbooks().then(setCookbooks).finally(() => setLoading(false));
+    Promise.all([getCookbooks(), getRecipes()])
+      .then(([cbs, recipes]) => {
+        setCookbooks(cbs);
+        setSmartCookbooks(deriveSmartCookbooks(recipes));
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
