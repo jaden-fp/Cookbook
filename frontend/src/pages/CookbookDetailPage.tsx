@@ -1,9 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import RecipeTile from '../components/RecipeTile';
 import BottomSheet from '../components/BottomSheet';
 import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook } from '../api';
 import type { Recipe, Cookbook } from '../types';
+
+type SortOption = 'az' | 'newest' | 'oldest' | 'top-rated';
+const SORT_LABELS: Record<SortOption, string> = { az: 'A → Z', newest: 'Newest', oldest: 'Oldest', 'top-rated': 'Top rated' };
+
+function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
+  const r = [...recipes];
+  if (sort === 'az') return r.sort((a, b) => a.title.localeCompare(b.title));
+  if (sort === 'newest') return r.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  if (sort === 'oldest') return r.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  if (sort === 'top-rated') return r.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  return r;
+}
 
 function AddRecipesModal({
   cookbookId,
