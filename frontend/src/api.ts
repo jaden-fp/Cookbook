@@ -201,3 +201,9 @@ export async function searchRecipes(q: string): Promise<SearchResult[]> {
   }
   return res.json();
 }
+
+export async function lookupNutrition(q: string): Promise<{ description: string; nutrition: import('./utils/nutritionData').NutrientPer100g } | null> {
+  const res = await fetch(`${BASE}/nutrition/search?q=${encodeURIComponent(q)}`);
+  if (!res.ok) return null;
+  return res.json();
+}
