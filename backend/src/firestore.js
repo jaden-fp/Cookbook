@@ -16,7 +16,7 @@ export async function getToken() {
   const now = Math.floor(Date.now() / 1000);
   const claim = {
     iss: CLIENT_EMAIL,
-    scope: 'https://www.googleapis.com/auth/datastore',
+    scope: 'https://www.googleapis.com/auth/cloud-platform',
     aud: 'https://oauth2.googleapis.com/token',
     iat: now,
     exp: now + 3600,
