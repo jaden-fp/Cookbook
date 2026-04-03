@@ -45,6 +45,8 @@ export default function CookbooksPage() {
   );
   const [showCreate, setShowCreate] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
   const [createName, setCreateName] = useState('');
   const [creating, setCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
