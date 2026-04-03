@@ -122,7 +122,7 @@ Also extract: all instructions as steps, equipment list, prep time, cook time, y
         })),
       }));
 
-    const doc = await fsAdd('recipes', {
+    const recipeData = {
       title: extracted.title || 'Untitled Recipe',
       description: extracted.description || null,
       image_url: extracted.image_url || null,
@@ -137,10 +137,21 @@ Also extract: all instructions as steps, equipment list, prep time, cook time, y
       review: null,
       bake_log: [],
       cookbook_ids: [],
+      ai_category: null,
       created_at: new Date().toISOString(),
-    });
+    };
 
-    res.json(doc);
+    const doc = await fsAdd('recipes', recipeData);
+
+    // Categorize synchronously — Haiku is fast (~1s) and category is immediately available
+    try {
+      const ai_category = await categorizeRecipe({ title: recipeData.title, ingredient_groups: ingredientGroups });
+      await fsUpdate('recipes', doc.id, { ai_category });
+      res.json({ ...doc, ai_category });
+    } catch (err) {
+      console.error('Categorization failed:', err.message);
+      res.json(doc);
+    }
   } catch (err) {
     console.error('Import error:', err?.response?.data || err.message);
     res.status(500).json({ error: err?.response?.data?.error || err.message });
