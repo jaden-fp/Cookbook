@@ -205,6 +205,7 @@ export default function RecipeDetailPage() {
       instructions: [...recipe.instructions],
       equipment: [...recipe.equipment],
       image_url: recipe.image_url ?? null,
+      ai_category: recipe.ai_category ?? null,
     });
     setIsEditing(true);
   }
