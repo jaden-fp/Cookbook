@@ -176,24 +176,47 @@ export default function CookbooksPage() {
           {loading ? '' : `${cookbooks.length} ${cookbooks.length === 1 ? 'cookbook' : 'cookbooks'}`}
         </p>
         {!loading && cookbooks.length > 0 && (
-          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-            <select
-              value={sort}
-              onChange={e => {
-                const val = e.target.value as SortOption;
-                setSort(val);
-                localStorage.setItem('cookbooks-sort', val);
+          <div ref={sortRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowSort(v => !v)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                fontFamily: 'var(--font-body)', fontWeight: 500,
+                fontSize: '0.625rem', color: 'var(--text)',
+                background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
+                borderRadius: '999px', padding: '2px 10px 2px 8px',
+                cursor: 'pointer', outline: 'none',
               }}
-              className="sort-select"
-              style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none', appearance: 'none' }}
             >
-              <option value="az">A → Z</option>
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-            </select>
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ position: 'absolute', right: '10px', pointerEvents: 'none', color: 'var(--text-muted)' }}>
-              <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+              {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first' }[sort]}
+              <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}>
+                <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {showSort && (
+              <div style={{
+                position: 'absolute', right: 0, top: 'calc(100% + 4px)', zIndex: 50,
+                background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
+                borderRadius: '10px', overflow: 'hidden', minWidth: '110px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              }}>
+                {(['az', 'newest', 'oldest'] as SortOption[]).map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => { setSort(opt); localStorage.setItem('cookbooks-sort', opt); setShowSort(false); }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 14px', border: 'none', background: opt === sort ? 'var(--accent-dim)' : 'transparent',
+                      color: opt === sort ? 'var(--accent)' : 'var(--text)',
+                      fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400,
+                      fontSize: '0.8125rem', cursor: 'pointer',
+                    }}
+                  >
+                    {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first' }[opt]}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
