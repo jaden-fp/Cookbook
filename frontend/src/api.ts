@@ -53,6 +53,7 @@ export async function updateRecipe(
     instructions?: string[];
     equipment?: string[];
     image_url?: string | null;
+    ai_category?: string | null;
   }
 ): Promise<Recipe> {
   const res = await fetch(`${BASE}/recipes/${id}`, {
