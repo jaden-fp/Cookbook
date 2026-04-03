@@ -193,11 +193,20 @@ export default function AllRecipesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
-          {sortRecipes(recipes, sort).map((r, i) => (
+          {sortRecipes(
+            search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes,
+            sort
+          ).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
               <RecipeTile recipe={r} />
             </div>
           ))}
+          {search && recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())).length === 0 && (
+            <div className="col-span-2 sm:col-span-3 text-center py-16">
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>No results</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)' }}>No recipes match "{search}"</p>
+            </div>
+          )}
         </div>
       )}
     </div>
