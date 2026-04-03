@@ -63,6 +63,7 @@ export default function NutritionPanel({ ingredientGroups, yieldStr, scale }: Pr
   const badges = getNutritionBadges(result.perServing);
 
   const hasData = result.coveragePercent > 0;
+  const unmatched = result.breakdown.filter(item => !item.matched);
 
   return (
     <div className="animate-fade-up space-y-4">
