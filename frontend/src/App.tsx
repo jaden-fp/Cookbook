@@ -8,6 +8,7 @@ import CookbooksPage from './pages/CookbooksPage';
 import AllRecipesPage from './pages/AllRecipesPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import CookbookDetailPage from './pages/CookbookDetailPage';
+import SmartCookbookDetailPage from './pages/SmartCookbookDetailPage';
 import PantryPage from './pages/PantryPage';
 
 function MobileLogo() {
