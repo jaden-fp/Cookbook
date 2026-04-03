@@ -269,6 +269,7 @@ router.patch('/:id', async (req, res) => {
   if (instructions !== undefined) updates.instructions = instructions;
   if (equipment !== undefined) updates.equipment = equipment;
   if (image_url !== undefined) updates.image_url = image_url;
+  if (ai_category !== undefined) updates.ai_category = ai_category;
   if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
   const doc = await fsUpdate('recipes', req.params.id, updates);
   res.json(doc);
