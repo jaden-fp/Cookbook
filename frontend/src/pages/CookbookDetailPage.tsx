@@ -314,7 +314,38 @@ export default function CookbookDetailPage() {
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid var(--border)', marginBottom: '28px' }} />
+      <div className="flex items-center justify-between" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', marginBottom: '28px' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+          {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
+        </p>
+        {recipes.length > 1 && (
+          <button
+            ref={sortBtnRef}
+            onClick={() => {
+              const rect = sortBtnRef.current?.getBoundingClientRect();
+              if (rect) setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right });
+              setShowSort(v => !v);
+            }}
+            className="sort-btn"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+          >
+            {SORT_LABELS[sort]}
+            <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}>
+              <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        )}
+        {showSort && createPortal(
+          <div ref={sortMenuRef} style={{ position: 'absolute', top: sortPos.top, right: sortPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '120px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+            {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
+              <button key={opt} onClick={() => { setSort(opt); setShowSort(false); }}
+                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === sort ? 'var(--accent-dim)' : 'transparent', color: opt === sort ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
+              >{SORT_LABELS[opt]}</button>
+            ))}
+          </div>,
+          document.body
+        )}
+      </div>
 
       {/* Recipes */}
       {recipes.length === 0 ? (
