@@ -283,7 +283,7 @@ router.delete('/:id', async (req, res) => {
 // POST /api/recipes/categorize-all — categorize all recipes missing ai_category
 router.post('/categorize-all', async (req, res) => {
   const recipes = await fsQuery('recipes', {});
-  const uncategorized = recipes.filter(r => !r.ai_category);
+  const uncategorized = req.query.force === 'true' ? recipes : recipes.filter(r => !r.ai_category);
   let done = 0;
   let failed = 0;
   for (const recipe of uncategorized) {
