@@ -94,6 +94,20 @@ export async function deleteRecipe(id: string): Promise<void> {
   await fetch(`${BASE}/recipes/${id}`, { method: 'DELETE' });
 }
 
+export async function uploadRecipeImage(id: string, dataUrl: string): Promise<string> {
+  const res = await fetch(`${BASE}/recipes/${id}/image`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dataUrl }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Image upload failed');
+  }
+  const data = await res.json();
+  return data.image_url;
+}
+
 export async function getCookbooks(): Promise<Cookbook[]> {
   const res = await fetch(`${BASE}/cookbooks`);
   return res.json();
