@@ -238,6 +238,24 @@ router.get('/:id/cookbooks', async (req, res) => {
   res.json(cookbooks.filter(Boolean));
 });
 
+// POST /api/recipes/:id/image — upload photo to Firebase Storage, update recipe
+router.post('/:id/image', async (req, res) => {
+  const { dataUrl } = req.body;
+  if (!dataUrl?.startsWith('data:image/')) {
+    return res.status(400).json({ error: 'Invalid image data' });
+  }
+  try {
+    const ext = dataUrl.startsWith('data:image/png') ? 'png' : 'jpg';
+    const filename = `recipe-images/${req.params.id}_${Date.now()}.${ext}`;
+    const imageUrl = await fsUploadImage(dataUrl, filename);
+    const doc = await fsUpdate('recipes', req.params.id, { image_url: imageUrl });
+    res.json({ image_url: imageUrl, recipe: doc });
+  } catch (err) {
+    console.error('Image upload error:', err.message);
+    res.status(500).json({ error: err.message || 'Upload failed' });
+  }
+});
+
 // PATCH /api/recipes/:id
 router.patch('/:id', async (req, res) => {
   const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment, image_url } = req.body;
