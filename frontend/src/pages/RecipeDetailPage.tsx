@@ -159,7 +159,8 @@ export default function RecipeDetailPage() {
           setPantryItems(prev => prev.map(p => p.id === updated.id ? updated : p));
         }
       } else {
-        const newItem = await addPantryItem({ name: ingName, quantity: 0, unit: '', needs_purchase: 1 });
+        const capitalized = ingName.replace(/(^|[\s-])(\w)/g, (_, sep, c) => sep + c.toUpperCase());
+        const newItem = await addPantryItem({ name: capitalized, quantity: 0, unit: '', needs_purchase: 1 });
         setPantryItems(prev => [...prev, newItem]);
       }
     } finally {
