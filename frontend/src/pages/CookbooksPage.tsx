@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useIsMobile } from '../hooks/useIsMobile';
 import ImportBar from '../components/ImportBar';
 import BottomSheet from '../components/BottomSheet';
 import CookbookCard from '../components/CookbookCard';
