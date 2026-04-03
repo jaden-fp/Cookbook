@@ -67,6 +67,15 @@ export default function CookbooksPage() {
   }, [setAction]);
 
   useEffect(() => {
+    if (!showSort) return;
+    const handler = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) setShowSort(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showSort]);
+
+  useEffect(() => {
     if (showCreate) {
       setTimeout(() => inputRef.current?.focus(), 50);
       const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowCreate(false); };
