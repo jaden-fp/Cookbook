@@ -1,35 +1,24 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-const VALID_CATEGORIES = ['Cookies', 'Muffins', 'Cakes', 'Breads', 'Pastries'];
+const RULES = [
+  { category: 'Cookies', keywords: ['cookie', 'cookies', 'biscuit', 'biscotti', 'shortbread', 'brownie', 'bar', 'bars', 'blondie', 'snickerdoodle', 'macaroon', 'macaron'] },
+  { category: 'Muffins',  keywords: ['muffin', 'muffins', 'cupcake', 'cupcakes'] },
+  { category: 'Cakes',    keywords: ['cake', 'cakes', 'cheesecake', 'loaf cake', 'bundt', 'torte', 'gateau', 'sponge', 'layer cake', 'pound cake', 'coffee cake', 'upside-down'] },
+  { category: 'Breads',   keywords: ['bread', 'breads', 'loaf', 'roll', 'rolls', 'bun', 'buns', 'sourdough', 'focaccia', 'brioche', 'baguette', 'scone', 'scones', 'biscuit', 'cornbread', 'flatbread'] },
+  { category: 'Pastries', keywords: ['pastry', 'pastries', 'croissant', 'danish', 'tart', 'tarts', 'pie', 'pies', 'galette', 'strudel', 'éclair', 'profiterole', 'choux', 'puff', 'turnover', 'quiche', 'cinnamon roll'] },
+];
 
 export async function categorizeRecipe({ title, ingredient_groups = [] }) {
+  const text = title.toLowerCase();
+  for (const { category, keywords } of RULES) {
+    if (keywords.some(k => text.includes(k))) return category;
+  }
+  // fallback: check first 15 ingredient names
   const ingredients = ingredient_groups
     .flatMap(g => g.ingredients || [])
     .slice(0, 15)
-    .map(i => i.name)
-    .join(', ');
-
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5',
-    max_tokens: 32,
-    system: 'You are a baked-goods classifier. Reply ONLY with a JSON object: {"category": "<value>"}. Valid values: Cookies, Muffins, Cakes, Breads, Pastries, Other. Pick the single best fit.',
-    messages: [{
-      role: 'user',
-      content: `Title: ${title}\nIngredients: ${ingredients}`,
-    }],
-  });
-
-  const text = response.content.find(b => b.type === 'text')?.text ?? '';
-  // Extract JSON even if the model adds extra whitespace or text
-  const match = text.match(/\{[^}]+\}/);
-  if (!match) return 'Other';
-
-  try {
-    const { category } = JSON.parse(match[0]);
-    return VALID_CATEGORIES.includes(category) ? category : 'Other';
-  } catch {
-    return 'Other';
+    .map(i => (i.name || '').toLowerCase())
+    .join(' ');
+  for (const { category, keywords } of RULES) {
+    if (keywords.some(k => ingredients.includes(k))) return category;
   }
+  return 'Other';
 }
