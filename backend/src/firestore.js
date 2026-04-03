@@ -10,7 +10,7 @@ const BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databas
 let _token = null;
 let _tokenExpiry = 0;
 
-async function getToken() {
+export async function getToken() {
   if (_token && Date.now() < _tokenExpiry) return _token;
 
   const now = Math.floor(Date.now() / 1000);
