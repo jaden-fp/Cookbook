@@ -25,6 +25,7 @@ export default function AllRecipesPage() {
     () => (localStorage.getItem('recipes-sort') as SortOption) ?? 'newest'
   );
   const [showImportSheet, setShowImportSheet] = useState(false);
+  const [search, setSearch] = useState('');
   const { setAction } = useFAB();
 
   useEffect(() => {
