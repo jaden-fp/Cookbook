@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Modal from './Modal';
 import StarPicker from './StarPicker';
-import { logBake, rateRecipe } from '../api';
+import { logBake, rateRecipe, uploadBakePhoto } from '../api';
 import type { Recipe } from '../types';
 
 interface Props {
@@ -18,13 +18,29 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
   const [date, setDate] = useState(todayStr());
   const [rating, setRating] = useState(recipe.rating || 0);
   const [notes, setNotes] = useState('');
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      setPhotoDataUrl(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
 
   async function handleSave() {
     if (!date) return;
     setSaving(true);
     try {
-      let updated = await logBake(recipe.id, date, notes || undefined);
+      let photo_url: string | undefined;
+      if (photoDataUrl) {
+        photo_url = await uploadBakePhoto(recipe.id, photoDataUrl);
+      }
+      let updated = await logBake(recipe.id, date, notes || undefined, photo_url);
       if (rating) {
         updated = await rateRecipe(recipe.id, rating, notes);
       }
@@ -64,6 +80,67 @@ export default function BakedModal({ recipe, onClose, onSave }: Props) {
             }}
             onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
             onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
+          />
+        </div>
+
+        {/* Photo (optional) */}
+        <div>
+          <label
+            className="block text-xs font-semibold mb-2 uppercase tracking-wider"
+            style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', letterSpacing: '0.08em' }}
+          >
+            Photo <span style={{ textTransform: 'none', fontWeight: 400 }}>(optional)</span>
+          </label>
+          {photoDataUrl ? (
+            <div className="relative" style={{ display: 'inline-block' }}>
+              <img
+                src={photoDataUrl}
+                alt="Bake preview"
+                style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: 'var(--radius-md)', display: 'block' }}
+              />
+              <button
+                onClick={() => { setPhotoDataUrl(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                style={{
+                  position: 'absolute', top: 6, right: 6,
+                  background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                  width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#fff', fontSize: '14px', lineHeight: 1,
+                }}
+                title="Remove photo"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full text-sm transition-all duration-200"
+              style={{
+                padding: '0.75rem 1rem',
+                border: '1.5px dashed var(--border-strong)',
+                borderRadius: 'var(--radius-md)',
+                background: 'var(--bg-subtle)',
+                color: 'var(--text-muted)',
+                fontFamily: 'var(--font-body)',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+              </svg>
+              Add a photo
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handlePhotoChange}
+            style={{ display: 'none' }}
           />
         </div>
 

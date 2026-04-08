@@ -1,19 +1,23 @@
 import { Link, useLocation } from 'react-router-dom';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import BottomNav from './components/BottomNav';
 import { FABProvider } from './context/FABContext';
+import { TimerProvider } from './context/TimerContext';
 import FAB from './components/FAB';
+import FloatingTimer from './components/FloatingTimer';
 import CookbooksPage from './pages/CookbooksPage';
 import AllRecipesPage from './pages/AllRecipesPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import CookbookDetailPage from './pages/CookbookDetailPage';
 import SmartCookbookDetailPage from './pages/SmartCookbookDetailPage';
 import PantryPage from './pages/PantryPage';
+import ShoppingListPage from './pages/ShoppingListPage';
+import HomePage from './pages/HomePage';
 
 function MobileLogo() {
   const { pathname } = useLocation();
-  if (/^\/recipes\/[^/]+/.test(pathname)) return null;
+  if (pathname === '/' || /^\/recipes\/[^/]+/.test(pathname)) return null;
   return (
     <Link to="/cookbooks" className="sm:hidden"
       style={{
@@ -33,24 +37,28 @@ function MobileLogo() {
 export default function App() {
   return (
     <BrowserRouter>
+      <TimerProvider>
       <FABProvider>
         <div className="min-h-screen" style={{ background: 'var(--bg)', position: 'relative' }}>
           <NavBar />
           {/* Mobile logo — scrolls with page, hidden on recipe detail, desktop hidden */}
           <MobileLogo />
           <Routes>
-            <Route path="/" element={<Navigate to="/cookbooks" replace />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/cookbooks" element={<CookbooksPage />} />
             <Route path="/cookbooks/smart/:category" element={<SmartCookbookDetailPage />} />
             <Route path="/cookbooks/:id" element={<CookbookDetailPage />} />
             <Route path="/recipes" element={<AllRecipesPage />} />
             <Route path="/recipes/:id" element={<RecipeDetailPage />} />
             <Route path="/pantry" element={<PantryPage />} />
+            <Route path="/shopping" element={<ShoppingListPage />} />
           </Routes>
           <FAB />
+          <FloatingTimer />
           <BottomNav />
         </div>
       </FABProvider>
+      </TimerProvider>
     </BrowserRouter>
   );
 }

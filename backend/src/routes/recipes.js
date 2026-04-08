@@ -158,6 +158,35 @@ Also extract: all instructions as steps, equipment list, prep time, cook time, y
   }
 });
 
+// POST /api/recipes/mark-ingredient-optional — mark a named ingredient as
+// optional across every recipe that contains it (case-insensitive substring).
+// Body: { ingredientName: string }
+router.post('/mark-ingredient-optional', async (req, res) => {
+  const { ingredientName } = req.body;
+  if (!ingredientName) return res.status(400).json({ error: 'ingredientName required' });
+  const needle = ingredientName.toLowerCase().trim();
+  const recipes = await fsQuery('recipes', {});
+  let updated = 0;
+  for (const recipe of recipes) {
+    let changed = false;
+    const groups = (recipe.ingredient_groups || []).map(g => ({
+      ...g,
+      ingredients: (g.ingredients || []).map(ing => {
+        if (!ing.optional && ing.name.toLowerCase().includes(needle)) {
+          changed = true;
+          return { ...ing, optional: true };
+        }
+        return ing;
+      }),
+    }));
+    if (changed) {
+      await fsUpdate('recipes', recipe.id, { ingredient_groups: groups });
+      updated++;
+    }
+  }
+  res.json({ total: recipes.length, updated });
+});
+
 // POST /api/recipes/migrate-group-names — one-time fix for existing recipes
 router.post('/migrate-group-names', async (_req, res) => {
   const migrateGroupName = (name, recipeTitle) => {
@@ -219,13 +248,31 @@ router.patch('/:id/rating', async (req, res) => {
 
 // POST /api/recipes/:id/bakes
 router.post('/:id/bakes', async (req, res) => {
-  const { date, notes } = req.body;
+  const { date, notes, photo_url } = req.body;
   if (!date) return res.status(400).json({ error: 'Date is required' });
   const existing = await fsGet('recipes', req.params.id);
   if (!existing) return res.status(404).json({ error: 'Recipe not found' });
-  const bake_log = [...(existing.bake_log || []), { date, notes: notes || null }];
+  const entry = { date, notes: notes || null, ...(photo_url ? { photo_url } : {}) };
+  const bake_log = [...(existing.bake_log || []), entry];
   const doc = await fsUpdate('recipes', req.params.id, { bake_log });
   res.json(doc);
+});
+
+// POST /api/recipes/:id/bake-photo — upload a bake photo, return URL
+router.post('/:id/bake-photo', async (req, res) => {
+  const { dataUrl } = req.body;
+  if (!dataUrl?.startsWith('data:image/')) {
+    return res.status(400).json({ error: 'Invalid image data' });
+  }
+  try {
+    const ext = dataUrl.startsWith('data:image/png') ? 'png' : 'jpg';
+    const filename = `bake-photos/${req.params.id}_${Date.now()}.${ext}`;
+    const photo_url = await fsUploadImage(dataUrl, filename);
+    res.json({ photo_url });
+  } catch (err) {
+    console.error('Bake photo upload error:', err.message);
+    res.status(500).json({ error: err.message || 'Upload failed' });
+  }
 });
 
 // GET /api/recipes/:id/cookbooks
@@ -258,7 +305,7 @@ router.post('/:id/image', async (req, res) => {
 
 // PATCH /api/recipes/:id
 router.patch('/:id', async (req, res) => {
-  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment, image_url, ai_category } = req.body;
+  const { title, description, prep_time, cook_time, yield: yieldAmount, ingredient_groups, instructions, equipment, image_url, ai_category, bake_log, tags } = req.body;
   const updates = {};
   if (title !== undefined) updates.title = title;
   if (description !== undefined) updates.description = description;
@@ -270,6 +317,8 @@ router.patch('/:id', async (req, res) => {
   if (equipment !== undefined) updates.equipment = equipment;
   if (image_url !== undefined) updates.image_url = image_url;
   if (ai_category !== undefined) updates.ai_category = ai_category;
+  if (bake_log !== undefined) updates.bake_log = bake_log;
+  if (tags !== undefined) updates.tags = tags;
   if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nothing to update' });
   const doc = await fsUpdate('recipes', req.params.id, updates);
   res.json(doc);

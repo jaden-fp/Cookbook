@@ -54,6 +54,7 @@ export async function updateRecipe(
     equipment?: string[];
     image_url?: string | null;
     ai_category?: string | null;
+    tags?: string[];
   }
 ): Promise<Recipe> {
   const res = await fetch(`${BASE}/recipes/${id}`, {
@@ -81,14 +82,28 @@ export async function setRecipeCookbooks(
   });
 }
 
-export async function logBake(id: string, date: string, notes?: string): Promise<Recipe> {
+export async function logBake(id: string, date: string, notes?: string, photo_url?: string): Promise<Recipe> {
   const res = await fetch(`${BASE}/recipes/${id}/bakes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ date, notes }),
+    body: JSON.stringify({ date, notes, photo_url }),
   });
   if (!res.ok) throw new Error('Failed to log bake');
   return res.json();
+}
+
+export async function uploadBakePhoto(id: string, dataUrl: string): Promise<string> {
+  const res = await fetch(`${BASE}/recipes/${id}/bake-photo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dataUrl }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Photo upload failed');
+  }
+  const data = await res.json();
+  return data.photo_url;
 }
 
 export async function deleteRecipe(id: string): Promise<void> {
@@ -254,3 +269,33 @@ export async function lookupIngredientPrice(name: string): Promise<import('./uti
   if (!res.ok) return null;
   return res.json();
 }
+
+export async function aiSearchRecipes(query: string, recipes: { id: string; title: string; description?: string | null; ai_category?: string | null; tags?: string[] }[]): Promise<string[]> {
+  const res = await fetch(`${BASE}/ai-search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, recipes }),
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.ids ?? [];
+}
+
+export async function getShelf(): Promise<string[]> {
+  const res = await fetch(`${BASE}/shelf`);
+  const data = await res.json();
+  return data.recipe_ids ?? [];
+}
+
+export async function addToShelf(recipeId: string): Promise<string[]> {
+  const res = await fetch(`${BASE}/shelf/${recipeId}`, { method: 'POST' });
+  const data = await res.json();
+  return data.recipe_ids ?? [];
+}
+
+export async function removeFromShelf(recipeId: string): Promise<string[]> {
+  const res = await fetch(`${BASE}/shelf/${recipeId}`, { method: 'DELETE' });
+  const data = await res.json();
+  return data.recipe_ids ?? [];
+}
+

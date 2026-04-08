@@ -1,0 +1,125 @@
+import type { Recipe, PantryItem } from '../types';
+
+const PANTRY_QUALIFIERS = new Set([
+  'unsalted', 'salted', 'large', 'medium', 'small', 'extra', 'extra-virgin',
+  'fresh', 'dried', 'ground', 'whole', 'pure', 'cold', 'warm', 'hot', 'frozen',
+  'organic', 'raw', 'lightly', 'finely', 'coarsely', 'packed', 'sifted',
+  'softened', 'melted', 'heavy', 'light', 'plain', 'all-purpose', 'unbleached',
+  'virgin', 'dark', 'white', 'semi-sweet', 'bittersweet', 'ripe', 'overripe',
+  'granulated', 'semisweet', 'dutch', 'dutch-process', 'process',
+  'all', 'purpose', // handle unhyphenated "all purpose flour"
+]);
+
+// Scraper artifacts that end up as ingredient names but aren't real ingredients
+const GHOST_INGREDIENT_RE = /^(room temperature|as needed|to taste|for serving|for topping|for garnish|to coat|for dusting|at room temperature)$/i;
+
+function normIngredient(s: string): string {
+  return s.toLowerCase().split(',')[0].replace(/\([^)]*\)/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function ingredientBase(s: string): string {
+  const words = s.split(/\s+/);
+  const idx = words.findIndex(w => !PANTRY_QUALIFIERS.has(w));
+  return idx === -1 ? s : words.slice(idx).join(' ');
+}
+
+/**
+ * Returns true if a recipe ingredient name is satisfied by a pantry item name.
+ *
+ * Handles:
+ * - Qualifier prefixes: "unsalted butter" → "butter"
+ * - Hyphens: "all-purpose flour" → "all purpose flour"
+ * - Singular/plural: "egg" ↔ "eggs"
+ * - "or" alternatives: "semisweet or bittersweet chocolate chips"
+ * - Bidirectional specificity: pantry "granulated sugar" covers ingredient "sugar"
+ * - Base-word match: "white sugar" and "granulated sugar" both strip to "sugar"
+ */
+export function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
+  const ing = normIngredient(ingredientName);
+  const item = normIngredient(pantryItemName);
+
+  const alts = ing.split(' or ').map(a => a.trim()).filter(Boolean);
+
+  const itemVariants = new Set([item]);
+  if (item.endsWith('s')) itemVariants.add(item.slice(0, -1));
+  else itemVariants.add(item + 's');
+
+  for (const alt of alts) {
+    for (const v of itemVariants) {
+      if (alt === v) return true;
+      // Forward: ingredient ends with pantry item (qualifying adjectives before it)
+      if (alt.endsWith(v)) {
+        const prefix = alt.slice(0, alt.length - v.length).trim();
+        if (!prefix || prefix.split(/\s+/).every(w => PANTRY_QUALIFIERS.has(w))) return true;
+      }
+      // Reverse: pantry item is more specific than ingredient
+      // e.g. pantry "granulated sugar" satisfies ingredient "sugar"
+      if (v.endsWith(alt)) {
+        const prefix = v.slice(0, v.length - alt.length).trim();
+        if (!prefix || prefix.split(/\s+/).every(w => PANTRY_QUALIFIERS.has(w))) return true;
+      }
+    }
+    // Base-word match: strip qualifiers from both sides
+    // e.g. "white sugar" (ingredient) and "granulated sugar" (pantry) both → "sugar"
+    const ingBase = ingredientBase(alt);
+    const itemBase = ingredientBase(item);
+    if (ingBase === itemBase && ingBase.length > 0) return true;
+  }
+  return false;
+}
+
+/** Returns the pantry item that covers this ingredient, or null if none. */
+export function findPantryMatch(ingredientName: string, pantryItems: PantryItem[]): PantryItem | null {
+  return pantryItems.find(item => pantryMatch(ingredientName, item.name)) ?? null;
+}
+
+export type IngStatus = 'in-stock' | 'low' | 'missing';
+
+/**
+ * Returns the status of a single ingredient against the current pantry.
+ * - 'missing': no pantry item covers this ingredient
+ * - 'low': pantry item exists but is marked low, out, or needs purchase
+ * - 'in-stock': pantry item exists and is available
+ */
+export function getIngredientStatus(ingredientName: string, pantryItems: PantryItem[]): IngStatus {
+  if (!pantryItems.length) return 'missing';
+  const match = findPantryMatch(ingredientName, pantryItems);
+  if (!match) return 'missing';
+  const s = match.status || (match.needs_purchase ? 'out' : 'in-stock');
+  if (s === 'out' || s === 'low') return 'low';
+  return 'in-stock';
+}
+
+/** Returns true if every non-optional, non-ghost ingredient has a pantry entry. */
+export function recipeAllIngredientsCovered(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+  const names = recipe.ingredient_groups
+    .flatMap(g => g.ingredients.filter(i => !i.optional).map(i => i.name.trim()))
+    .filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
+  if (names.length === 0) return false;
+  return names.every(name => pantryItems.some(item => pantryMatch(name, item.name)));
+}
+
+/** Returns coverage percentage and list of missing ingredient names. */
+export function recipeCoverage(recipe: Recipe, pantryItems: PantryItem[]): { pct: number; missing: string[] } {
+  const names = recipe.ingredient_groups
+    .flatMap(g => g.ingredients.filter(i => !i.optional).map(i => i.name.trim()))
+    .filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
+  if (names.length === 0) return { pct: 0, missing: [] };
+  const missing = names.filter(name => !pantryItems.some(item => pantryMatch(name, item.name)));
+  const pct = Math.round(((names.length - missing.length) / names.length) * 100);
+  return { pct, missing };
+}
+
+/** Returns true if any pantry-tracked ingredient for this recipe is marked out. */
+export function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+  const names = recipe.ingredient_groups
+    .flatMap(g => g.ingredients.filter(i => !i.optional).map(i => i.name.trim()))
+    .filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
+  for (const item of pantryItems) {
+    if (names.some(n => pantryMatch(n, item.name))) {
+      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
+      if (s === 'out') return true;
+    }
+  }
+  return false;
+}

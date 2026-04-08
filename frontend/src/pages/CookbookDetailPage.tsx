@@ -5,16 +5,13 @@ import RecipeTile from '../components/RecipeTile';
 import BottomSheet from '../components/BottomSheet';
 import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook, getPantryItems } from '../api';
 import type { Recipe, Cookbook, PantryItem } from '../types';
+import { pantryMatch, recipeAllIngredientsCovered, recipeHasOutOfStock } from '../utils/pantryMatch';
 
 function getRecipeReadiness(recipe: Recipe, pantryItems: PantryItem[]): 'green' | 'yellow' | 'red' | undefined {
-  const ingredientNames = recipe.ingredient_groups.flatMap(g =>
-    g.ingredients.map(i => i.name.toLowerCase())
-  );
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
   let hasMatch = false, hasLow = false, hasOut = false;
   for (const item of pantryItems) {
-    const escaped = item.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const re = new RegExp(`\\b${escaped}\\b`);
-    if (ingredientNames.some(n => re.test(n))) {
+    if (names.some(n => pantryMatch(n, item.name))) {
       hasMatch = true;
       const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
       if (s === 'out') hasOut = true;
@@ -30,32 +27,12 @@ function getRecipeReadiness(recipe: Recipe, pantryItems: PantryItem[]): 'green' 
 type SortOption = 'az' | 'newest' | 'oldest' | 'top-rated';
 const SORT_LABELS: Record<SortOption, string> = { az: 'A → Z', newest: 'Newest', oldest: 'Oldest', 'top-rated': 'Top rated' };
 
-type FilterOption = 'all' | 'ready' | 'out' | 'rated' | 'unrated';
+type FilterOption = 'all' | 'ready' | 'out' | 'rated' | 'unrated' | 'stale';
 const FILTER_LABELS: Record<FilterOption, string> = {
-  all: 'Filter', ready: 'Ready to bake', out: 'Missing ingredients', rated: 'Rated', unrated: 'Unrated',
+  all: 'Filter', ready: 'Ready to bake', out: 'Missing ingredients', rated: 'Rated', unrated: 'Unrated', stale: 'Not baked in 3+ months',
 };
 
-function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
-  const escaped = pantryItemName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`\\b${escaped}\\b`).test(ingredientName.toLowerCase());
-}
-
-function recipeAllIngredientsCovered(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
-  if (names.length === 0) return false;
-  return names.every(name => pantryItems.some(item => pantryMatch(name, item.name)));
-}
-
-function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
-  for (const item of pantryItems) {
-    if (names.some(n => pantryMatch(n, item.name))) {
-      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
-      if (s === 'out') return true;
-    }
-  }
-  return false;
-}
+const STALE_MS = 90 * 24 * 60 * 60 * 1000;
 
 function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: PantryItem[]): Recipe[] {
   switch (filter) {
@@ -63,6 +40,11 @@ function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: Pantr
     case 'out':     return recipes.filter(r => recipeHasOutOfStock(r, pantryItems));
     case 'rated':   return recipes.filter(r => r.rating != null);
     case 'unrated': return recipes.filter(r => r.rating == null);
+    case 'stale':   return recipes.filter(r => {
+      if (!r.bake_log?.length) return false;
+      const latest = Math.max(...r.bake_log.map(e => new Date(e.date).getTime()));
+      return Date.now() - latest >= STALE_MS;
+    });
     default:        return recipes;
   }
 }
@@ -406,7 +388,7 @@ export default function CookbookDetailPage() {
           </button>
           {showFilter && createPortal(
             <div ref={filterMenuRef} style={{ position: 'absolute', top: filterPos.top, right: filterPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '160px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
-              {(['all', 'ready', 'out', 'rated', 'unrated'] as FilterOption[]).map(opt => (
+              {(['all', 'ready', 'out', 'rated', 'unrated', 'stale'] as FilterOption[]).map(opt => (
                 <button key={opt} onClick={() => { setFilter(opt); setShowFilter(false); }}
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === filter ? 'var(--accent-dim)' : 'transparent', color: opt === filter ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === filter ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
                 >{FILTER_LABELS[opt]}</button>
@@ -479,7 +461,7 @@ export default function CookbookDetailPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {sortRecipes(applyFilter(recipes, filter, pantryItems), sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
-              <RecipeTile recipe={r} />
+              <RecipeTile recipe={r} pantryItems={pantryItems} />
             </div>
           ))}
         </div>

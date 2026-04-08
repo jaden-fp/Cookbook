@@ -4,6 +4,8 @@
  * Prices based on Trader Joe's / Kroger averages (2024–2026).
  */
 
+import { splitCompound } from './scaleAmount';
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type PackageUnit = 'cup' | 'tsp' | 'tbsp' | 'floz' | 'oz' | 'lb' | 'g' | 'piece';
@@ -21,6 +23,13 @@ export interface PriceOverride {
   packagePrice: number;
   packageAmount: number;
   packageUnit: PackageUnit;
+}
+
+export interface AIPrice {
+  packagePrice: number;
+  packageAmount: number;
+  packageUnit: PackageUnit;
+  densityGPerCup?: number | null;
 }
 
 export interface CostResult {
@@ -485,6 +494,31 @@ export function hasUserOverride(key: string): boolean {
   return key in getOverrides();
 }
 
+// ── AI price cache ────────────────────────────────────────────────────────────
+
+const AI_LS_KEY = 'ingredient-ai-prices-v1';
+
+function getAIPriceCache(): Record<string, AIPrice> {
+  try {
+    const raw = localStorage.getItem(AI_LS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, AIPrice>) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function getAIPrice(name: string): AIPrice | null {
+  return getAIPriceCache()[name.toLowerCase()] ?? null;
+}
+
+export function setAIPrice(name: string, price: AIPrice): void {
+  try {
+    const cache = getAIPriceCache();
+    cache[name.toLowerCase()] = price;
+    localStorage.setItem(AI_LS_KEY, JSON.stringify(cache));
+  } catch {}
+}
+
 // ── Derived prices from a package entry ───────────────────────────────────────
 
 interface DerivedPrices {
@@ -635,9 +669,9 @@ function parseAmount(s: string): number | null {
 
 // ── Main exports ──────────────────────────────────────────────────────────────
 
-export function estimateCost(amount: string, unit: string, name: string, scale = 1): CostResult {
+export function estimateCost(amount: string, unit: string, name: string, scale = 1, aiPrice?: AIPrice | null): CostResult {
   const entry = findEntry(name);
-  if (!entry) return { cost: null, display: '—' };
+  if (!entry && !aiPrice) return { cost: null, display: '—' };
 
   // Strip unit from amount if accidentally embedded
   let cleanAmount = amount.trim();
@@ -653,7 +687,11 @@ export function estimateCost(amount: string, unit: string, name: string, scale =
   const scaledQty = qty * scale;
   const unitLower = unit.toLowerCase().trim();
 
-  const { pricePerCup, pricePerGram, pricePerPiece } = getEffectiveDerived(entry);
+  // Use database entry if found, otherwise fall back to AI price
+  const derived = entry
+    ? getEffectiveDerived(entry)
+    : derivePrices(aiPrice!.packagePrice, aiPrice!.packageAmount, aiPrice!.packageUnit, aiPrice!.densityGPerCup ?? undefined);
+  const { pricePerCup, pricePerGram, pricePerPiece } = derived;
 
   let cost: number | null = null;
 
@@ -680,12 +718,14 @@ export function estimateCost(amount: string, unit: string, name: string, scale =
 export function totalCost(
   ingredientGroups: { ingredients: { amount: string; unit: string; name: string }[] }[],
   scale = 1,
+  aiPriceMap: Record<string, AIPrice> = {},
 ): number | null {
   let total = 0;
   let hasAny = false;
   for (const group of ingredientGroups) {
     for (const ing of group.ingredients) {
-      const { cost } = estimateCost(ing.amount, ing.unit, ing.name, scale);
+      const aiPrice = aiPriceMap[ing.name.toLowerCase()];
+      const { cost } = estimateCost(ing.amount, ing.unit, ing.name, scale, aiPrice);
       if (cost != null) { total += cost; hasAny = true; }
     }
   }
@@ -695,13 +735,15 @@ export function totalCost(
 export function costCoverage(
   groups: { ingredients: { amount: string; unit: string; name: string }[] }[],
   scale = 1,
+  aiPriceMap: Record<string, AIPrice> = {},
 ): { priced: number; total: number } {
   let total = 0;
   let priced = 0;
   for (const group of groups) {
     for (const ing of group.ingredients) {
       total++;
-      const { cost } = estimateCost(ing.amount, ing.unit, ing.name, scale);
+      const aiPrice = aiPriceMap[ing.name.toLowerCase()];
+      const { cost } = estimateCost(ing.amount, ing.unit, ing.name, scale, aiPrice);
       if (cost != null) priced++;
     }
   }

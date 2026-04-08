@@ -5,38 +5,15 @@ import ImportBar from '../components/ImportBar';
 import RecipeImportLoader from '../components/RecipeImportLoader';
 import BottomSheet from '../components/BottomSheet';
 import RecipeTile from '../components/RecipeTile';
-import { getRecipes, importRecipe, getPantryItems } from '../api';
+import { getRecipes, importRecipe, getPantryItems, aiSearchRecipes } from '../api';
 import { useFAB } from '../context/FABContext';
 import type { Recipe, PantryItem } from '../types';
-
-function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
-  const escaped = pantryItemName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`\\b${escaped}\\b`).test(ingredientName.toLowerCase());
-}
-
-/** Returns true if EVERY recipe ingredient has a matching pantry item. */
-function recipeAllIngredientsCovered(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
-  if (names.length === 0) return false;
-  return names.every(name => pantryItems.some(item => pantryMatch(name, item.name)));
-}
-
-/** Returns true if any pantry-tracked ingredient is explicitly marked "out". */
-function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
-  for (const item of pantryItems) {
-    if (names.some(n => pantryMatch(n, item.name))) {
-      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
-      if (s === 'out') return true;
-    }
-  }
-  return false;
-}
+import { recipeAllIngredientsCovered, recipeHasOutOfStock, recipeCoverage } from '../utils/pantryMatch';
 
 const URL_RE = /^https?:\/\/.+/i;
 
-type SortOption = 'az' | 'newest' | 'oldest' | 'rating';
-type FilterOption = 'all' | 'ready' | 'out' | 'rated' | 'unrated';
+type SortOption = 'az' | 'newest' | 'oldest' | 'rating' | 'coverage';
+type FilterOption = 'all' | 'ready' | 'out' | 'rated' | 'unrated' | 'stale';
 
 const FILTER_LABELS: Record<FilterOption, string> = {
   all: 'Filter',
@@ -44,26 +21,34 @@ const FILTER_LABELS: Record<FilterOption, string> = {
   out: 'Missing ingredients',
   rated: 'Rated',
   unrated: 'Unrated',
+  stale: 'Not baked in 3+ months',
 };
+
+const STALE_MS = 90 * 24 * 60 * 60 * 1000;
 
 function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: PantryItem[]): Recipe[] {
   switch (filter) {
-    // "Ready": every ingredient must have a pantry entry, and none are "out"
     case 'ready':   return recipes.filter(r => recipeAllIngredientsCovered(r, pantryItems) && !recipeHasOutOfStock(r, pantryItems));
     case 'out':     return recipes.filter(r => recipeHasOutOfStock(r, pantryItems));
     case 'rated':   return recipes.filter(r => r.rating != null);
     case 'unrated': return recipes.filter(r => r.rating == null);
+    case 'stale':   return recipes.filter(r => {
+      if (!r.bake_log?.length) return false;
+      const latest = Math.max(...r.bake_log.map(e => new Date(e.date).getTime()));
+      return Date.now() - latest >= STALE_MS;
+    });
     default:        return recipes;
   }
 }
 
-function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
+function sortRecipes(recipes: Recipe[], sort: SortOption, pantryItems: PantryItem[] = []): Recipe[] {
   const sorted = [...recipes];
   switch (sort) {
-    case 'az':      return sorted.sort((a, b) => a.title.localeCompare(b.title));
-    case 'newest':  return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    case 'oldest':  return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-    case 'rating':  return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    case 'az':       return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    case 'newest':   return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    case 'oldest':   return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    case 'rating':   return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    case 'coverage': return sorted.sort((a, b) => recipeCoverage(b, pantryItems).pct - recipeCoverage(a, pantryItems).pct);
   }
 }
 
@@ -78,6 +63,7 @@ export default function AllRecipesPage() {
   const [filter, setFilter] = useState<FilterOption>(
     () => (localStorage.getItem('recipes-filter') as FilterOption) ?? 'all'
   );
+  const [activeTag, setActiveTag] = useState<string | null>(null);
   const [showImportSheet, setShowImportSheet] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -97,9 +83,28 @@ export default function AllRecipesPage() {
   // Mobile-only search
   const [mobileSearch, setMobileSearch] = useState('');
 
+  // AI search
+  const [aiMode, setAiMode] = useState(false);
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiResultIds, setAiResultIds] = useState<string[] | null>(null);
+  const [aiSearching, setAiSearching] = useState(false);
+
   const isUrl = URL_RE.test(smartInput.trim());
   // Active search term: desktop uses smartInput when not a URL, mobile uses mobileSearch
   const search = smartInput && !isUrl ? smartInput : mobileSearch;
+
+  async function handleAiSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (!aiQuery.trim() || aiSearching) return;
+    setAiSearching(true);
+    try {
+      const catalog = recipes.map(r => ({ id: r.id, title: r.title, description: r.description, ai_category: r.ai_category, tags: r.tags }));
+      const ids = await aiSearchRecipes(aiQuery.trim(), catalog);
+      setAiResultIds(ids);
+    } finally {
+      setAiSearching(false);
+    }
+  }
 
   async function handleSmartImport(e: React.FormEvent) {
     e.preventDefault();
@@ -267,6 +272,62 @@ export default function AllRecipesPage() {
         )}
       </div>
 
+      {/* AI Search bar */}
+      {aiMode && (
+        <form onSubmit={handleAiSearch} className="mb-4 animate-fade-up">
+          <div style={{
+            display: 'flex', alignItems: 'stretch', overflow: 'hidden',
+            borderRadius: '999px', border: '1.5px solid var(--accent)',
+            background: 'var(--surface)', boxShadow: '0 0 0 3px var(--accent-dim)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '14px', color: 'var(--accent)', flexShrink: 0 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)">
+                <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+                <path d="M19 3C19 3 19.5 5.5 21.5 6C19.5 6.5 19 9 19 9C19 9 18.5 6.5 16.5 6C18.5 5.5 19 3 19 3Z"/>
+              </svg>
+            </div>
+            <input
+              autoFocus
+              type="text"
+              value={aiQuery}
+              onChange={e => { setAiQuery(e.target.value); if (aiResultIds) setAiResultIds(null); }}
+              placeholder="I'm craving something chocolatey…"
+              style={{
+                flex: 1, border: 'none', outline: 'none',
+                fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                color: 'var(--text)', padding: '11px 10px', background: 'transparent', minWidth: 0,
+              }}
+            />
+            <button
+              type="submit"
+              disabled={!aiQuery.trim() || aiSearching}
+              className="shrink-0 disabled:opacity-40"
+              style={{
+                background: 'var(--accent)', color: '#fff', border: 'none',
+                borderRadius: '999px', fontFamily: 'var(--font-body)', fontWeight: 700,
+                fontSize: '0.875rem', padding: '0 1.25rem', margin: '4px', cursor: 'pointer',
+              }}
+            >
+              {aiSearching ? '…' : 'Ask'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAiMode(false); setAiQuery(''); setAiResultIds(null); }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0 12px 0 4px', display: 'flex', alignItems: 'center' }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          {aiResultIds !== null && (
+            <p style={{ marginTop: '6px', paddingLeft: '1rem', fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--accent)' }}>
+              {aiResultIds.length > 0 ? `Found ${aiResultIds.length} matches` : 'No matches found — try a different description'}
+            </p>
+          )}
+        </form>
+      )}
+
       <BottomSheet open={showImportSheet} onClose={() => setShowImportSheet(false)} title="Import Recipe">
         <ImportBar onSuccess={() => getRecipes().then(setRecipes)} />
       </BottomSheet>
@@ -285,6 +346,25 @@ export default function AllRecipesPage() {
 
         {!loading && recipes.length > 0 && (
           <div className="flex items-center gap-2">
+
+            {/* AI search toggle */}
+            <button
+              onClick={() => { setAiMode(v => !v); if (aiMode) { setAiQuery(''); setAiResultIds(null); } }}
+              className="sort-btn"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                fontFamily: 'var(--font-body)', fontWeight: aiMode ? 600 : 500,
+                color: aiMode ? 'var(--accent)' : 'var(--text)',
+                background: aiMode ? 'var(--accent-dim)' : 'var(--surface)',
+                border: aiMode ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
+                borderRadius: '999px', cursor: 'pointer', outline: 'none',
+              }}
+            >
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+              </svg>
+              Ask AI
+            </button>
 
             {/* Filter button */}
             <div style={{ position: 'relative' }}>
@@ -329,7 +409,7 @@ export default function AllRecipesPage() {
                     boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                   }}
                 >
-                  {(['all', 'ready', 'out', 'rated', 'unrated'] as FilterOption[]).map(opt => (
+                  {(['all', 'ready', 'out', 'rated', 'unrated', 'stale'] as FilterOption[]).map(opt => (
                     <button key={opt}
                       onClick={() => { setFilter(opt); localStorage.setItem('recipes-filter', opt); setShowFilter(false); }}
                       style={{
@@ -367,7 +447,7 @@ export default function AllRecipesPage() {
                   borderRadius: '999px', cursor: 'pointer', outline: 'none',
                 }}
               >
-                {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated' }[sort]}
+                {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated', coverage: 'What can I make' }[sort]}
                 <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}>
                   <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -381,7 +461,7 @@ export default function AllRecipesPage() {
                     boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                   }}
                 >
-                  {(['az', 'newest', 'oldest', 'rating'] as SortOption[]).map(opt => (
+                  {(['az', 'newest', 'oldest', 'rating', 'coverage'] as SortOption[]).map(opt => (
                     <button key={opt}
                       onClick={() => { setSort(opt); localStorage.setItem('recipes-sort', opt); setShowSort(false); }}
                       style={{
@@ -393,7 +473,7 @@ export default function AllRecipesPage() {
                         fontSize: '0.8125rem', cursor: 'pointer',
                       }}
                     >
-                      {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated' }[opt]}
+                      {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated', coverage: 'What can I make' }[opt]}
                     </button>
                   ))}
                 </div>,
@@ -405,6 +485,32 @@ export default function AllRecipesPage() {
         )}
       </div>
 
+      {/* Tag filter chips */}
+      {!loading && (() => {
+        const allTags = [...new Set(recipes.flatMap(r => r.tags ?? []))].sort();
+        if (!allTags.length) return null;
+        return (
+          <div className="flex gap-2 flex-wrap mb-6 animate-fade-up">
+            {allTags.map(tag => {
+              const active = activeTag === tag;
+              return (
+                <button key={tag} onClick={() => setActiveTag(active ? null : tag)}
+                  style={{
+                    padding: '4px 12px', borderRadius: '999px', border: '1.5px solid',
+                    borderColor: active ? 'var(--accent)' : 'var(--border-strong)',
+                    background: active ? 'var(--accent-dim)' : 'var(--surface)',
+                    color: active ? 'var(--accent)' : 'var(--text-muted)',
+                    fontFamily: 'var(--font-body)', fontSize: '0.75rem',
+                    fontWeight: active ? 700 : 400, cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Grid */}
       {loading ? (
@@ -437,8 +543,12 @@ export default function AllRecipesPage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {(() => {
-            const searched = search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes;
-            const displayed = sortRecipes(applyFilter(searched, filter, pantryItems), sort);
+            const base = aiResultIds
+              ? recipes.filter(r => aiResultIds.includes(r.id)).sort((a, b) => aiResultIds.indexOf(a.id) - aiResultIds.indexOf(b.id))
+              : (search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes);
+            const filtered = aiResultIds ? base : applyFilter(base, filter, pantryItems);
+            const tagFiltered = activeTag ? filtered.filter(r => r.tags?.includes(activeTag)) : filtered;
+            const displayed = aiResultIds ? tagFiltered : sortRecipes(tagFiltered, sort, pantryItems);
             if (displayed.length === 0) return (
               <div className="col-span-2 sm:col-span-3 text-center py-16">
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>No results</p>
@@ -449,7 +559,7 @@ export default function AllRecipesPage() {
             );
             return displayed.map((r, i) => (
               <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
-                <RecipeTile recipe={r} />
+                <RecipeTile recipe={r} pantryItems={pantryItems} />
               </div>
             ));
           })()}

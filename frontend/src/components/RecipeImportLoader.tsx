@@ -1,67 +1,70 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-// Stage 0: Mixing Bowl (0–33%)
-const MIXING_PUNS = [
-  "I told my dough a joke. It didn't rise to the occasion.",
-  "I tried to make a belt out of bread. Total waist of dough.",
-  "I burned my Hawaiian pizza. Should've used aloha temperature.",
-  "Knead I say more?",
-  "Flour is just wheat that got its life together.",
-  "The dough isn't sticky — it's just emotionally clingy.",
-  "Unsalted butter is just butter that gave up.",
-  "Cold butter builds character. Also pastry.",
-  "I have trust issues with recipes that say 'a pinch of salt.'",
-  "Room temperature eggs. It's not a suggestion. It's a warning.",
-  "Some people find baking relaxing. Those people have never made croissants.",
-  "Folding in the flour is just stirring for people who've been humbled.",
-  "The eggs were cage-free. The puns are not.",
-  "The recipe said to mix until smooth. We've been at it for eleven minutes.",
-  "Every cookie is a little different. Like children, but edible.",
-  "Why did the baker quit? He kneaded a break.",
+const ALL_PUNS = [
+  'Whisking up your link…',
+  'Just a batter of time...',
+  "We're baking it happen!",
+  'Good things come to those who bake!',
+  'Proofing your request...',
+  "Please don't dessert us.",
+  'Rising to the occasion!',
+  'Accepting all cookies...',
+  'Taking a mega-bite...',
+  'Preheating the servers...',
+  'Taking this to the next layer...',
+  'This is going to be a piece of cake.',
+  'Getting a little hot in here...',
+  'Frosting the details...',
+  "Any way you slice it, it's almost done!",
+  'I knead you to wait...',
+  "Butter believe it's loading!",
+  'Bake it till you make it.',
+  "Let's get ready to crumble.",
+  'Whisk me away!',
+  'Muffin compares to this wait.',
+  'I loaf you for being patient.',
+  'History in the baking.',
+  "Don't go breaking my tart.",
+  'Bready or not, here I crumb!',
+  'Life is what you bake it.',
+  "I'm on a roll. A cinnamon roll!",
+  "Doughn't worry, it's coming.",
+  'This is the yeast I could do.',
+  "You're the icing on the cake.",
+  'Sweet things take time.',
+  'Sugar-coating the loading bar...',
+  'Sifting through the files...',
+  "You're the zest!",
+  "Holy crepe, it's almost done!",
+  'Donut close the app!',
+  'Please stand pie...',
+  'Whisk-y business ahead...',
+  'Hold your croissants!',
+  'Rolling out the red velvet...',
+  'Choux-ing away the bugs...',
+  'Baking sure everything is perfect!',
+  'This loading screen is half-baked.',
+  'Whipping it into shape...',
+  'Piping the final pixels...',
+  'Baking the internet great again...',
+  'Oh my ganache, just a few more seconds...',
+  'Brownie points for your patience!',
+  'Muffin to see here, just loading...',
+  'Gathering the final crumbs...',
+  'Oh fudge, still processing.',
+  'Baking the world a batter place.',
+  "Challah at me when it's done!",
+  'Torte-ly worth the wait!',
+  'Piping hot content coming right up!',
+  "We're preheating the servers to 350 degrees, please stand pie.",
+  'Whipping the data together until it forms stiff peaks.',
+  "Don't close the app, or your data soufflé might collapse!",
+  'Letting the dough rise so your content is perfectly fluffy.',
+  "We promise this wait will be a lot better than getting a soggy bottom!",
+  "We're currently stuck in a sticky bun situation, please hold.",
+  'Beating the butter and sugar together until light, fluffy, and fully downloaded.',
 ];
-
-// Stage 1: Oven (33–67%)
-const BAKING_PUNS = [
-  "Opening the oven early is how you ruin things and also friendships.",
-  "The toothpick came out clean. We don't believe it either.",
-  "Golden brown is a feeling, not a temperature.",
-  "That smell coming from the oven? That's ambition.",
-  "The loaf is very full of itself. Upper crust behavior.",
-  "We'd never half-bake a recipe. Our integrity is intact.",
-  "The oven is preheated. There's no going back now.",
-  "Sourdough starter is just a pet you have to feed or it dies.",
-  "Everything is fine. We're rotating the pan. It's fine.",
-  "If it smells burnt, it's not burnt. It's caramelized. Stay calm.",
-  "Bread is just cake that decided to take itself seriously.",
-  "The timer went off. That doesn't mean it's done. Never means it's done.",
-  "This recipe is really proving itself right now.",
-  "Convection ovens are regular ovens with a superiority complex.",
-  "A watched oven never browns. So we're not looking.",
-  "The Maillard reaction is just science's way of saying 'nice crust.'",
-];
-
-// Stage 2: Decorating / Finishing (67–100%)
-const DECORATING_PUNS = [
-  "The crumb coat is a rough draft. We respect rough drafts.",
-  "Frosting is mostly butter and confidence.",
-  "A cake without sprinkles is just bread with commitment issues.",
-  "The ganache knows what it did. We're letting it cool.",
-  "Piping rosettes is the closest most of us get to fine art.",
-  "Salt on top of chocolate is not controversial. It's correct.",
-  "A soggy bottom is a personal failure and we refuse.",
-  "The sprinkles are non-negotiable at this point.",
-  "The cake is not a lie. We checked.",
-  "Inverting the cake is the most stressful two seconds in baking.",
-  "The recipe said 'let cool completely.' We gave it three minutes.",
-  "Edible glitter is just glamour you can digest.",
-  "What did the cake say to the fork? 'You want a piece of me?'",
-  "Every slice is a fresh start. And also dessert.",
-  "I'm on a roll. A cinnamon roll.",
-  "The soufflé looked me dead in the eyes and fell. I respect the commitment.",
-];
-
-const PUNS_BY_STAGE = [MIXING_PUNS, BAKING_PUNS, DECORATING_PUNS];
 
 const SPRINKLES: Array<{ x: number; y: number; color: string; angle: number; delay: number }> = [
   { x: 64,  y: 70, color: '#F46696', angle: 35,  delay: 0   },
@@ -611,11 +614,19 @@ function LoadingBar({ progress }: { progress: number }) {
 
 interface Props { url?: string; }
 
+function randomPunIndex(last: number): number {
+  if (ALL_PUNS.length === 1) return 0;
+  let next: number;
+  do { next = Math.floor(Math.random() * ALL_PUNS.length); } while (next === last);
+  return next;
+}
+
 export default function RecipeImportLoader({ url }: Props) {
-  const [punIndex, setPunIndex] = useState(0);
+  const [punIndex, setPunIndex] = useState(() => Math.floor(Math.random() * ALL_PUNS.length));
   const [punVisible, setPunVisible] = useState(true);
   const [elapsed, setElapsed] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
+  const lastPunRef = useRef(punIndex);
 
   useEffect(() => {
     const start = Date.now();
@@ -629,23 +640,27 @@ export default function RecipeImportLoader({ url }: Props) {
   // Stage thresholds
   const stage = progress < 33 ? 0 : progress < 67 ? 1 : 2;
 
-  // When stage changes, immediately swap to a random pun from the new stage's pool
+  // When stage changes, swap to a new random pun (no repeat)
   useEffect(() => {
     if (stage === currentStage) return;
     setCurrentStage(stage);
     setPunVisible(false);
     setTimeout(() => {
-      setPunIndex(Math.floor(Math.random() * PUNS_BY_STAGE[stage].length));
+      const next = randomPunIndex(lastPunRef.current);
+      lastPunRef.current = next;
+      setPunIndex(next);
       setPunVisible(true);
     }, 400);
   }, [stage, currentStage]);
 
-  // Cycle through puns within the current stage
+  // Cycle puns every 4s, never repeating the last one
   useEffect(() => {
     const id = setInterval(() => {
       setPunVisible(false);
       setTimeout(() => {
-        setPunIndex(i => (i + 1) % PUNS_BY_STAGE[currentStage].length);
+        const next = randomPunIndex(lastPunRef.current);
+        lastPunRef.current = next;
+        setPunIndex(next);
         setPunVisible(true);
       }, 400);
     }, 4000);
@@ -749,7 +764,7 @@ export default function RecipeImportLoader({ url }: Props) {
           </div>
 
           {/* ── Pun bubble (updates independently) ── */}
-          <PunBubble text={PUNS_BY_STAGE[currentStage][punIndex]} visible={punVisible} />
+          <PunBubble text={ALL_PUNS[punIndex]} visible={punVisible} />
 
           {/* ── Continuous loading bar ── */}
           <LoadingBar progress={progress} />

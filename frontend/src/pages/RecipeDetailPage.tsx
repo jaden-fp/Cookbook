@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe, updateBakeLog, getCookbooks, createCookbook, addRecipesToCookbook, getRecipeCookbooks, setRecipeCookbooks, lookupIngredientPrice } from '../api';
+import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe, updateBakeLog, getCookbooks, createCookbook, addRecipesToCookbook, getRecipeCookbooks, setRecipeCookbooks, lookupIngredientPrice, getShelf, addToShelf, removeFromShelf } from '../api';
 import type { BakeEntry } from '../types';
 import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
@@ -12,6 +12,7 @@ import { estimateCost, totalCost, costCoverage, hasUserOverride, setUserOverride
 import type { PackageUnit, AIPrice } from '../utils/ingredientCost';
 import NutritionPanel from '../components/NutritionPanel';
 import BakingMode from '../components/BakingMode';
+import { findPantryMatch, getIngredientStatus, type IngStatus } from '../utils/pantryMatch';
 
 type Tab = 'ingredients' | 'instructions' | 'nutrition' | 'cost';
 
@@ -26,6 +27,7 @@ function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (l
   const [editDate, setEditDate] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [saving, setSaving] = useState(false);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   function startEdit(origIdx: number, entry: BakeEntry) {
     setEditingIdx(origIdx);
@@ -37,7 +39,7 @@ function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (l
     if (editingIdx === null) return;
     setSaving(true);
     const updated = entries.map((e, i) =>
-      i === editingIdx ? { date: editDate, notes: editNotes || null } : e
+      i === editingIdx ? { ...e, date: editDate, notes: editNotes || null } : e
     );
     onUpdate(updated);
     setEditingIdx(null);
@@ -61,6 +63,24 @@ function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (l
           {entries.length} {entries.length === 1 ? 'time' : 'times'}
         </span>
       </div>
+      {lightboxUrl && createPortal(
+        <div
+          onClick={() => setLightboxUrl(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out',
+          }}
+        >
+          <img
+            src={lightboxUrl}
+            alt="Bake photo"
+            style={{ maxWidth: '95vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }}
+          />
+        </div>,
+        document.body
+      )}
       <div className="space-y-2">
         {sorted.map(({ origIdx, ...entry }) => (
           <div key={origIdx}>
@@ -115,37 +135,51 @@ function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (l
                 </div>
               </div>
             ) : (
-              <div className="flex items-start gap-3 py-2 px-3 rounded-xl group" style={{ background: 'var(--bg-subtle)' }}>
-                <div className="shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style={{ background: 'var(--accent)' }} />
-                <div className="flex-1 min-w-0">
-                  <span className="text-sm font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
-                    {formatBakeDate(entry.date)}
-                  </span>
-                  {entry.notes && (
-                    <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
-                      {entry.notes}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              <div className="rounded-xl group overflow-hidden" style={{ background: 'var(--bg-subtle)' }}>
+                {entry.photo_url && (
                   <button
-                    onClick={() => startEdit(origIdx, entry)}
-                    title="Edit"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                    onClick={() => setLightboxUrl(entry.photo_url!)}
+                    style={{ display: 'block', width: '100%', padding: 0, border: 'none', background: 'none', cursor: 'zoom-in' }}
                   >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
+                    <img
+                      src={entry.photo_url}
+                      alt="Bake photo"
+                      style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }}
+                    />
                   </button>
-                  <button
-                    onClick={() => deleteEntry(origIdx)}
-                    title="Delete"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
-                    </svg>
-                  </button>
+                )}
+                <div className="flex items-start gap-3 py-2 px-3">
+                  <div className="shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style={{ background: 'var(--accent)' }} />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
+                      {formatBakeDate(entry.date)}
+                    </span>
+                    {entry.notes && (
+                      <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
+                        {entry.notes}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                    <button
+                      onClick={() => startEdit(origIdx, entry)}
+                      title="Edit"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => deleteEntry(origIdx)}
+                      title="Delete"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -155,7 +189,7 @@ function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (l
     </div>
   );
 }
-type IngStatus = 'in-stock' | 'low' | 'missing';
+// IngStatus imported from ../utils/pantryMatch
 
 
 const STATUS_DOT: Record<IngStatus, string> = {
@@ -175,6 +209,7 @@ export default function RecipeDetailPage() {
   const [scale, setScale] = useState(1);
   const [scaleInput, setScaleInput] = useState('1');
   const [customCatInput, setCustomCatInput] = useState('');
+  const [tagInput, setTagInput] = useState('');
   const [showBaked, setShowBaked] = useState(false);
   const [showBaking, setShowBaking] = useState(false);
   const [showCookbook, setShowCookbook] = useState(false);
@@ -191,6 +226,7 @@ export default function RecipeDetailPage() {
     equipment: string[];
     image_url: string | null;
     ai_category: string | null;
+    tags: string[];
   } | null>(null);
 
   // Pantry
@@ -201,6 +237,8 @@ export default function RecipeDetailPage() {
   const [addingAll, setAddingAll] = useState(false);
   const [queuing, setQueuing] = useState(false);
   const [isQueued, setIsQueued] = useState(false);
+  const [isOnShelf, setIsOnShelf] = useState(false);
+  const [shelving, setShelving] = useState(false);
 
   // Cost tab price editing
   const [editingPriceKey, setEditingPriceKey] = useState<string | null>(null);
@@ -221,6 +259,7 @@ export default function RecipeDetailPage() {
     getRecipeCookbooks(id).then(books => {
       setIsQueued(books.some(b => b.name.toLowerCase() === 'queued'));
     }).catch(() => {});
+    getShelf().then(ids => setIsOnShelf(ids.includes(id))).catch(() => {});
   }, [id]);
 
   useEffect(() => {
@@ -283,6 +322,22 @@ export default function RecipeDetailPage() {
     }).finally(() => setFetchingAI(false));
   }, [tab, recipe?.id]);
 
+  async function handleShelf() {
+    if (!recipe || shelving) return;
+    setShelving(true);
+    try {
+      if (isOnShelf) {
+        await removeFromShelf(recipe.id);
+        setIsOnShelf(false);
+      } else {
+        await addToShelf(recipe.id);
+        setIsOnShelf(true);
+      }
+    } finally {
+      setShelving(false);
+    }
+  }
+
   async function handleQueue() {
     if (!recipe || queuing) return;
     setQueuing(true);
@@ -331,38 +386,16 @@ export default function RecipeDetailPage() {
   }
 
   function matchPantry(name: string): PantryItem | null {
-    const n = name.toLowerCase().trim();
-    for (const item of pantryItems) {
-      const p = item.name.toLowerCase().trim();
-      if (n.includes(p) || p.includes(n)) return item;
-    }
-    const STOPWORDS = new Set([
-      'powder', 'sauce', 'extract', 'whole', 'dried', 'fresh', 'ground',
-      'chopped', 'sliced', 'minced', 'large', 'small', 'medium', 'room',
-      'temperature', 'packed', 'softened', 'melted', 'unsalted', 'salted',
-      'heavy', 'light', 'dark', 'semi', 'sweet', 'dutch', 'process',
-      'mix', 'mix,', 'type', 'style', 'purpose', 'free', 'fat',
-    ]);
-    const stem = (w: string) => w.replace(/ies$/, 'y').replace(/es$/, '').replace(/s$/, '');
-    const words = n.split(/[\s,-]+/).filter(w => w.length >= 3 && !STOPWORDS.has(w)).map(stem);
-    for (const item of pantryItems) {
-      const pwords = item.name.toLowerCase().split(/[\s,-]+/).filter(w => w.length >= 3 && !STOPWORDS.has(w)).map(stem);
-      if (words.length > 0 && pwords.length > 0 && words.some(w => pwords.some(pw => w === pw))) return item;
-    }
-    return null;
+    return findPantryMatch(name, pantryItems);
   }
 
   function getIngStatus(name: string): IngStatus {
-    if (!pantryItems.length) return 'missing';
-    const match = matchPantry(name);
-    if (!match) return 'missing';
-    if (match.needs_purchase === 1) return 'low';
-    return 'in-stock';
+    return getIngredientStatus(name, pantryItems);
   }
 
   const allIngredients = recipe?.ingredient_groups.flatMap(g => g.ingredients) ?? [];
   const hasMissingOrLow = pantryItems.length > 0 &&
-    allIngredients.some(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) !== 'in-stock');
+    allIngredients.some(ing => getIngStatus(ing.name) !== 'in-stock');
 
   async function addToShoppingList(ingName: string) {
     if (addingToList.has(ingName)) return;
@@ -388,7 +421,7 @@ export default function RecipeDetailPage() {
     if (addingAll) return;
     setAddingAll(true);
     try {
-      const missing = allIngredients.filter(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) !== 'in-stock');
+      const missing = allIngredients.filter(ing => getIngStatus(ing.name) !== 'in-stock');
       for (const ing of missing) {
         await addToShoppingList(ing.name);
       }
@@ -421,9 +454,11 @@ export default function RecipeDetailPage() {
       equipment: [...recipe.equipment],
       image_url: recipe.image_url ?? null,
       ai_category: recipe.ai_category ?? null,
+      tags: recipe.tags ?? [],
     });
     const PRESETS = ['Cookies', 'Cakes', 'Bars'];
     setCustomCatInput(recipe.ai_category && !PRESETS.includes(recipe.ai_category) ? recipe.ai_category : '');
+    setTagInput('');
     setIsEditing(true);
   }
 
@@ -448,6 +483,7 @@ export default function RecipeDetailPage() {
         equipment: draft.equipment.filter(e => e.trim()),
         image_url: draft.image_url !== recipe.image_url ? (draft.image_url ?? null) : undefined,
         ai_category: draft.ai_category !== recipe.ai_category ? (draft.ai_category ?? null) : undefined,
+        tags: draft.tags,
       });
       setRecipe(updated);
       setIsEditing(false);
@@ -723,6 +759,43 @@ export default function RecipeDetailPage() {
             position: 'relative',
           }}
         >
+          {/* Shelf button — top-right of card (second from right) */}
+          <button
+            onClick={handleShelf}
+            disabled={shelving}
+            title={isOnShelf ? 'Remove from weekend shelf' : 'Bake this weekend'}
+            className="flex items-center justify-center rounded-full transition-all duration-200"
+            style={{
+              position: 'absolute', top: '14px', right: '54px',
+              width: '2rem', height: '2rem',
+              background: isOnShelf ? 'rgba(255,152,0,0.12)' : 'transparent',
+              border: `1.5px solid ${isOnShelf ? '#ff9800' : 'var(--border-strong)'}`,
+              color: isOnShelf ? '#ff9800' : 'var(--text-muted)',
+              cursor: shelving ? 'wait' : 'pointer',
+            }}
+            onMouseEnter={e => {
+              if (!isOnShelf) {
+                e.currentTarget.style.borderColor = '#ff9800';
+                e.currentTarget.style.color = '#ff9800';
+                e.currentTarget.style.background = 'rgba(255,152,0,0.10)';
+              }
+            }}
+            onMouseLeave={e => {
+              if (!isOnShelf) {
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
+                e.currentTarget.style.color = 'var(--text-muted)';
+                e.currentTarget.style.background = 'transparent';
+              }
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill={isOnShelf ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+
           {/* Queue button — top-right of card */}
           <button
             onClick={handleQueue}
@@ -1231,7 +1304,7 @@ export default function RecipeDetailPage() {
                 ) : (
                   <ul className="space-y-2.5">
                     {group.ingredients.map((ing, ii) => {
-                      const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
+                      const status = getIngStatus(ing.name);
                       const dotColor = pantryItems.length > 0 ? STATUS_DOT[status] : 'var(--purple)';
                       return (
                         <li key={ii} className="flex items-baseline gap-3">
@@ -1710,21 +1783,34 @@ export default function RecipeDetailPage() {
           );
         })()}
 
-        {/* Category badge — always at very bottom of page content */}
-        {recipe.ai_category && !isEditing && (
-          <div className="flex items-center gap-2 pt-5 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: '5px',
-              padding: '3px 10px', borderRadius: '999px',
-              background: 'var(--accent-dim)', border: '1px solid var(--accent)',
-              color: 'var(--accent)', fontFamily: 'var(--font-body)',
-              fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
-            }}>
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
-                <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
-              </svg>
-              {recipe.ai_category}
-            </span>
+        {/* Category badge + tags — always at very bottom of page content */}
+        {(recipe.ai_category || (recipe.tags?.length ?? 0) > 0) && !isEditing && (
+          <div className="flex flex-wrap items-center gap-2 pt-5 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
+            {recipe.ai_category && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                padding: '3px 10px', borderRadius: '999px',
+                background: 'var(--accent-dim)', border: '1px solid var(--accent)',
+                color: 'var(--accent)', fontFamily: 'var(--font-body)',
+                fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+              }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
+                  <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+                </svg>
+                {recipe.ai_category}
+              </span>
+            )}
+            {recipe.tags?.map(tag => (
+              <span key={tag} style={{
+                display: 'inline-flex', alignItems: 'center',
+                padding: '3px 10px', borderRadius: '999px',
+                background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)',
+                color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
+                fontSize: '0.7rem', fontWeight: 500,
+              }}>
+                {tag}
+              </span>
+            ))}
           </div>
         )}
         {isEditing && (
@@ -1764,6 +1850,56 @@ export default function RecipeDetailPage() {
               />
               <button type="submit" style={{ padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
                 Set
+              </button>
+            </form>
+          </div>
+        )}
+        {isEditing && (
+          <div className="pt-4 mt-1">
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tags</p>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(draft?.tags ?? []).map(tag => (
+                <span key={tag} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '5px',
+                  padding: '3px 8px 3px 10px', borderRadius: '999px',
+                  background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)',
+                  color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.75rem',
+                }}>
+                  {tag}
+                  <button
+                    onClick={() => setDraft(d => d ? { ...d, tags: d.tags.filter(t => t !== tag) } : d)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0', display: 'flex', alignItems: 'center' }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </span>
+              ))}
+            </div>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                const val = tagInput.trim().toLowerCase();
+                if (val && !draft?.tags.includes(val)) {
+                  setDraft(d => d ? { ...d, tags: [...d.tags, val] } : d);
+                }
+                setTagInput('');
+              }}
+              style={{ display: 'flex', gap: '6px' }}
+            >
+              <input
+                placeholder="Add tag…"
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                style={{
+                  padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)',
+                  fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
+                  background: 'var(--bg-subtle)', outline: 'none', width: '110px',
+                }}
+                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
+              />
+              <button type="submit" style={{ padding: '4px 12px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                Add
               </button>
             </form>
           </div>
@@ -1870,7 +2006,7 @@ export default function RecipeDetailPage() {
             <div className="overflow-y-auto flex-1 px-4 py-4">
               <div className="space-y-1">
                 {allIngredients.map((ing, i) => {
-                  const status = getIngStatus([ing.unit, ing.name].filter(Boolean).join(' '));
+                  const status = getIngStatus(ing.name);
                   const icon = status === 'in-stock' ? '✓' : status === 'low' ? '~' : '−';
                   const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--teal)' : '#E03E3E';
                   const isAdding = addingToList.has(ing.name);
@@ -1921,7 +2057,7 @@ export default function RecipeDetailPage() {
             <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid var(--surface-hover)' }}>
               <button
                 onClick={addAllMissing}
-                disabled={addingAll || allIngredients.every(ing => getIngStatus([ing.unit, ing.name].filter(Boolean).join(' ')) === 'in-stock')}
+                disabled={addingAll || allIngredients.every(ing => getIngStatus(ing.name) === 'in-stock')}
                 className="w-full py-2.5 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{
                   background: 'var(--accent)',

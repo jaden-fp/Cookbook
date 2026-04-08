@@ -45,9 +45,16 @@ function groupByCategory(items: PantryItem[]): { category: string; items: Pantry
     map.get(cat)!.push(item);
   }
 
-  // Sort each group alphabetically by name
+  const STATUS_PRIORITY: Record<Status, number> = { out: 0, low: 1, 'in-stock': 2 };
+
+  // Sort each group: out first, then low, then in-stock; alphabetically within each tier
   for (const arr of map.values()) {
-    arr.sort((a, b) => a.name.localeCompare(b.name));
+    arr.sort((a, b) => {
+      const pa = STATUS_PRIORITY[getStatus(a)];
+      const pb = STATUS_PRIORITY[getStatus(b)];
+      if (pa !== pb) return pa - pb;
+      return a.name.localeCompare(b.name);
+    });
   }
 
   // Build ordered list: known categories first, then any unknown ones alphabetically

@@ -1,4 +1,57 @@
 /**
+ * Splits a compound ingredient like "large eggs + 1 egg yolk" into components.
+ * Returns null if the name is not compound (no embedded `+ N` pattern).
+ */
+
+const FRACTION_CHARS = '½¼¾⅓⅔⅛⅜⅝⅞';
+const COMPOUND_RE = new RegExp(
+  `^(.*?)\\s*\\+\\s*([\\d${FRACTION_CHARS}][\\d\\s/${FRACTION_CHARS}]*)\\s+(.+)$`
+);
+
+const KNOWN_UNITS = new Set([
+  'cup','cups','tbsp','tsp','tablespoon','tablespoons','teaspoon','teaspoons',
+  'oz','ounce','ounces','lb','lbs','pound','pounds','g','gram','grams','ml',
+  'floz','fluid oz',
+]);
+
+export interface CompoundComponent {
+  amount: string;
+  unit: string;
+  name: string;
+}
+
+/**
+ * If `name` contains a ` + N [unit] ingredient` pattern, returns two components.
+ * The first component uses the caller's amount/unit with the primary name.
+ * Otherwise returns null (treat as a simple ingredient).
+ */
+export function splitCompound(amount: string, unit: string, name: string): CompoundComponent[] | null {
+  const match = name.match(COMPOUND_RE);
+  if (!match) return null;
+
+  const primaryName = match[1].trim();
+  const secondaryAmount = match[2].trim();
+  const secondaryRest = match[3].trim();
+
+  // Check if the secondary starts with a known unit
+  const parts = secondaryRest.split(/\s+/);
+  let secondaryUnit = '';
+  let secondaryName = secondaryRest;
+  if (parts.length > 1 && KNOWN_UNITS.has(parts[0].toLowerCase())) {
+    secondaryUnit = parts[0];
+    secondaryName = parts.slice(1).join(' ');
+  }
+
+  // Don't split if primary name is empty (malformed)
+  if (!primaryName) return null;
+
+  return [
+    { amount, unit, name: primaryName },
+    { amount: secondaryAmount, unit: secondaryUnit, name: secondaryName },
+  ];
+}
+
+/**
  * Scale an ingredient amount string by a multiplier.
  * Handles integers, decimals, fractions (e.g. "1/2", "1 1/2"), and ranges ("2-3").
  * Returns the original string if it can't be parsed.

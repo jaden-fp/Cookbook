@@ -4,10 +4,68 @@ import { importRecipe } from '../api';
 import RecipeImportLoader from './RecipeImportLoader';
 
 const IMPORT_MESSAGES = [
-  'Fetching recipe page…',
-  'Extracting ingredients…',
-  'Parsing instructions…',
-  'Saving to your cookbook…',
+  'Whisking up your link…',
+  'Just a batter of time...',
+  "We're baking it happen!",
+  'Good things come to those who bake!',
+  'Proofing your request...',
+  'Please don\'t dessert us.',
+  'Rising to the occasion!',
+  'Accepting all cookies...',
+  'Taking a mega-bite...',
+  'Preheating the servers...',
+  'Taking this to the next layer...',
+  'This is going to be a piece of cake.',
+  'Getting a little hot in here...',
+  'Frosting the details...',
+  "Any way you slice it, it's almost done!",
+  'I knead you to wait...',
+  "Butter believe it's loading!",
+  'Bake it till you make it.',
+  "Let's get ready to crumble.",
+  'Whisk me away!',
+  'Muffin compares to this wait.',
+  'I loaf you for being patient.',
+  'History in the baking.',
+  "Don't go breaking my tart.",
+  'Bready or not, here I crumb!',
+  'Life is what you bake it.',
+  "I'm on a roll. A cinnamon roll!",
+  "Doughn't worry, it's coming.",
+  'This is the yeast I could do.',
+  "You're the icing on the cake.",
+  'Sweet things take time.',
+  'Sugar-coating the loading bar...',
+  'Sifting through the files...',
+  "You're the zest!",
+  'Holy crepe, it\'s almost done!',
+  'Donut close the app!',
+  'Please stand pie...',
+  'Whisk-y business ahead...',
+  'Hold your croissants!',
+  'Rolling out the red velvet...',
+  'Choux-ing away the bugs...',
+  'Baking sure everything is perfect!',
+  'This loading screen is half-baked.',
+  'Whipping it into shape...',
+  'Piping the final pixels...',
+  'Baking the internet great again...',
+  'Oh my ganache, just a few more seconds...',
+  'Brownie points for your patience!',
+  'Muffin to see here, just loading...',
+  'Gathering the final crumbs...',
+  'Oh fudge, still processing.',
+  'Baking the world a batter place.',
+  'Challah at me when it\'s done!',
+  'Torte-ly worth the wait!',
+  'Piping hot content coming right up!',
+  "We're preheating the servers to 350 degrees, please stand pie.",
+  'Whipping the data together until it forms stiff peaks.',
+  "Don't close the app, or your data soufflé might collapse!",
+  'Letting the dough rise so your content is perfectly fluffy.',
+  "We promise this wait will be a lot better than getting a soggy bottom!",
+  "We're currently stuck in a sticky bun situation, please hold.",
+  'Beating the butter and sugar together until light, fluffy, and fully downloaded.',
 ];
 
 interface Props {
@@ -34,10 +92,10 @@ export default function ImportBar({ onSuccess }: Props) {
 
   useEffect(() => {
     if (importing) {
-      setImportMsgIdx(0);
+      setImportMsgIdx(Math.floor(Math.random() * IMPORT_MESSAGES.length));
       importIntervalRef.current = setInterval(() => {
-        setImportMsgIdx(i => Math.min(i + 1, IMPORT_MESSAGES.length - 1));
-      }, 2200);
+        setImportMsgIdx(() => Math.floor(Math.random() * IMPORT_MESSAGES.length));
+      }, 2500);
     } else {
       if (importIntervalRef.current) clearInterval(importIntervalRef.current);
     }

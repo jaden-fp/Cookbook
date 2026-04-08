@@ -2,6 +2,17 @@ import { Link, useLocation } from 'react-router-dom';
 
 const tabs = [
   {
+    to: '/',
+    label: 'Home',
+    icon: (active: boolean) => (
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={active ? 2.2 : 1.7} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    ),
+  },
+  {
     to: '/cookbooks',
     label: 'Cookbooks',
     icon: (active: boolean) => (
@@ -29,10 +40,20 @@ const tabs = [
     icon: (active: boolean) => (
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         strokeWidth={active ? 2.2 : 1.7} strokeLinecap="round" strokeLinejoin="round">
-        {/* Shopping bag */}
         <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
         <line x1="3" y1="6" x2="21" y2="6"/>
         <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+    ),
+  },
+  {
+    to: '/shopping',
+    label: 'Shopping',
+    icon: (active: boolean) => (
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={active ? 2.2 : 1.7} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
       </svg>
     ),
   },
@@ -40,7 +61,7 @@ const tabs = [
 
 export default function BottomNav() {
   const { pathname } = useLocation();
-  const isActive = (to: string) => pathname.startsWith(to);
+  const isActive = (to: string) => to === '/' ? pathname === '/' : pathname.startsWith(to);
 
   return (
     <nav

@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 export default function NavBar() {
   const { pathname } = useLocation();
-  const isActive = (to: string) => pathname.startsWith(to);
+  const isActive = (to: string) => to === '/' ? pathname === '/' : pathname.startsWith(to);
 
   return (
     <>
@@ -26,9 +26,11 @@ export default function NavBar() {
 
         <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 ml-auto sm:ml-0">
           {[
+            { to: '/',          label: 'Home' },
             { to: '/cookbooks', label: 'Cookbooks' },
             { to: '/recipes',   label: 'Recipes' },
             { to: '/pantry',    label: 'Pantry' },
+            { to: '/shopping',  label: 'Shopping' },
           ].map(({ to, label }) => {
             const active = isActive(to);
             return (

@@ -3,6 +3,7 @@ export interface Ingredient {
   unit: string;
   name: string;
   notes?: string | null;
+  optional?: boolean;
 }
 
 export interface IngredientGroup {
@@ -13,6 +14,7 @@ export interface IngredientGroup {
 export interface BakeEntry {
   date: string;
   notes?: string | null;
+  photo_url?: string | null;
 }
 
 export interface Recipe {
@@ -31,6 +33,7 @@ export interface Recipe {
   review?: string | null;
   bake_log?: BakeEntry[];
   ai_category?: string | null;
+  tags?: string[];
   created_at: string;
 }
 
@@ -47,6 +50,8 @@ export interface PantryItem {
   quantity: number;
   unit: string;
   needs_purchase: number;
+  status: 'in-stock' | 'low' | 'out';
+  category: string;
   created_at: string;
   updated_at: string;
 }

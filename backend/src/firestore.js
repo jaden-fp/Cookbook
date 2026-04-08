@@ -143,6 +143,15 @@ export async function fsUpdate(collection, id, data) {
   return fromDoc(await res.json());
 }
 
+/** Create or replace a document with a known ID (upsert). */
+export async function fsSet(collection, id, data) {
+  const res = await req(`${BASE}/${collection}/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ fields: toFields(data) }),
+  });
+  return fromDoc(await res.json());
+}
+
 export async function fsDelete(collection, id) {
   await req(`${BASE}/${collection}/${id}`, { method: 'DELETE' });
 }

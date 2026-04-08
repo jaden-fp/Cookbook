@@ -5,6 +5,8 @@ import cookbooksRouter from './routes/cookbooks.js';
 import searchRouter from './routes/search.js';
 import pantryRouter from './routes/pantry.js';
 import nutritionRouter from './routes/nutrition.js';
+import shelfRouter from './routes/shelf.js';
+import aiSearchRouter from './routes/aiSearch.js';
 
 const app = express();
 
@@ -18,5 +20,7 @@ app.use('/api/cookbooks', cookbooksRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/pantry', pantryRouter);
 app.use('/api/nutrition', nutritionRouter);
+app.use('/api/shelf', shelfRouter);
+app.use('/api/ai-search', aiSearchRouter);
 
 export default app;
