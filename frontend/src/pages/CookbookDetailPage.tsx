@@ -3,8 +3,27 @@ import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import RecipeTile from '../components/RecipeTile';
 import BottomSheet from '../components/BottomSheet';
-import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook } from '../api';
-import type { Recipe, Cookbook } from '../types';
+import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook, getPantryItems } from '../api';
+import type { Recipe, Cookbook, PantryItem } from '../types';
+
+function getRecipeReadiness(recipe: Recipe, pantryItems: PantryItem[]): 'green' | 'yellow' | 'red' | undefined {
+  const ingredientNames = recipe.ingredient_groups.flatMap(g =>
+    g.ingredients.map(i => i.name.toLowerCase())
+  );
+  let hasMatch = false, hasLow = false, hasOut = false;
+  for (const item of pantryItems) {
+    const pn = item.name.toLowerCase();
+    if (ingredientNames.some(n => n.includes(pn) || pn.includes(n))) {
+      hasMatch = true;
+      if (item.status === 'out') hasOut = true;
+      else if (item.status === 'low') hasLow = true;
+    }
+  }
+  if (!hasMatch) return undefined;
+  if (hasOut) return 'red';
+  if (hasLow) return 'yellow';
+  return 'green';
+}
 
 type SortOption = 'az' | 'newest' | 'oldest' | 'top-rated';
 const SORT_LABELS: Record<SortOption, string> = { az: 'A → Z', newest: 'Newest', oldest: 'Oldest', 'top-rated': 'Top rated' };
@@ -187,6 +206,7 @@ export default function CookbookDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [cookbook, setCookbook] = useState<Cookbook | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [sort, setSort] = useState<SortOption>('newest');
@@ -209,8 +229,8 @@ export default function CookbookDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    Promise.all([getCookbook(id), getCookbookRecipes(id)])
-      .then(([cb, recs]) => { setCookbook(cb); setRecipes(recs); })
+    Promise.all([getCookbook(id), getCookbookRecipes(id), getPantryItems()])
+      .then(([cb, recs, pantry]) => { setCookbook(cb); setRecipes(recs); setPantryItems(pantry); })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -377,7 +397,7 @@ export default function CookbookDetailPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {sortRecipes(recipes, sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
-              <RecipeTile recipe={r} />
+              <RecipeTile recipe={r} pantryStatus={getRecipeReadiness(r, pantryItems)} />
             </div>
           ))}
         </div>

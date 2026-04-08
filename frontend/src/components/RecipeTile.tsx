@@ -24,9 +24,10 @@ function formatMinutes(mins: number): string {
 
 interface Props {
   recipe: Recipe;
+  pantryStatus?: 'green' | 'yellow' | 'red';
 }
 
-export default function RecipeTile({ recipe }: Props) {
+export default function RecipeTile({ recipe, pantryStatus }: Props) {
   const [showCookbook, setShowCookbook] = useState(false);
 
   return (
@@ -90,6 +91,19 @@ export default function RecipeTile({ recipe }: Props) {
                 ★ {recipe.rating}
               </span>
             </div>
+          )}
+
+          {/* Pantry readiness dot */}
+          {pantryStatus && (
+            <div
+              title={{ green: 'Ready to bake', yellow: 'Low on some ingredients', red: 'Missing some ingredients' }[pantryStatus]}
+              style={{
+                position: 'absolute', top: '10px', right: '10px', zIndex: 10,
+                width: '10px', height: '10px', borderRadius: '50%',
+                background: { green: '#22c55e', yellow: '#f59e0b', red: '#ef4444' }[pantryStatus],
+                boxShadow: '0 0 0 2px rgba(255,255,255,0.9)',
+              }}
+            />
           )}
 
           {/* Cookbook button */}
