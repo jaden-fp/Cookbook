@@ -91,7 +91,7 @@ export default function RecipeTile({ recipe, pantryItems }: Props) {
         {coverage && (
           <div className="absolute bottom-2.5 left-2.5 z-10"
             style={{
-              background: coverage.pct === 100 ? 'rgba(0,196,180,0.75)' : 'rgba(244,102,150,0.72)',
+              background: coverage.pct === 100 ? 'rgba(0,196,180,0.55)' : 'rgba(244,102,150,0.52)',
               backdropFilter: 'blur(6px)',
               borderRadius: '999px',
               padding: '5px 11px',
