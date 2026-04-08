@@ -16,7 +16,7 @@ async function categorizeIngredient(name) {
       messages: [
         {
           role: 'system',
-          content: `Categorize baking pantry ingredients. Reply ONLY with JSON: {"category": "<value>"}. Valid values: ${VALID_CATEGORIES.join(', ')}.`,
+          content: `Categorize baking pantry ingredients into exactly one category. Reply ONLY with JSON: {"category": "<value>"}.\nValid categories: ${VALID_CATEGORIES.join(', ')}.\nExamples: butter→Fats & Oils, eggs→Dairy, milk→Dairy, cream→Dairy, all-purpose flour→Flours, bread flour→Flours, granulated sugar→Sweeteners, brown sugar→Sweeteners, powdered sugar→Sweeteners, honey→Sweeteners, maple syrup→Sweeteners, cocoa powder→Chocolate, chocolate chips→Chocolate, vanilla extract→Extracts, almond extract→Extracts, cinnamon→Spices, salt→Spices, baking powder→Leavening, baking soda→Leavening, yeast→Leavening, walnuts→Nuts, almonds→Nuts, olive oil→Fats & Oils, vegetable oil→Fats & Oils.`,
         },
         { role: 'user', content: `Ingredient: "${name}"` },
       ],

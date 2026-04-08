@@ -15,11 +15,14 @@ function getRecipeReadiness(recipe: Recipe, pantryItems: PantryItem[]): 'green' 
   );
   let hasMatch = false, hasLow = false, hasOut = false;
   for (const item of pantryItems) {
-    const pn = item.name.toLowerCase();
-    if (ingredientNames.some(n => n.includes(pn) || pn.includes(n))) {
+    const escaped = item.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`\\b${escaped}\\b`);
+    if (ingredientNames.some(n => re.test(n))) {
       hasMatch = true;
-      if (item.status === 'out') hasOut = true;
-      else if (item.status === 'low') hasLow = true;
+      // Backward compat: old items may only have needs_purchase, not status
+      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
+      if (s === 'out') hasOut = true;
+      else if (s === 'low') hasLow = true;
     }
   }
   if (!hasMatch) return undefined;

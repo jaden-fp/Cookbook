@@ -100,7 +100,7 @@ export default function PantryPage() {
       // Background: auto-categorize any items that have no category yet
       if (didCategorize.current) return;
       didCategorize.current = true;
-      const uncategorized = items.filter(i => !i.category);
+      const uncategorized = items.filter(i => !i.category || i.category === 'Other');
       uncategorized.forEach(item => {
         categorizePantryItem(item.id)
           .then(updated => setItems(prev => prev.map(p => p.id === updated.id ? updated : p)))
