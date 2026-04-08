@@ -30,7 +30,6 @@ export default function NavBar() {
             { to: '/cookbooks', label: 'Cookbooks' },
             { to: '/recipes',   label: 'Recipes' },
             { to: '/pantry',    label: 'Pantry' },
-            { to: '/shopping',  label: 'Shopping' },
           ].map(({ to, label }) => {
             const active = isActive(to);
             return (
