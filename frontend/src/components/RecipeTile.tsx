@@ -91,14 +91,17 @@ export default function RecipeTile({ recipe, pantryItems }: Props) {
         {coverage && (
           <div className="absolute bottom-2.5 left-2.5 z-10"
             style={{
-              background: coverage.pct === 100 ? 'rgba(76,175,80,0.90)' : 'rgba(0,0,0,0.55)',
+              background: coverage.pct === 100 ? 'rgba(0,196,180,0.92)' : 'rgba(244,102,150,0.88)',
               backdropFilter: 'blur(6px)',
               borderRadius: '999px',
-              padding: '3px 8px',
+              padding: '3px 10px',
+              lineHeight: 1,
+              display: 'flex',
+              alignItems: 'center',
             }}>
             <span style={{
-              fontSize: '10px', fontFamily: 'var(--font-body)', fontWeight: 700,
-              color: coverage.pct === 100 ? '#fff' : coverage.pct >= 60 ? '#ffd54f' : '#ef9a9a',
+              fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 700,
+              color: '#fff',
             }}>
               {coverage.pct === 100 ? '✓ Ready' : `${coverage.pct}%`}
             </span>
