@@ -245,6 +245,9 @@ export default function PantryPage() {
 
   const lowCount = items.filter(i => getStatus(i) === 'low').length;
   const outCount = items.filter(i => getStatus(i) === 'out').length;
+  const shoppingCount = lowCount + outCount;
+  const shoppingItems = items.filter(i => { const s = getStatus(i); return s === 'low' || s === 'out'; });
+  const shoppingGroups = groupByCategory(shoppingItems).filter(g => g.items.length > 0);
 
   // ── Skeleton ──────────────────────────────────────────────────────────────────
 
