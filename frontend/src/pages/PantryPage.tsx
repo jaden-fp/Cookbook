@@ -629,6 +629,7 @@ export default function PantryPage() {
           ))}
         </div>
       )}
+      </>}
     </div>
   );
 }
