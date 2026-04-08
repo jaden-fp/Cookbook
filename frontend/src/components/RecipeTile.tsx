@@ -71,19 +71,19 @@ export default function RecipeTile({ recipe, pantryItems }: Props) {
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)' }} />
 
-        {/* Rating badge — filled stars */}
+        {/* Rating badge — number + star */}
         {recipe.rating != null && (
-          <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-0.5"
+          <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1"
             style={{
-              background: 'rgba(255,255,255,0.88)',
+              background: 'rgba(255,255,255,0.72)',
               backdropFilter: 'blur(8px)',
               borderRadius: '999px',
-              padding: '3px 8px',
-              border: '1px solid rgba(15,12,30,0.08)',
+              padding: '5px 9px',
+              border: '1px solid rgba(15,12,30,0.06)',
+              lineHeight: 1,
             }}>
-            {[1,2,3,4,5].map(n => (
-              <span key={n} style={{ fontSize: '9px', color: n <= recipe.rating! ? 'var(--accent)' : 'rgba(15,12,30,0.2)', lineHeight: 1 }}>★</span>
-            ))}
+            <span style={{ fontSize: '11px', color: 'var(--accent)', lineHeight: 1 }}>★</span>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>{recipe.rating}</span>
           </div>
         )}
 
