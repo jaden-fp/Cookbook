@@ -98,7 +98,14 @@ export default function AllRecipesPage() {
     if (!aiQuery.trim() || aiSearching) return;
     setAiSearching(true);
     try {
-      const catalog = recipes.map(r => ({ id: r.id, title: r.title, description: r.description, ai_category: r.ai_category, tags: r.tags }));
+      const catalog = recipes.map(r => ({
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        ai_category: r.ai_category,
+        tags: r.tags,
+        ingredients: r.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name)),
+      }));
       const ids = await aiSearchRecipes(aiQuery.trim(), catalog);
       setAiResultIds(ids);
     } finally {
