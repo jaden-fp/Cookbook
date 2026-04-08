@@ -92,6 +92,9 @@ export default function PantryPage() {
   const [renameValue, setRenameValue] = useState('');
   const renameInputRef = useRef<HTMLInputElement>(null);
 
+  // Delete confirmation
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
   // Load items
   const didCategorize = useRef(false);
   useEffect(() => {
@@ -474,6 +477,7 @@ export default function PantryPage() {
                     item={item}
                     isLast={idx === groupItems.length - 1}
                     isRenaming={renamingId === item.id}
+                    confirmingDelete={confirmDeleteId === item.id}
                     renameValue={renameValue}
                     renameInputRef={renameInputRef}
                     onCycleStatus={handleCycleStatus}
@@ -481,7 +485,9 @@ export default function PantryPage() {
                     onRenameChange={setRenameValue}
                     onRenameCommit={commitRename}
                     onRenameCancel={() => setRenamingId(null)}
-                    onDelete={handleDelete}
+                    onDeleteRequest={() => setConfirmDeleteId(item.id)}
+                    onDeleteConfirm={() => { setConfirmDeleteId(null); handleDelete(item); }}
+                    onDeleteCancel={() => setConfirmDeleteId(null)}
                   />
                 ))}
               </div>
@@ -499,6 +505,7 @@ interface PantryRowProps {
   item: PantryItem;
   isLast: boolean;
   isRenaming: boolean;
+  confirmingDelete: boolean;
   renameValue: string;
   renameInputRef: React.RefObject<HTMLInputElement>;
   onCycleStatus: (item: PantryItem) => void;
@@ -506,13 +513,16 @@ interface PantryRowProps {
   onRenameChange: (val: string) => void;
   onRenameCommit: (item: PantryItem) => void;
   onRenameCancel: () => void;
-  onDelete: (item: PantryItem) => void;
+  onDeleteRequest: () => void;
+  onDeleteConfirm: () => void;
+  onDeleteCancel: () => void;
 }
 
 function PantryRow({
   item,
   isLast,
   isRenaming,
+  confirmingDelete,
   renameValue,
   renameInputRef,
   onCycleStatus,
@@ -520,7 +530,9 @@ function PantryRow({
   onRenameChange,
   onRenameCommit,
   onRenameCancel,
-  onDelete,
+  onDeleteRequest,
+  onDeleteConfirm,
+  onDeleteCancel,
 }: PantryRowProps) {
   const status = getStatus(item);
   const meta = STATUS_META[status];
@@ -630,38 +642,50 @@ function PantryRow({
         </p>
       )}
 
-      {/* Delete button — visible on hover (or always on mobile) */}
+      {/* Delete / confirm */}
       {!isTemp && (
-        <button
-          onClick={() => onDelete(item)}
-          title="Remove item"
-          className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150 shrink-0"
-          style={{
-            width: '26px',
-            height: '26px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            borderRadius: '50%',
-            background: 'transparent',
-            color: 'var(--text-muted)',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(229,57,53,0.10)';
-            e.currentTarget.style.color = '#e53935';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = 'var(--text-muted)';
-          }}
-        >
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M1 1l10 10M11 1L1 11"/>
-          </svg>
-        </button>
+        confirmingDelete ? (
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={onDeleteConfirm}
+              style={{
+                fontSize: '0.7rem', fontFamily: 'var(--font-body)', fontWeight: 700,
+                padding: '3px 8px', borderRadius: '999px', border: 'none',
+                background: '#ef4444', color: '#fff', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              Delete
+            </button>
+            <button
+              onClick={onDeleteCancel}
+              style={{
+                fontSize: '0.7rem', fontFamily: 'var(--font-body)', fontWeight: 500,
+                padding: '3px 8px', borderRadius: '999px',
+                border: '1px solid var(--border-strong)',
+                background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={onDeleteRequest}
+            title="Remove item"
+            className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150 shrink-0"
+            style={{
+              width: '26px', height: '26px', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', border: 'none', borderRadius: '50%',
+              background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.10)'; e.currentTarget.style.color = '#e53935'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+          >
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M1 1l10 10M11 1L1 11"/>
+            </svg>
+          </button>
+        )
       )}
     </div>
   );

@@ -24,10 +24,10 @@ function formatMinutes(mins: number): string {
 
 interface Props {
   recipe: Recipe;
-  pantryStatus?: 'green' | 'yellow' | 'red';
+  hasOutOfStock?: boolean;
 }
 
-export default function RecipeTile({ recipe, pantryStatus }: Props) {
+export default function RecipeTile({ recipe, hasOutOfStock }: Props) {
   const [showCookbook, setShowCookbook] = useState(false);
 
   return (
@@ -93,33 +93,33 @@ export default function RecipeTile({ recipe, pantryStatus }: Props) {
             </div>
           )}
 
-          {/* Pantry readiness badge */}
-          {pantryStatus && (
+          {/* Out-of-stock badge */}
+          {hasOutOfStock && (
             <div
-              title={{ green: 'Ready to bake', yellow: 'Low on some ingredients', red: 'Missing some ingredients' }[pantryStatus]}
+              title="Missing ingredients"
               className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1"
               style={{
                 background: 'rgba(255,255,255,0.88)',
                 backdropFilter: 'blur(8px)',
                 borderRadius: '999px',
                 padding: '3px 7px 3px 5px',
-                border: '1px solid rgba(15,12,30,0.08)',
+                border: '1px solid rgba(239,68,68,0.2)',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
               }}
             >
               <span style={{
                 width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0,
-                background: { green: '#22c55e', yellow: '#f59e0b', red: '#ef4444' }[pantryStatus],
-                boxShadow: `0 0 5px ${{ green: '#22c55e80', yellow: '#f59e0b80', red: '#ef444480' }[pantryStatus]}`,
+                background: '#ef4444',
+                boxShadow: '0 0 5px #ef444480',
               }} />
               <span style={{
                 fontSize: '10px',
                 fontFamily: 'var(--font-body)',
                 fontWeight: 700,
                 lineHeight: 1,
-                color: { green: '#15803d', yellow: '#92400e', red: '#991b1b' }[pantryStatus],
+                color: '#991b1b',
               }}>
-                {{ green: 'Ready', yellow: 'Low', red: 'Out' }[pantryStatus]}
+                Out
               </span>
             </div>
           )}
