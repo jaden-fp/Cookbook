@@ -33,20 +33,82 @@ function detectTimers(text: string): DetectedTimer[] {
 }
 
 // ── Ingredient matching per step ───────────────────────────────────────────
+// Strict matching: an ingredient is shown for a step only if its name (or
+// core name with qualifiers stripped) explicitly appears in the step text
+// via a word-boundary match. No keyword guessing / single-word fallback.
+// Each ingredient is shown at most once — once displayed in a step it is
+// hidden from all later steps.
 
-function stepIngredients(step: string, recipe: Recipe): string[] {
-  const stepLower = step.toLowerCase();
-  const found: string[] = [];
-  const SKIP = new Set(['the', 'a', 'an', 'and', 'or', 'with', 'in', 'of', 'to', 'until', 'for', 'into']);
+const QUALIFIER_PREFIXES = new Set([
+  'unsalted', 'salted', 'large', 'medium', 'small', 'fresh', 'dried', 'ground',
+  'whole', 'pure', 'cold', 'warm', 'hot', 'lightly', 'finely', 'coarsely',
+  'packed', 'sifted', 'extra', 'virgin', 'plain', 'white', 'dark', 'light', 'heavy',
+]);
+
+/** Strip suffix qualifiers (after comma) and leading descriptor words to get
+ *  the essential ingredient identity, e.g.:
+ *  "unsalted butter"          → "butter"
+ *  "eggs, room temperature"   → "eggs"
+ *  "all-purpose flour"        → "all-purpose flour"  (keep; both words matter)
+ *  "baking soda"              → "baking soda"        (keep; both words matter)
+ */
+function coreIngredientName(name: string): string {
+  // Strip everything after the first comma
+  let core = name.split(',')[0].trim().toLowerCase();
+  // Strip parentheticals
+  core = core.replace(/\([^)]*\)/g, '').trim();
+  // Strip leading qualifier words (but keep at least one word)
+  const words = core.split(/\s+/);
+  let i = 0;
+  while (i < words.length - 1 && QUALIFIER_PREFIXES.has(words[i])) i++;
+  return words.slice(i).join(' ');
+}
+
+function wordBoundaryMatch(phrase: string, text: string): boolean {
+  if (!phrase || phrase.length < 2) return false;
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}\\b`).test(text);
+}
+
+interface IngredientMatch {
+  display: string;
+  name: string;
+}
+
+/** Return ingredients from the recipe that are explicitly named in stepText
+ *  and have NOT already been used in a prior step (tracked via usedNames). */
+function stepIngredients(
+  stepText: string,
+  recipe: Recipe,
+  scale: number,
+  usedNames: Set<string>,
+): IngredientMatch[] {
+  const stepLower = stepText.toLowerCase();
+  const results: IngredientMatch[] = [];
+
   for (const group of recipe.ingredient_groups) {
     for (const ing of group.ingredients) {
-      const parts = ing.name.toLowerCase().split(/[\s,]+/).filter(w => w.length > 2 && !SKIP.has(w));
-      if (parts.some(w => stepLower.includes(w))) {
-        found.push([scaleAmount(ing.amount, 1, ing.unit), ing.unit, ing.name].filter(Boolean).join(' '));
+      if (usedNames.has(ing.name)) continue;
+
+      const nameLower = ing.name.toLowerCase();
+
+      // 1. Full name word-boundary match
+      const matched =
+        wordBoundaryMatch(nameLower, stepLower) ||
+        // 2. Core name (qualifiers stripped) — only if different from full name
+        (coreIngredientName(ing.name) !== nameLower &&
+          wordBoundaryMatch(coreIngredientName(ing.name), stepLower));
+
+      if (matched) {
+        results.push({
+          display: [scaleAmount(ing.amount, scale, ing.unit), ing.unit, ing.name].filter(Boolean).join(' '),
+          name: ing.name,
+        });
       }
     }
   }
-  return found;
+
+  return results;
 }
 
 // ── Audio beep ────────────────────────────────────────────────────────────
@@ -134,6 +196,7 @@ function fmtTime(secs: number): string {
 
 interface Props {
   recipe: Recipe;
+  scale: number;
   onClose: () => void;
   onRate: () => void;
 }
@@ -145,7 +208,7 @@ interface TimerState {
   done: boolean;
 }
 
-export default function BakingMode({ recipe, onClose, onRate }: Props) {
+export default function BakingMode({ recipe, scale, onClose, onRate }: Props) {
   const steps = recipe.instructions;
   const [step, setStep] = useState(0);
   const [timer, setTimer] = useState<TimerState | null>(null);
@@ -162,7 +225,15 @@ export default function BakingMode({ recipe, onClose, onRate }: Props) {
   const currentStep = steps[step] ?? '';
   const isMicrowave = /microwave/i.test(currentStep);
   const timers = isMicrowave ? [] : detectTimers(currentStep);
-  const relatedIngredients = stepIngredients(currentStep, recipe);
+
+  // Collect all ingredient names shown in steps before this one, then match
+  // only against ingredients not yet used.
+  const usedIngredients = new Set<string>();
+  for (let i = 0; i < step; i++) {
+    stepIngredients(steps[i], recipe, scale, usedIngredients).forEach(m => usedIngredients.add(m.name));
+  }
+  const stepMatches = stepIngredients(currentStep, recipe, scale, usedIngredients);
+  const relatedIngredients = stepMatches.map(m => m.display);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
