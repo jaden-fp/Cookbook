@@ -4,7 +4,7 @@ import Groq from 'groq-sdk';
 const router = Router();
 
 // POST /api/ai-search
-// Body: { query: string, recipes: { id, title, description, ai_category, tags }[] }
+// Body: { query: string, recipes: { id, title, description, ai_category, tags, ingredients }[] }
 // Returns: { ids: string[] } — ordered by relevance, up to 8 matches
 router.post('/', async (req, res) => {
   const { query, recipes } = req.body;
@@ -18,22 +18,34 @@ router.post('/', async (req, res) => {
 
   const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-  const catalog = recipes.map(r =>
-    `${r.id}|${r.title}${r.ai_category ? ` (${r.ai_category})` : ''}${r.tags?.length ? ` [${r.tags.join(', ')}]` : ''}${r.description ? ` - ${r.description.slice(0, 80)}` : ''}`
-  ).join('\n');
+  const catalog = recipes.map(r => {
+    const meta = [
+      r.ai_category ? `(${r.ai_category})` : '',
+      r.tags?.length ? `[${r.tags.join(', ')}]` : '',
+      r.description ? `- ${r.description.slice(0, 80)}` : '',
+      r.ingredients?.length ? `{ingredients: ${r.ingredients.slice(0, 20).join(', ')}}` : '',
+    ].filter(Boolean).join(' ');
+    return `${r.id}|${r.title} ${meta}`;
+  }).join('\n');
 
   try {
     const response = await client.chat.completions.create({
       model: 'llama-3.1-8b-instant',
-      max_tokens: 256,
+      max_tokens: 300,
       messages: [
         {
           role: 'system',
-          content: 'You are a baking recipe assistant. Given a user\'s craving or mood, return the IDs of up to 8 matching recipes from the catalog, ordered by relevance. Reply ONLY with a JSON object: {"ids": ["id1", "id2", ...]}. Only include IDs from the catalog. If nothing matches well, return fewer.',
+          content: `You are a baking recipe search engine. Match recipes by ingredients, flavors, textures, and vibes — not just title keywords.
+Key rules:
+- Match on INGREDIENTS (e.g. "sprinkles" → recipes that list sprinkles; "fruit" → recipes with berries, lemon, apple, etc.)
+- Match on FLAVOR/MOOD (e.g. "fruity", "chocolatey", "festive", "cozy")
+- Be INCLUSIVE: return every recipe that plausibly fits, up to 8
+- Be EXCLUSIVE: skip recipes that clearly don't fit
+- Reply ONLY with valid JSON: {"ids": ["id1", "id2", ...]}`,
         },
         {
           role: 'user',
-          content: `Craving/mood: "${query}"\n\nRecipe catalog (id|title):\n${catalog}`,
+          content: `Search: "${query}"\n\nCatalog (id|title meta {ingredients}):\n${catalog}`,
         },
       ],
     });
