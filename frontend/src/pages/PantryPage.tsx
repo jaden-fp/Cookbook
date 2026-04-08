@@ -1,338 +1,254 @@
-import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import BottomSheet from '../components/BottomSheet';
-import { getPantryItems, addPantryItem, updatePantryItem, deletePantryItem } from '../api';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { getPantryItems, addPantryItem, updatePantryItem, deletePantryItem, categorizePantryItem } from '../api';
 import type { PantryItem } from '../types';
 
-type Suggestion = { name: string; unit: string };
+// ─── Status helpers ────────────────────────────────────────────────────────────
 
-const INGREDIENT_SUGGESTIONS: Suggestion[] = [
-  // Sugars
-  { name: 'Granulated sugar', unit: 'cups' },
-  { name: 'Light brown sugar', unit: 'cups' },
-  { name: 'Dark brown sugar', unit: 'cups' },
-  { name: 'Powdered sugar', unit: 'cups' },
-  { name: 'Raw sugar', unit: 'cups' },
-  { name: 'Coconut sugar', unit: 'cups' },
-  { name: 'Honey', unit: 'tbsp' },
-  { name: 'Maple syrup', unit: 'tbsp' },
-  { name: 'Molasses', unit: 'tbsp' },
-  { name: 'Corn syrup', unit: 'tbsp' },
-  // Flours & starches
-  { name: 'All-purpose flour', unit: 'cups' },
-  { name: 'Bread flour', unit: 'cups' },
-  { name: 'Cake flour', unit: 'cups' },
-  { name: 'Whole wheat flour', unit: 'cups' },
-  { name: 'Almond flour', unit: 'cups' },
-  { name: 'Coconut flour', unit: 'cups' },
-  { name: 'Rice flour', unit: 'cups' },
-  { name: 'Cornstarch', unit: 'tbsp' },
-  { name: 'Rolled oats', unit: 'cups' },
-  // Fats
-  { name: 'Unsalted butter', unit: 'sticks' },
-  { name: 'Salted butter', unit: 'sticks' },
-  { name: 'Vegetable oil', unit: 'cups' },
-  { name: 'Olive oil', unit: 'tbsp' },
-  { name: 'Coconut oil', unit: 'tbsp' },
-  { name: 'Shortening', unit: 'cups' },
-  // Dairy
-  { name: 'Whole milk', unit: 'cups' },
-  { name: 'Buttermilk', unit: 'cups' },
-  { name: 'Heavy cream', unit: 'cups' },
-  { name: 'Sour cream', unit: 'cups' },
-  { name: 'Cream cheese', unit: 'oz' },
-  { name: 'Evaporated milk', unit: 'cups' },
-  { name: 'Sweetened condensed milk', unit: 'cups' },
-  // Eggs
-  { name: 'Eggs', unit: 'whole' },
-  // Leavening & salt
-  { name: 'Baking soda', unit: 'tsp' },
-  { name: 'Baking powder', unit: 'tsp' },
-  { name: 'Cream of tartar', unit: 'tsp' },
-  { name: 'Active dry yeast', unit: 'tsp' },
-  { name: 'Instant yeast', unit: 'tsp' },
-  { name: 'Salt', unit: 'tsp' },
-  { name: 'Sea salt', unit: 'tsp' },
-  // Extracts & flavorings
-  { name: 'Vanilla extract', unit: 'tsp' },
-  { name: 'Almond extract', unit: 'tsp' },
-  { name: 'Peppermint extract', unit: 'tsp' },
-  { name: 'Lemon juice', unit: 'tbsp' },
-  { name: 'Orange juice', unit: 'tbsp' },
-  // Chocolate & cocoa
-  { name: 'Cocoa powder', unit: 'cups' },
-  { name: 'Dutch-process cocoa', unit: 'cups' },
-  { name: 'Chocolate chips', unit: 'cups' },
-  { name: 'Semi-sweet chocolate', unit: 'oz' },
-  { name: 'Dark chocolate', unit: 'oz' },
-  { name: 'White chocolate', unit: 'oz' },
-  // Spices
-  { name: 'Cinnamon', unit: 'tsp' },
-  { name: 'Nutmeg', unit: 'tsp' },
-  { name: 'Ginger', unit: 'tsp' },
-  { name: 'Cardamom', unit: 'tsp' },
-  { name: 'Cloves', unit: 'tsp' },
-  { name: 'Allspice', unit: 'tsp' },
-  // Nuts & mix-ins
-  { name: 'Walnuts', unit: 'cups' },
-  { name: 'Pecans', unit: 'cups' },
-  { name: 'Almonds', unit: 'cups' },
-  { name: 'Peanuts', unit: 'cups' },
-  { name: 'Shredded coconut', unit: 'cups' },
-  { name: 'Raisins', unit: 'cups' },
-  { name: 'Dried cranberries', unit: 'cups' },
-  { name: 'Sprinkles', unit: 'tbsp' },
-];
+type Status = 'in-stock' | 'low' | 'out';
 
-const UNITS = ['', 'whole', 'sticks', 'cups', 'tsp', 'tbsp', 'oz', 'g', 'ml', 'lbs'];
-
-const COMMON_STAPLES = [
-  { name: 'Butter', unit: 'sticks' },
-  { name: 'Eggs', unit: 'whole' },
-  { name: 'All-purpose flour', unit: 'cups' },
-  { name: 'Sugar', unit: 'cups' },
-  { name: 'Brown sugar', unit: 'cups' },
-  { name: 'Powdered sugar', unit: 'cups' },
-  { name: 'Baking soda', unit: 'tsp' },
-  { name: 'Baking powder', unit: 'tsp' },
-  { name: 'Salt', unit: 'tsp' },
-  { name: 'Vanilla extract', unit: 'tsp' },
-  { name: 'Milk', unit: 'cups' },
-  { name: 'Vegetable oil', unit: 'cups' },
-  { name: 'Cream cheese', unit: 'oz' },
-  { name: 'Heavy cream', unit: 'cups' },
-  { name: 'Cocoa powder', unit: 'cups' },
-];
-
-function getDefaultUnit(name: string): string {
-  const n = name.toLowerCase();
-  if (n.includes('egg')) return 'whole';
-  if (n.includes('butter')) return 'sticks';
-  if (n.includes('flour') || n.includes('sugar') || n.includes('milk') || n.includes('cream') || n.includes('oil')) return 'cups';
-  if (n.includes('soda') || n.includes('powder') || n.includes('salt') || n.includes('vanilla') || n.includes('extract')) return 'tsp';
-  return '';
+function getStatus(item: PantryItem): Status {
+  if (item.status) return item.status;
+  return item.needs_purchase ? 'out' : 'in-stock';
 }
+
+const STATUS_CYCLE: Status[] = ['in-stock', 'low', 'out'];
+
+function nextStatus(s: Status): Status {
+  const i = STATUS_CYCLE.indexOf(s);
+  return STATUS_CYCLE[(i + 1) % STATUS_CYCLE.length];
+}
+
+const STATUS_META: Record<Status, { label: string; dot: string; color: string; bg: string }> = {
+  'in-stock': { label: 'In Stock', dot: '#4caf50', color: '#4caf50', bg: 'rgba(76,175,80,0.12)' },
+  'low':      { label: 'Low',      dot: '#ff9800', color: '#ff9800', bg: 'rgba(255,152,0,0.12)' },
+  'out':      { label: 'Out',      dot: '#e53935', color: '#e53935', bg: 'rgba(229,57,53,0.12)' },
+};
+
+// ─── Category order ────────────────────────────────────────────────────────────
+
+const CATEGORY_ORDER = [
+  'Dairy', 'Flours', 'Sweeteners', 'Fats & Oils', 'Chocolate',
+  'Spices', 'Extracts', 'Leavening', 'Nuts', 'Other',
+];
+
+
+function normalizeCategory(cat: string | undefined): string {
+  return cat?.trim() || 'Other';
+}
+
+function groupByCategory(items: PantryItem[]): { category: string; items: PantryItem[] }[] {
+  const map = new Map<string, PantryItem[]>();
+
+  for (const item of items) {
+    const cat = normalizeCategory(item.category);
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(item);
+  }
+
+  // Sort each group alphabetically by name
+  for (const arr of map.values()) {
+    arr.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  // Build ordered list: known categories first, then any unknown ones alphabetically
+  const knownGroups = CATEGORY_ORDER
+    .filter(cat => map.has(cat))
+    .map(cat => ({ category: cat, items: map.get(cat)! }));
+
+  const unknownGroups = [...map.keys()]
+    .filter(cat => !CATEGORY_ORDER.includes(cat))
+    .sort()
+    .map(cat => ({ category: cat, items: map.get(cat)! }));
+
+  return [...knownGroups, ...unknownGroups];
+}
+
+// ─── Filter type ───────────────────────────────────────────────────────────────
+
+type Filter = 'all' | 'low' | 'out';
+
+// ─── Optimistic placeholder ID prefix ─────────────────────────────────────────
+
+let _tempId = 0;
+function tempId() { return `__temp_${++_tempId}`; }
+
+// ─── Component ─────────────────────────────────────────────────────────────────
 
 export default function PantryPage() {
   const [items, setItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Filter
+  const [filter, setFilter] = useState<Filter>('all');
+
   // Add form
   const [newName, setNewName] = useState('');
-  const [newQty, setNewQty] = useState('');
-  const [newUnit, setNewUnit] = useState('');
-  const [customUnit, setCustomUnit] = useState('');
-  const [saving, setSaving] = useState(false);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Suggestion dropdown
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [highlightIdx, setHighlightIdx] = useState(-1);
-
-  // Quick add modal
-  const [showQuickAdd, setShowQuickAdd] = useState(false);
-  const [quickSelected, setQuickSelected] = useState<Set<string>>(new Set());
-  const [quickAdding, setQuickAdding] = useState(false);
-
-  // Mark as bought modal
-  const [boughtItem, setBoughtItem] = useState<PantryItem | null>(null);
-  const [boughtQty, setBoughtQty] = useState('');
-  const [boughtUnit, setBoughtUnit] = useState('');
-  const [buyingSaving, setBuyingSaving] = useState(false);
-
-  // Edit item modal
-  const [editItem, setEditItem] = useState<PantryItem | null>(null);
-  const [editName, setEditName] = useState('');
-  const [editQty, setEditQty] = useState('');
-  const [editUnit, setEditUnit] = useState('');
-  const [editSaving, setEditSaving] = useState(false);
-
-  useEffect(() => {
-    getPantryItems().then(setItems).finally(() => setLoading(false));
-  }, []);
-
-
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setShowQuickAdd(false); setBoughtItem(null); setEditItem(null); }
-    };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = (showQuickAdd || boughtItem || editItem) ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [showQuickAdd, boughtItem, editItem]);
-
-  const inStock = items.filter(i => i.needs_purchase === 0).sort((a, b) => a.name.localeCompare(b.name));
-  const shoppingList = items.filter(i => i.needs_purchase === 1);
-  const effectiveUnit = newUnit === '__other__' ? customUnit : newUnit;
-
-  const filteredSuggestions = newName.trim().length > 0
-    ? INGREDIENT_SUGGESTIONS
-        .filter(s => s.name.toLowerCase().includes(newName.toLowerCase()))
-        .slice(0, 8)
-    : [];
-
-  function handleNameChange(value: string) {
-    setNewName(value);
-    setHighlightIdx(-1);
-    setShowSuggestions(true);
-    if (!newUnit || newUnit === '') {
-      const suggested = getDefaultUnit(value);
-      if (suggested) setNewUnit(suggested);
-    }
-  }
-
-  function selectSuggestion(s: Suggestion) {
-    setNewName(s.name);
-    setNewUnit(s.unit || getDefaultUnit(s.name));
-    setShowSuggestions(false);
-    setHighlightIdx(-1);
-  }
-
-  function handleNameKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!showSuggestions || filteredSuggestions.length === 0) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setHighlightIdx(i => Math.min(i + 1, filteredSuggestions.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setHighlightIdx(i => Math.max(i - 1, 0));
-    } else if (e.key === 'Enter' && highlightIdx >= 0) {
-      e.preventDefault();
-      selectSuggestion(filteredSuggestions[highlightIdx]);
-    } else if (e.key === 'Escape') {
-      setShowSuggestions(false);
-    }
-  }
-
   const [addError, setAddError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // Inline rename
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
+
+  // Load items
+  const didCategorize = useRef(false);
+  useEffect(() => {
+    getPantryItems().then(items => {
+      setItems(items);
+      // Background: auto-categorize any items that have no category yet
+      if (didCategorize.current) return;
+      didCategorize.current = true;
+      const uncategorized = items.filter(i => !i.category);
+      uncategorized.forEach(item => {
+        categorizePantryItem(item.id)
+          .then(updated => setItems(prev => prev.map(p => p.id === updated.id ? updated : p)))
+          .catch(() => {});
+      });
+    }).finally(() => setLoading(false));
+  }, []);
+
+  // Focus rename input when entering rename mode
+  useEffect(() => {
+    if (renamingId) {
+      setTimeout(() => renameInputRef.current?.focus(), 10);
+    }
+  }, [renamingId]);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────────
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!newName.trim() || saving) return;
+    const name = newName.trim();
+    if (!name || saving) return;
+
     setSaving(true);
     setAddError(null);
+
+    // Optimistic placeholder
+    const placeholder: PantryItem = {
+      id: tempId(),
+      name,
+      quantity: 0,
+      unit: '',
+      needs_purchase: 0,
+      status: 'in-stock',
+      category: '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setItems(prev => [...prev, placeholder]);
+    setNewName('');
+    nameInputRef.current?.focus();
+
     try {
-      const item = await addPantryItem({
-        name: newName.trim(),
-        quantity: parseFloat(newQty) || 0,
-        unit: effectiveUnit,
-        needs_purchase: 1,
-      });
-      setItems(prev => [...prev, item]);
-      setNewName('');
-      setNewQty('');
-      setNewUnit('');
-      setCustomUnit('');
-      nameRef.current?.focus();
+      const item = await addPantryItem({ name, status: 'in-stock' });
+      setItems(prev => prev.map(p => p.id === placeholder.id ? item : p));
     } catch (err) {
+      // Roll back
+      setItems(prev => prev.filter(p => p.id !== placeholder.id));
+      setNewName(name);
       setAddError(err instanceof Error ? err.message : 'Failed to add item');
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleAdjustQty(item: PantryItem, delta: number) {
-    const newQ = Math.max(0, item.quantity + delta);
-    const updates: { quantity: number; needs_purchase?: number } = { quantity: newQ };
-    if (newQ === 0) updates.needs_purchase = 1;
-    const updated = await updatePantryItem(item.id, updates);
-    setItems(prev => prev.map(p => p.id === updated.id ? updated : p));
-  }
+  const handleCycleStatus = useCallback(async (item: PantryItem) => {
+    const current = getStatus(item);
+    const next = nextStatus(current);
 
-  async function handleNeedToBuy(item: PantryItem) {
-    const updated = await updatePantryItem(item.id, { needs_purchase: 1 });
-    setItems(prev => prev.map(p => p.id === updated.id ? updated : p));
-  }
+    // Optimistic update
+    setItems(prev => prev.map(p => p.id === item.id ? { ...p, status: next } : p));
 
-  async function handleBoughtConfirm() {
-    if (!boughtItem || buyingSaving) return;
-    setBuyingSaving(true);
     try {
-      const updated = await updatePantryItem(boughtItem.id, {
-        quantity: parseFloat(boughtQty) || 0,
-        unit: boughtUnit || boughtItem.unit,
-        needs_purchase: 0,
-      });
-      setItems(prev => prev.map(p => p.id === updated.id ? updated : p));
-      setBoughtItem(null);
-    } finally {
-      setBuyingSaving(false);
+      const updated = await updatePantryItem(item.id, { status: next });
+      setItems(prev => prev.map(p => p.id === item.id ? updated : p));
+    } catch {
+      // Roll back
+      setItems(prev => prev.map(p => p.id === item.id ? item : p));
     }
+  }, []);
+
+  function startRename(item: PantryItem) {
+    setRenamingId(item.id);
+    setRenameValue(item.name);
   }
 
-  async function handleEditSave() {
-    if (!editItem || !editName.trim() || editSaving) return;
-    setEditSaving(true);
+  async function commitRename(item: PantryItem) {
+    const name = renameValue.trim();
+    setRenamingId(null);
+    if (!name || name === item.name) return;
+
+    // Optimistic
+    setItems(prev => prev.map(p => p.id === item.id ? { ...p, name } : p));
+
     try {
-      const updated = await updatePantryItem(editItem.id, {
-        name: editName.trim(),
-        quantity: parseFloat(editQty) || 0,
-        unit: editUnit,
-      });
-      setItems(prev => prev.map(p => p.id === updated.id ? updated : p));
-      setEditItem(null);
-    } finally {
-      setEditSaving(false);
+      const updated = await updatePantryItem(item.id, { name });
+      setItems(prev => prev.map(p => p.id === item.id ? updated : p));
+    } catch {
+      // Roll back
+      setItems(prev => prev.map(p => p.id === item.id ? item : p));
     }
   }
 
   async function handleDelete(item: PantryItem) {
-    await deletePantryItem(item.id);
     setItems(prev => prev.filter(p => p.id !== item.id));
-  }
-
-  function toggleQuick(name: string) {
-    setQuickSelected(prev => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
-    });
-  }
-
-  async function handleQuickAdd() {
-    if (!quickSelected.size || quickAdding) return;
-    setQuickAdding(true);
     try {
-      const existingNames = new Set(items.map(i => i.name.toLowerCase()));
-      const toAdd = COMMON_STAPLES.filter(
-        s => quickSelected.has(s.name) && !existingNames.has(s.name.toLowerCase())
-      );
-      const added: PantryItem[] = [];
-      for (const staple of toAdd) {
-        const item = await addPantryItem({ name: staple.name, quantity: 0, unit: staple.unit });
-        added.push(item);
-      }
-      setItems(prev => [...prev, ...added]);
-      setShowQuickAdd(false);
-      setQuickSelected(new Set());
-    } finally {
-      setQuickAdding(false);
+      await deletePantryItem(item.id);
+    } catch {
+      // Roll back
+      setItems(prev => [...prev, item]);
     }
   }
+
+  // ── Derived data ──────────────────────────────────────────────────────────────
+
+  const filteredItems = items.filter(item => {
+    const s = getStatus(item);
+    if (filter === 'low') return s === 'low';
+    if (filter === 'out') return s === 'out';
+    return true;
+  });
+
+  const groups = groupByCategory(filteredItems).filter(g => g.items.length > 0);
+
+  const lowCount = items.filter(i => getStatus(i) === 'low').length;
+  const outCount = items.filter(i => getStatus(i) === 'out').length;
+
+  // ── Skeleton ──────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-24 pb-32 sm:pb-16">
-        <div className="skeleton h-8 w-48 rounded-lg mb-8" />
+        <div className="mb-8">
+          <div className="skeleton h-3 w-20 rounded mb-2" />
+          <div className="skeleton h-12 w-56 rounded-lg mb-3" />
+          <div className="skeleton h-1 w-10 rounded" />
+        </div>
+        <div className="skeleton h-11 w-full rounded-full mb-6" />
+        <div className="flex gap-2 mb-8">
+          {[80, 96, 112].map(w => (
+            <div key={w} className="skeleton h-8 rounded-full" style={{ width: w }} />
+          ))}
+        </div>
         <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="skeleton h-16 rounded-xl" />
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="skeleton h-14 rounded-xl" />
           ))}
         </div>
       </div>
     );
   }
 
+  // ── Render ────────────────────────────────────────────────────────────────────
+
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-24 pb-32 sm:pb-16">
 
-      {/* Header */}
-      <div className="mb-8 animate-fade-up">
+      {/* ── Page header ── */}
+      <div className="mb-6 animate-fade-up">
         <p style={{
           fontFamily: 'var(--font-body)',
           fontSize: '0.75rem',
@@ -342,7 +258,7 @@ export default function PantryPage() {
           color: 'var(--accent)',
           marginBottom: '6px',
         }}>
-          Your Kitchen
+          The Pantry
         </p>
         <h1 style={{
           fontFamily: 'var(--font-display)',
@@ -358,10 +274,9 @@ export default function PantryPage() {
         <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
-      {/* Add ingredient form */}
-      <div className="animate-fade-up delay-1 mb-8" style={{ position: 'relative', zIndex: 10 }}>
+      {/* ── Add item form ── */}
+      <div className="animate-fade-up delay-1 mb-5">
         <form onSubmit={handleAdd}>
-          {/* Single-row pill form */}
           <div
             className="flex items-stretch overflow-hidden"
             style={{
@@ -371,91 +286,47 @@ export default function PantryPage() {
               boxShadow: 'var(--shadow-sm)',
             }}
           >
-            {/* Name input — takes up all remaining space */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <label style={{ display: 'none' }}>Ingredient</label>
-              <input
-                ref={nameRef}
-                type="text"
-                value={newName}
-                onChange={e => handleNameChange(e.target.value)}
-                onKeyDown={handleNameKeyDown}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                placeholder="Add an ingredient…"
-                autoComplete="off"
-                className="w-full"
-                style={{
-                  border: 'none',
-                  outline: 'none',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.9375rem',
-                  color: 'var(--text)',
-                  padding: '0.75rem 1.25rem',
-                  background: 'transparent',
-                  minWidth: 0,
-                }}
-              />
+            {/* Search icon */}
+            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '16px', color: 'var(--text-muted)', flexShrink: 0 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
             </div>
 
-            {/* Separator — desktop only */}
-            <div className="hidden sm:block" style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
-
-            {/* Qty input — desktop only */}
             <input
+              ref={nameInputRef}
               type="text"
-              inputMode="decimal"
-              value={newQty}
-              onChange={e => setNewQty(e.target.value)}
-              placeholder="qty"
-              className="hidden sm:block"
+              value={newName}
+              onChange={e => { setNewName(e.target.value); setAddError(null); }}
+              onKeyDown={e => { if (e.key === 'Escape') setNewName(''); }}
+              placeholder="Add an ingredient…"
+              autoComplete="off"
+              className="w-full"
               style={{
-                border: 'none', outline: 'none',
-                fontFamily: 'var(--font-body)', fontSize: '0.875rem',
-                color: 'var(--text)', padding: '0.75rem 0.5rem',
-                background: 'transparent', width: '52px', textAlign: 'center',
+                border: 'none',
+                outline: 'none',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.9375rem',
+                color: 'var(--text)',
+                padding: '0.75rem 0.75rem 0.75rem 10px',
+                background: 'transparent',
+                minWidth: 0,
+                flex: 1,
               }}
             />
 
-            {/* Separator — desktop only */}
-            <div className="hidden sm:block" style={{ width: '1px', background: 'var(--border-strong)', margin: '8px 0', flexShrink: 0 }} />
-
-            {/* Unit select — desktop only */}
-            <select
-              value={newUnit}
-              onChange={e => setNewUnit(e.target.value)}
-              className="hidden sm:block"
-              style={{
-                border: 'none', outline: 'none',
-                fontFamily: 'var(--font-body)', fontSize: '0.875rem',
-                color: newUnit ? 'var(--text)' : 'var(--text-muted)',
-                padding: '0.75rem 0.5rem',
-                background: 'transparent', cursor: 'pointer',
-              }}
-            >
-              <option value="">unit</option>
-              {UNITS.filter(u => u !== '').map(u => <option key={u} value={u}>{u}</option>)}
-              <option value="__other__">other…</option>
-            </select>
-
-            {newUnit === '__other__' && (
-              <input
-                type="text"
-                value={customUnit}
-                onChange={e => setCustomUnit(e.target.value)}
-                placeholder="unit"
-                autoFocus
-                className="hidden sm:block"
-                style={{
-                  border: 'none', outline: 'none',
-                  fontFamily: 'var(--font-body)', fontSize: '0.875rem',
-                  color: 'var(--text)', padding: '0.75rem 0.5rem',
-                  background: 'transparent', width: '72px',
-                }}
-              />
+            {newName && (
+              <button
+                type="button"
+                onClick={() => setNewName('')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0 8px', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             )}
 
-            {/* Add button — inset pink pill */}
             <button
               type="submit"
               disabled={!newName.trim() || saving}
@@ -481,521 +352,317 @@ export default function PantryPage() {
           </div>
         </form>
 
-        {/* Suggestions dropdown — outside pill to avoid overflow:hidden clipping */}
-        {showSuggestions && filteredSuggestions.length > 0 && (
-          <div
-            ref={dropdownRef}
-            style={{
-              position: 'absolute',
-              top: 'calc(100% + 4px)',
-              left: 0,
-              right: 0,
-              zIndex: 200,
-              background: 'var(--surface)',
-              border: '1.5px solid var(--border-strong)',
-              borderRadius: '12px',
-              boxShadow: 'var(--shadow-md)',
-              overflow: 'hidden',
-            }}
-          >
-            {filteredSuggestions.map((s, i) => {
-              const q = newName.toLowerCase();
-              const idx = s.name.toLowerCase().indexOf(q);
-              return (
-                <div
-                  key={s.name}
-                  onMouseDown={() => selectSuggestion(s)}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    cursor: 'pointer',
-                    background: i === highlightIdx ? 'var(--surface-hover)' : 'white',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.875rem',
-                    color: 'var(--text)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '8px',
-                    borderBottom: i < filteredSuggestions.length - 1 ? '1px solid var(--border)' : 'none',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-hover)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i === highlightIdx ? 'var(--surface-hover)' : 'white'; }}
-                >
-                  <span>
-                    {idx >= 0 ? (
-                      <>
-                        {s.name.slice(0, idx)}
-                        <strong style={{ color: 'var(--accent)' }}>{s.name.slice(idx, idx + q.length)}</strong>
-                        {s.name.slice(idx + q.length)}
-                      </>
-                    ) : s.name}
-                  </span>
-                  {s.unit && (
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', flexShrink: 0 }}>
-                      {s.unit}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {addError && (
-          <p style={{ marginTop: '6px', fontSize: '0.875rem', color: '#C0392B', fontFamily: 'var(--font-body)', paddingLeft: '1.25rem' }}>
+          <p style={{ marginTop: '6px', fontSize: '0.8125rem', color: '#e53935', fontFamily: 'var(--font-body)', paddingLeft: '1rem' }}>
             {addError}
           </p>
         )}
       </div>
 
-      {/* Shopping List */}
-      {shoppingList.length > 0 && (
-        <section className="mb-10 animate-fade-up delay-2">
-          <div className="flex items-center gap-2 mb-3">
-            <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Shopping List
-            </h2>
-            <span
-              className="text-xs font-bold px-2 py-0.5 rounded-full"
-              style={{ background: 'var(--accent)', color: 'white', fontFamily: 'var(--font-body)' }}
+      {/* ── Filter chips ── */}
+      <div className="flex items-center gap-2 mb-8 animate-fade-up delay-2 flex-wrap">
+        {(
+          [
+            { key: 'all' as Filter, label: 'All', count: items.length },
+            { key: 'low' as Filter, label: 'Low Stock', count: lowCount },
+            { key: 'out' as Filter, label: 'Out of Stock', count: outCount },
+          ] as const
+        ).map(({ key, label, count }) => {
+          const active = filter === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setFilter(key)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 14px',
+                borderRadius: '999px',
+                border: active ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
+                background: active ? 'var(--accent-dim)' : 'var(--surface)',
+                color: active ? 'var(--accent)' : 'var(--text-muted)',
+                fontFamily: 'var(--font-body)',
+                fontWeight: active ? 700 : 500,
+                fontSize: '0.8125rem',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                whiteSpace: 'nowrap',
+              }}
             >
-              {shoppingList.length}
-            </span>
-          </div>
+              {label}
+              {count > 0 && (
+                <span style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  padding: '1px 5px',
+                  borderRadius: '999px',
+                  background: active ? 'var(--accent)' : 'var(--bg-subtle)',
+                  color: active ? '#fff' : 'var(--text-muted)',
+                  lineHeight: 1.5,
+                }}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
 
-          <div
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            {shoppingList.map((item, i) => (
+      {/* ── Category groups ── */}
+      {groups.length === 0 ? (
+        <div
+          className="py-14 text-center rounded-2xl animate-fade-up delay-3"
+          style={{ border: '1.5px dashed var(--border-strong)' }}
+        >
+          <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.9375rem' }}>
+            {filter !== 'all'
+              ? `No ${filter === 'low' ? 'low stock' : 'out of stock'} items.`
+              : 'Your pantry is empty — add some ingredients above!'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-8 animate-fade-up delay-3">
+          {groups.map(({ category, items: groupItems }) => (
+            <section key={category}>
+              {/* Category header */}
+              <div className="flex items-center gap-2 mb-3" style={{ userSelect: 'none' }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border-strong)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}>
+                  {category}
+                </span>
+                <span style={{
+                  fontSize: '0.7rem',
+                  color: 'var(--text-muted)',
+                  fontFamily: 'var(--font-body)',
+                  opacity: 0.6,
+                  flexShrink: 0,
+                }}>
+                  {groupItems.length}
+                </span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              </div>
+
+              {/* Items */}
               <div
-                key={item.id}
-                className="flex items-center gap-3 group"
                 style={{
-                  padding: '14px 16px',
-                  borderBottom: i < shoppingList.length - 1 ? '1px solid var(--border)' : 'none',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: 'var(--shadow-sm)',
                 }}
               >
-                <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
-                    {item.name}
-                  </p>
-                  {item.unit && (
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1px' }}>
-                      {item.unit}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={async () => { const u = await updatePantryItem(item.id, { needs_purchase: 0 }); setItems(prev => prev.map(p => p.id === u.id ? u : p)); }}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
-                    style={{
-                      background: 'rgba(0,196,180,0.1)',
-                      color: '#00A89A',
-                      border: 'none',
-                      fontFamily: 'var(--font-body)',
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
-                  >
-                    Got it
-                  </button>
-                </div>
+                {groupItems.map((item, idx) => (
+                  <PantryRow
+                    key={item.id}
+                    item={item}
+                    isLast={idx === groupItems.length - 1}
+                    isRenaming={renamingId === item.id}
+                    renameValue={renameValue}
+                    renameInputRef={renameInputRef}
+                    onCycleStatus={handleCycleStatus}
+                    onStartRename={startRename}
+                    onRenameChange={setRenameValue}
+                    onRenameCommit={commitRename}
+                    onRenameCancel={() => setRenamingId(null)}
+                    onDelete={handleDelete}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          ))}
+        </div>
       )}
+    </div>
+  );
+}
 
-      {/* In Stock */}
-      <section className="mb-10 animate-fade-up delay-3">
-        <div className="flex items-center gap-2 mb-3">
-          <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            In Stock
-          </h2>
-          {inStock.length > 0 && (
-            <span
-              className="text-xs font-bold px-2 py-0.5 rounded-full"
-              style={{ background: 'var(--accent-dim)', color: 'var(--accent)', fontFamily: 'var(--font-body)' }}
-            >
-              {inStock.length}
+// ─── PantryRow subcomponent ────────────────────────────────────────────────────
+
+interface PantryRowProps {
+  item: PantryItem;
+  isLast: boolean;
+  isRenaming: boolean;
+  renameValue: string;
+  renameInputRef: React.RefObject<HTMLInputElement>;
+  onCycleStatus: (item: PantryItem) => void;
+  onStartRename: (item: PantryItem) => void;
+  onRenameChange: (val: string) => void;
+  onRenameCommit: (item: PantryItem) => void;
+  onRenameCancel: () => void;
+  onDelete: (item: PantryItem) => void;
+}
+
+function PantryRow({
+  item,
+  isLast,
+  isRenaming,
+  renameValue,
+  renameInputRef,
+  onCycleStatus,
+  onStartRename,
+  onRenameChange,
+  onRenameCommit,
+  onRenameCancel,
+  onDelete,
+}: PantryRowProps) {
+  const status = getStatus(item);
+  const meta = STATUS_META[status];
+  const isTemp = item.id.startsWith('__temp_');
+
+  return (
+    <div
+      className="flex items-center gap-3 group"
+      style={{
+        padding: '12px 14px',
+        borderBottom: isLast ? 'none' : '1px solid var(--border)',
+        opacity: isTemp ? 0.6 : 1,
+        transition: 'opacity 0.2s',
+      }}
+    >
+      {/* Status pill — clickable to cycle */}
+      <button
+        onClick={() => !isTemp && onCycleStatus(item)}
+        disabled={isTemp}
+        title={`Status: ${meta.label} — click to cycle`}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '5px',
+          padding: '4px 10px',
+          borderRadius: '999px',
+          border: 'none',
+          background: meta.bg,
+          color: meta.color,
+          fontFamily: 'var(--font-body)',
+          fontWeight: 600,
+          fontSize: '0.7rem',
+          letterSpacing: '0.02em',
+          cursor: isTemp ? 'default' : 'pointer',
+          flexShrink: 0,
+          transition: 'all 0.15s',
+          whiteSpace: 'nowrap',
+          userSelect: 'none',
+        }}
+        onMouseEnter={e => {
+          if (!isTemp) {
+            e.currentTarget.style.filter = 'brightness(0.92)';
+            e.currentTarget.style.transform = 'scale(1.04)';
+          }
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.filter = '';
+          e.currentTarget.style.transform = '';
+        }}
+      >
+        <span style={{
+          width: '6px',
+          height: '6px',
+          borderRadius: '50%',
+          background: meta.dot,
+          flexShrink: 0,
+        }} />
+        {meta.label}
+      </button>
+
+      {/* Item name — click to rename */}
+      {isRenaming ? (
+        <input
+          ref={renameInputRef}
+          type="text"
+          value={renameValue}
+          onChange={e => onRenameChange(e.target.value)}
+          onBlur={() => onRenameCommit(item)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') { e.preventDefault(); onRenameCommit(item); }
+            if (e.key === 'Escape') { e.preventDefault(); onRenameCancel(); }
+          }}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            border: 'none',
+            borderBottom: '1.5px solid var(--accent)',
+            outline: 'none',
+            fontFamily: 'var(--font-body)',
+            fontWeight: 500,
+            fontSize: '0.9375rem',
+            color: 'var(--text)',
+            background: 'transparent',
+            padding: '1px 2px',
+          }}
+        />
+      ) : (
+        <p
+          className="flex-1 min-w-0 truncate"
+          title="Click to rename"
+          onClick={() => !isTemp && onStartRename(item)}
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 500,
+            color: 'var(--text)',
+            fontSize: '0.9375rem',
+            cursor: isTemp ? 'default' : 'text',
+            userSelect: 'none',
+          }}
+        >
+          {item.name}
+          {isTemp && (
+            <span style={{ marginLeft: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              saving…
             </span>
           )}
-        </div>
+        </p>
+      )}
 
-        {inStock.length === 0 ? (
-          <div className="py-12 text-center rounded-2xl" style={{ border: '1.5px dashed var(--border-strong)' }}>
-            <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
-              No ingredients in stock yet — add some above!
-            </p>
-          </div>
-        ) : (
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-            {inStock.map((item, i) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 group sm:cursor-default"
-                style={{ padding: '12px 16px', borderBottom: i < inStock.length - 1 ? '1px solid var(--border)' : 'none', cursor: 'pointer' }}
-                onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
-              >
-                {/* Name */}
-                <p className="flex-1 min-w-0 truncate" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', fontSize: '0.9375rem' }}>
-                  {item.name}
-                </p>
-
-                {/* Right side: stepper (if qty) + list button + edit */}
-                <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
-                  {/* Edit pencil — desktop hover only */}
-                  <button
-                    onClick={() => { setEditItem(item); setEditName(item.name); setEditQty(item.quantity > 0 ? String(item.quantity) : ''); setEditUnit(item.unit); }}
-                    title="Edit item"
-                    className="hidden sm:flex shrink-0 items-center justify-center rounded-full transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
-                    style={{ width: '28px', height: '28px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                  </button>
-
-                  {item.quantity > 0 && (
-                    <div
-                      className="inline-flex items-center"
-                      style={{ border: '1.5px solid var(--border-strong)', borderRadius: '999px', overflow: 'hidden', height: '30px' }}
-                    >
-                      <button
-                        onClick={() => handleAdjustQty(item, -1)}
-                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                      >
-                        <svg width="10" height="2" viewBox="0 0 10 2" fill="currentColor"><rect width="10" height="2" rx="1"/></svg>
-                      </button>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text)', padding: '0 8px', whiteSpace: 'nowrap', borderLeft: '1px solid var(--border-strong)', borderRight: '1px solid var(--border-strong)' }}>
-                        {item.quantity}{item.unit ? ` ${item.unit}` : ''}
-                      </span>
-                      <button
-                        onClick={() => handleAdjustQty(item, 1)}
-                        style={{ width: '28px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', flexShrink: 0 }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-dim)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                      >
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="4" width="2" height="10" rx="1"/><rect y="4" width="10" height="2" rx="1"/></svg>
-                      </button>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={() => handleNeedToBuy(item)}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200"
-                    style={{ background: 'rgba(0,196,180,0.1)', color: '#00A89A', border: 'none', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.2)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,196,180,0.1)'; }}
-                  >+ List</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-
-
-      {/* Edit Item Modal */}
-      <BottomSheet open={!!editItem} onClose={() => setEditItem(null)} title="Edit Item">
-        <div className="space-y-3">
-          <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Name
-            </label>
-            <input
-              type="text"
-              value={editName}
-              onChange={e => setEditName(e.target.value)}
-              autoFocus
-              className="w-full transition-all duration-200"
-              style={{
-                border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
-                fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                color: 'var(--text)', padding: '0.625rem 0.875rem',
-                outline: 'none', background: 'var(--bg-subtle)',
-              }}
-              onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-              onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-            />
-          </div>
-
-          <div className="flex gap-3">
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Quantity
-              </label>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={editQty}
-                onChange={e => setEditQty(e.target.value)}
-                placeholder="—"
-                className="w-full transition-all duration-200"
-                style={{
-                  border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
-                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: 'var(--text)', padding: '0.625rem 0.875rem',
-                  outline: 'none', background: 'var(--bg-subtle)',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-body)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Unit
-              </label>
-              <select
-                value={editUnit}
-                onChange={e => setEditUnit(e.target.value)}
-                style={{
-                  border: '1.5px solid var(--border-strong)', borderRadius: 'var(--radius-sm)',
-                  fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                  color: 'var(--text)', padding: '0.625rem 0.75rem',
-                  outline: 'none', background: 'var(--bg-subtle)', height: '42px',
-                }}
-              >
-                {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-1">
-            <button
-              onClick={() => { if (editItem) handleDelete(editItem); setEditItem(null); }}
-              className="px-4 py-2 text-sm rounded-lg transition-all duration-150"
-              style={{ color: '#e05555', fontFamily: 'var(--font-body)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(224,85,85,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              Delete
-            </button>
-            <button
-              onClick={handleEditSave}
-              disabled={!editName.trim() || editSaving}
-              className="px-5 py-2 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40"
-              style={{
-                background: 'var(--accent)', fontFamily: 'var(--font-body)',
-                borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-              }}
-              onMouseEnter={e => { if (editName.trim() && !editSaving) e.currentTarget.style.background = '#D94E7A'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-            >
-              {editSaving ? 'Saving…' : 'Save'}
-            </button>
-          </div>
-        </div>
-      </BottomSheet>
-
-      {/* Quick Add Modal */}
-      {showQuickAdd && createPortal(
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'var(--text-muted)' }}
-          onClick={e => e.target === e.currentTarget && setShowQuickAdd(false)}
+      {/* Delete button — visible on hover (or always on mobile) */}
+      {!isTemp && (
+        <button
+          onClick={() => onDelete(item)}
+          title="Remove item"
+          className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150 shrink-0"
+          style={{
+            width: '26px',
+            height: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'none',
+            borderRadius: '50%',
+            background: 'transparent',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'rgba(229,57,53,0.10)';
+            e.currentTarget.style.color = '#e53935';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
         >
-          <div
-            className="w-full max-w-md bg-white rounded-2xl animate-scale-in flex flex-col"
-            style={{ border: '1px solid var(--border-strong)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)', maxHeight: '80vh' }}
-          >
-            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--border-strong)' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: 'var(--text)' }}>
-                Quick Add Common Ingredients
-              </h2>
-              <button
-                onClick={() => setShowQuickAdd(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-              </button>
-            </div>
-
-            <div className="overflow-y-auto flex-1 px-4 py-4">
-              <p className="text-sm mb-3" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
-                Select the ingredients you have on hand:
-              </p>
-              <div className="space-y-1">
-                {COMMON_STAPLES.map(staple => {
-                  const checked = quickSelected.has(staple.name);
-                  const alreadyHave = items.some(i => i.name.toLowerCase() === staple.name.toLowerCase());
-                  return (
-                    <div
-                      key={staple.name}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150"
-                      style={{
-                        background: checked ? 'var(--surface-hover)' : 'transparent',
-                        border: checked ? '1.5px solid var(--border-strong)' : '1.5px solid transparent',
-                        opacity: alreadyHave ? 0.45 : 1,
-                        cursor: alreadyHave ? 'default' : 'pointer',
-                      }}
-                      onClick={() => !alreadyHave && toggleQuick(staple.name)}
-                    >
-                      <div
-                        className="flex items-center justify-center shrink-0"
-                        style={{
-                          width: '18px', height: '18px', borderRadius: '5px',
-                          border: checked ? 'none' : '1.5px solid var(--border-strong)',
-                          background: checked ? 'var(--accent)' : 'white',
-                        }}
-                      >
-                        {checked && (
-                          <svg className="w-2.5 h-2.5" viewBox="0 0 10 8" fill="none">
-                            <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        )}
-                      </div>
-                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)', fontWeight: checked ? 600 : 400 }}>
-                        {staple.name}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
-                        {alreadyHave ? 'already added' : staple.unit}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="px-6 py-4 flex items-center justify-between shrink-0" style={{ borderTop: '1px solid var(--border-strong)' }}>
-              <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
-                {quickSelected.size > 0 ? `${quickSelected.size} selected` : 'Select ingredients to add'}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowQuickAdd(false)}
-                  className="px-4 py-2 text-sm rounded-lg transition-colors"
-                  style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleQuickAdd}
-                  disabled={!quickSelected.size || quickAdding}
-                  className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: 'var(--accent)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { if (quickSelected.size && !quickAdding) e.currentTarget.style.background = '#D94E7A'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-                >
-                  {quickAdding ? 'Adding…' : `Add${quickSelected.size > 0 ? ` ${quickSelected.size}` : ''}`}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      , document.body)}
-
-      {/* Mark as Bought Modal */}
-      {boughtItem && createPortal(
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-          style={{ background: 'var(--text-muted)' }}
-          onClick={e => e.target === e.currentTarget && setBoughtItem(null)}
-        >
-          <div
-            className="w-full max-w-xs bg-white rounded-2xl animate-scale-in"
-            style={{ border: '1px solid var(--border-strong)', boxShadow: '0 20px 60px rgba(81,42,24,0.15)' }}
-          >
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border-strong)' }}>
-              <h2 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: 'var(--text)' }}>
-                Mark as Bought
-              </h2>
-              <button
-                onClick={() => setBoughtItem(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-xl leading-none"
-                style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-              </button>
-            </div>
-
-            <div className="px-6 py-5 space-y-4">
-              <div>
-                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)', fontSize: '0.9375rem' }}>
-                  {boughtItem.name}
-                </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  How much did you buy? <span style={{ fontStyle: 'italic' }}>(leave blank if you're not sure)</span>
-                </p>
-              </div>
-
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={boughtQty}
-                  onChange={e => setBoughtQty(e.target.value)}
-                  placeholder="0"
-                  autoFocus
-                  style={{
-                    flex: 1, border: '1.5px solid var(--border-strong)', borderRadius: '8px',
-                    fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: 'var(--text)', padding: '0.5625rem 0.875rem',
-                    outline: 'none', background: 'var(--surface)',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = 'var(--accent)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-dim)'; }}
-                  onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; }}
-                />
-                <select
-                  value={boughtUnit}
-                  onChange={e => setBoughtUnit(e.target.value)}
-                  style={{
-                    border: '1.5px solid var(--border-strong)', borderRadius: '8px',
-                    fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-                    color: 'var(--text)', padding: '0.5625rem 0.75rem',
-                    outline: 'none', background: 'var(--surface)',
-                  }}
-                >
-                  {UNITS.map(u => <option key={u} value={u}>{u || '—'}</option>)}
-                </select>
-              </div>
-
-              <div className="flex gap-2 justify-end">
-                <button
-                  onClick={() => setBoughtItem(null)}
-                  className="px-4 py-2 text-sm rounded-lg transition-colors"
-                  style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleBoughtConfirm}
-                  disabled={buyingSaving}
-                  className="px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all disabled:opacity-40"
-                  style={{ background: 'var(--bg-subtle)', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => { if (!buyingSaving) e.currentTarget.style.background = '#38BABA'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-subtle)'; }}
-                >
-                  {buyingSaving ? 'Saving…' : boughtQty ? 'Confirm' : 'Mark as In Stock'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      , document.body)}
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M1 1l10 10M11 1L1 11"/>
+          </svg>
+        </button>
+      )}
     </div>
   );
 }

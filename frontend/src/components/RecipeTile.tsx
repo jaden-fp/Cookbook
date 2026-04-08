@@ -93,17 +93,35 @@ export default function RecipeTile({ recipe, pantryStatus }: Props) {
             </div>
           )}
 
-          {/* Pantry readiness dot */}
+          {/* Pantry readiness badge */}
           {pantryStatus && (
             <div
               title={{ green: 'Ready to bake', yellow: 'Low on some ingredients', red: 'Missing some ingredients' }[pantryStatus]}
+              className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1"
               style={{
-                position: 'absolute', top: '10px', right: '10px', zIndex: 10,
-                width: '10px', height: '10px', borderRadius: '50%',
-                background: { green: '#22c55e', yellow: '#f59e0b', red: '#ef4444' }[pantryStatus],
-                boxShadow: '0 0 0 2px rgba(255,255,255,0.9)',
+                background: 'rgba(255,255,255,0.88)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: '999px',
+                padding: '3px 7px 3px 5px',
+                border: '1px solid rgba(15,12,30,0.08)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
               }}
-            />
+            >
+              <span style={{
+                width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0,
+                background: { green: '#22c55e', yellow: '#f59e0b', red: '#ef4444' }[pantryStatus],
+                boxShadow: `0 0 5px ${{ green: '#22c55e80', yellow: '#f59e0b80', red: '#ef444480' }[pantryStatus]}`,
+              }} />
+              <span style={{
+                fontSize: '10px',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 700,
+                lineHeight: 1,
+                color: { green: '#15803d', yellow: '#92400e', red: '#991b1b' }[pantryStatus],
+              }}>
+                {{ green: 'Ready', yellow: 'Low', red: 'Out' }[pantryStatus]}
+              </span>
+            </div>
           )}
 
           {/* Cookbook button */}

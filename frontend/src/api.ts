@@ -176,9 +176,11 @@ export async function getPantryItems(): Promise<PantryItem[]> {
 
 export async function addPantryItem(data: {
   name: string;
-  quantity: number;
-  unit: string;
+  quantity?: number;
+  unit?: string;
   needs_purchase?: number;
+  status?: 'in-stock' | 'low' | 'out';
+  category?: string;
 }): Promise<PantryItem> {
   const res = await fetch(`${BASE}/pantry`, {
     method: 'POST',
@@ -194,7 +196,7 @@ export async function addPantryItem(data: {
 
 export async function updatePantryItem(
   id: string,
-  updates: { name?: string; quantity?: number; unit?: string; needs_purchase?: number }
+  updates: { name?: string; quantity?: number; unit?: string; needs_purchase?: number; status?: 'in-stock' | 'low' | 'out'; category?: string }
 ): Promise<PantryItem> {
   const res = await fetch(`${BASE}/pantry/${id}`, {
     method: 'PATCH',
@@ -208,6 +210,30 @@ export async function deletePantryItem(id: string): Promise<void> {
   await fetch(`${BASE}/pantry/${id}`, { method: 'DELETE' });
 }
 
+export async function categorizePantryItem(id: string): Promise<PantryItem> {
+  const res = await fetch(`${BASE}/pantry/${id}/categorize`, { method: 'POST' });
+  return res.json();
+}
+
+export async function updateBakeLog(
+  id: string,
+  bake_log: import('./types').BakeEntry[]
+): Promise<Recipe> {
+  const res = await fetch(`${BASE}/recipes/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ bake_log }),
+  });
+  if (!res.ok) throw new Error('Failed to update bake log');
+  return res.json();
+}
+
+export async function recategorizeAll(): Promise<{ total: number; done: number; failed: number }> {
+  const res = await fetch(`${BASE}/recipes/categorize-all?force=true`, { method: 'POST' });
+  if (!res.ok) throw new Error('Recategorization failed');
+  return res.json();
+}
+
 export async function searchRecipes(q: string): Promise<SearchResult[]> {
   const res = await fetch(`${BASE}/search?q=${encodeURIComponent(q)}`);
   if (!res.ok) {
@@ -219,6 +245,12 @@ export async function searchRecipes(q: string): Promise<SearchResult[]> {
 
 export async function lookupNutrition(q: string): Promise<{ description: string; nutrition: import('./utils/nutritionData').NutrientPer100g } | null> {
   const res = await fetch(`${BASE}/nutrition/search?q=${encodeURIComponent(q)}`);
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function lookupIngredientPrice(name: string): Promise<import('./utils/ingredientCost').AIPrice | null> {
+  const res = await fetch(`${BASE}/nutrition/price?q=${encodeURIComponent(name)}`);
   if (!res.ok) return null;
   return res.json();
 }
