@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getRecipes, getPantryItems, getShelf, removeFromShelf } from '../api';
+import { getRecipes, getPantryItems, getShelf } from '../api';
 import type { Recipe, PantryItem } from '../types';
 import { recipeCoverage } from '../utils/pantryMatch';
 import WeekendShelf from '../components/WeekendShelf';
