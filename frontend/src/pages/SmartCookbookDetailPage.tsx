@@ -18,9 +18,10 @@ function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
   return new RegExp(`\\b${escaped}\\b`).test(ingredientName.toLowerCase());
 }
 
-function recipeHasAnyPantryMatch(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+function recipeAllIngredientsCovered(recipe: Recipe, pantryItems: PantryItem[]): boolean {
   const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
-  return pantryItems.some(item => names.some(n => pantryMatch(n, item.name)));
+  if (names.length === 0) return false;
+  return names.every(name => pantryItems.some(item => pantryMatch(name, item.name)));
 }
 
 function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
@@ -36,7 +37,7 @@ function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean
 
 function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: PantryItem[]): Recipe[] {
   switch (filter) {
-    case 'ready':   return recipes.filter(r => recipeHasAnyPantryMatch(r, pantryItems) && !recipeHasOutOfStock(r, pantryItems));
+    case 'ready':   return recipes.filter(r => recipeAllIngredientsCovered(r, pantryItems) && !recipeHasOutOfStock(r, pantryItems));
     case 'out':     return recipes.filter(r => recipeHasOutOfStock(r, pantryItems));
     case 'rated':   return recipes.filter(r => r.rating != null);
     case 'unrated': return recipes.filter(r => r.rating == null);
