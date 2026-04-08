@@ -514,7 +514,7 @@ interface PantryRowProps {
   isRenaming: boolean;
   confirmingDelete: boolean;
   renameValue: string;
-  renameInputRef: React.RefObject<HTMLInputElement>;
+  renameInputRef: React.RefObject<HTMLInputElement | null>;
   onCycleStatus: (item: PantryItem) => void;
   onStartRename: (item: PantryItem) => void;
   onRenameChange: (val: string) => void;
