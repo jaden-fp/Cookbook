@@ -1098,7 +1098,7 @@ export default function RecipeDetailPage() {
                               key={`${scale}-${gi}-${ii}`}
                               className="font-semibold animate-amount"
                             >
-                              {[scaleAmount(ing.amount, scale), ing.unit].filter(Boolean).join(' ')}
+                              {[scaleAmount(ing.amount, scale, ing.unit), ing.unit].filter(Boolean).join(' ')}
                             </span>{' '}
                             {ing.name}
                             {ing.notes && ing.notes.trim() && (
@@ -1379,7 +1379,7 @@ export default function RecipeDetailPage() {
                       <span
                         style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)' }}
                       >
-                        {[ing.amount, ing.unit, ing.name].filter(Boolean).join(' ')}
+                        {[scaleAmount(ing.amount, 1, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ')}
                       </span>
                       {status !== 'in-stock' && (
                         <button

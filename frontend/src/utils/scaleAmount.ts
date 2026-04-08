@@ -3,10 +3,20 @@
  * Handles integers, decimals, fractions (e.g. "1/2", "1 1/2"), and ranges ("2-3").
  * Returns the original string if it can't be parsed.
  */
-export function scaleAmount(amount: string, scale: number): string {
-  if (!amount || scale === 1) return amount;
+export function scaleAmount(amount: string, scale: number, unit = ''): string {
+  if (!amount) return amount;
 
-  const trimmed = amount.trim();
+  // Strip unit from amount if it was accidentally included during import (e.g., "1/2 cup" with unit="cup")
+  let trimmed = amount.trim();
+  if (unit) {
+    const tl = trimmed.toLowerCase();
+    const ul = unit.toLowerCase();
+    if (tl.endsWith(ul) && tl.length > ul.length) {
+      trimmed = trimmed.slice(0, trimmed.length - unit.length).trim();
+    }
+  }
+
+  if (scale === 1) return trimmed;
 
   // Handle range like "2-3"
   const rangeMatch = trimmed.match(/^([\d./\s]+)-([\d./\s]+)$/);

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { Recipe } from '../types';
+import { scaleAmount } from '../utils/scaleAmount';
 
 // ── Timer detection ────────────────────────────────────────────────────────
 
@@ -41,7 +42,7 @@ function stepIngredients(step: string, recipe: Recipe): string[] {
     for (const ing of group.ingredients) {
       const parts = ing.name.toLowerCase().split(/[\s,]+/).filter(w => w.length > 2 && !SKIP.has(w));
       if (parts.some(w => stepLower.includes(w))) {
-        found.push([ing.amount, ing.unit, ing.name].filter(Boolean).join(' '));
+        found.push([scaleAmount(ing.amount, 1, ing.unit), ing.unit, ing.name].filter(Boolean).join(' '));
       }
     }
   }
