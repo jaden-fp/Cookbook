@@ -306,6 +306,111 @@ export default function PantryPage() {
         <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
+      {/* ── Tab switcher ── */}
+      <div className="flex gap-2 mb-6 animate-fade-up">
+        {(['pantry', 'shopping'] as const).map(t => {
+          const active = tab === t;
+          const label = t === 'pantry' ? 'Pantry' : 'Shopping List';
+          const badge = t === 'shopping' && shoppingCount > 0 ? shoppingCount : null;
+          return (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                padding: '7px 18px',
+                borderRadius: '999px',
+                border: active ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
+                background: active ? 'var(--accent-dim)' : 'var(--surface)',
+                color: active ? 'var(--accent)' : 'var(--text-muted)',
+                fontFamily: 'var(--font-body)', fontWeight: active ? 700 : 500,
+                fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.15s',
+              }}
+            >
+              {label}
+              {badge && (
+                <span style={{
+                  fontSize: '0.7rem', fontWeight: 700, padding: '1px 6px',
+                  borderRadius: '999px',
+                  background: active ? 'var(--accent)' : 'var(--bg-subtle)',
+                  color: active ? '#fff' : 'var(--text-muted)',
+                  lineHeight: 1.5,
+                }}>{badge}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Shopping list view ── */}
+      {tab === 'shopping' && (
+        <>
+          {shoppingGroups.length === 0 ? (
+            <div className="py-20 text-center rounded-2xl" style={{ border: '1.5px dashed var(--border-strong)' }}>
+              <p style={{ fontSize: '2rem', marginBottom: '12px' }}>✓</p>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text)' }}>All stocked up!</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '4px' }}>No items are low or out of stock.</p>
+            </div>
+          ) : (
+            <>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '24px' }}>
+                {shoppingCount} {shoppingCount === 1 ? 'item' : 'items'} to pick up — tap to mark as in stock
+              </p>
+              <div className="space-y-8">
+                {shoppingGroups.map(({ category, items: groupItems }) => (
+                  <section key={category}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', padding: '3px 10px',
+                        borderRadius: '999px', background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)',
+                        fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700,
+                        letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)',
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>{category}</span>
+                      <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+                    </div>
+                    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+                      {groupItems.map((item, idx) => {
+                        const isOut = getStatus(item) === 'out';
+                        const isChecking = shoppingChecking.has(item.id);
+                        return (
+                          <div key={item.id} className="flex items-center gap-3" style={{
+                            padding: '13px 14px',
+                            borderBottom: idx === groupItems.length - 1 ? 'none' : '1px solid var(--border)',
+                            opacity: isChecking ? 0.4 : 1, transition: 'opacity 0.2s',
+                          }}>
+                            <button
+                              onClick={() => handleShoppingCheck(item)}
+                              disabled={isChecking}
+                              style={{
+                                width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                                border: `2px solid ${isOut ? '#e53935' : '#ff9800'}`,
+                                background: 'transparent', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}
+                            />
+                            <p style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: '0.9375rem', color: 'var(--text)' }}>
+                              {item.name}
+                            </p>
+                            <span style={{
+                              flexShrink: 0, fontSize: '0.7rem', fontWeight: 700,
+                              fontFamily: 'var(--font-body)', padding: '3px 8px', borderRadius: '999px',
+                              background: isOut ? 'rgba(229,57,53,0.10)' : 'rgba(255,152,0,0.10)',
+                              color: isOut ? '#e53935' : '#ff9800',
+                            }}>{isOut ? 'Out' : 'Low'}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      )}
+
+      {tab === 'pantry' && <>
       {/* ── Add item form ── */}
       <div className="animate-fade-up delay-1 mb-5">
         <form onSubmit={handleAdd}>
