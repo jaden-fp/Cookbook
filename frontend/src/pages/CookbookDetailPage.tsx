@@ -5,7 +5,7 @@ import RecipeTile from '../components/RecipeTile';
 import BottomSheet from '../components/BottomSheet';
 import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook, getPantryItems } from '../api';
 import type { Recipe, Cookbook, PantryItem } from '../types';
-import { pantryMatch, recipeAllIngredientsCovered, recipeHasOutOfStock } from '../utils/pantryMatch';
+import { recipeAllIngredientsCovered, recipeHasOutOfStock } from '../utils/pantryMatch';
 
 
 type SortOption = 'az' | 'newest' | 'oldest' | 'top-rated';
