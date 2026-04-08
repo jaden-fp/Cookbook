@@ -12,7 +12,6 @@ import RecipeDetailPage from './pages/RecipeDetailPage';
 import CookbookDetailPage from './pages/CookbookDetailPage';
 import SmartCookbookDetailPage from './pages/SmartCookbookDetailPage';
 import PantryPage from './pages/PantryPage';
-import ShoppingListPage from './pages/ShoppingListPage';
 import HomePage from './pages/HomePage';
 
 function MobileLogo() {
