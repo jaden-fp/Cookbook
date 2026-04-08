@@ -7,22 +7,6 @@ import { getCookbook, getCookbookRecipes, getRecipes, addRecipesToCookbook, getP
 import type { Recipe, Cookbook, PantryItem } from '../types';
 import { pantryMatch, recipeAllIngredientsCovered, recipeHasOutOfStock } from '../utils/pantryMatch';
 
-function getRecipeReadiness(recipe: Recipe, pantryItems: PantryItem[]): 'green' | 'yellow' | 'red' | undefined {
-  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
-  let hasMatch = false, hasLow = false, hasOut = false;
-  for (const item of pantryItems) {
-    if (names.some(n => pantryMatch(n, item.name))) {
-      hasMatch = true;
-      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
-      if (s === 'out') hasOut = true;
-      else if (s === 'low') hasLow = true;
-    }
-  }
-  if (!hasMatch) return undefined;
-  if (hasOut) return 'red';
-  if (hasLow) return 'yellow';
-  return 'green';
-}
 
 type SortOption = 'az' | 'newest' | 'oldest' | 'top-rated';
 const SORT_LABELS: Record<SortOption, string> = { az: 'A → Z', newest: 'Newest', oldest: 'Oldest', 'top-rated': 'Top rated' };
