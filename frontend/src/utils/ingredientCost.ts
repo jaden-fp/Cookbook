@@ -4,7 +4,6 @@
  * Prices based on Trader Joe's / Kroger averages (2024–2026).
  */
 
-import { splitCompound } from './scaleAmount';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
