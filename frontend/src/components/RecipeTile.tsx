@@ -82,7 +82,7 @@ export default function RecipeTile({ recipe, pantryItems }: Props) {
               border: '1px solid rgba(15,12,30,0.06)',
               lineHeight: 1,
             }}>
-            <span style={{ fontSize: '11px', color: 'var(--accent)', lineHeight: 1 }}>★</span>
+            <span style={{ fontSize: '14px', color: 'var(--accent)', lineHeight: 1 }}>★</span>
             <span style={{ fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>{recipe.rating}</span>
           </div>
         )}
