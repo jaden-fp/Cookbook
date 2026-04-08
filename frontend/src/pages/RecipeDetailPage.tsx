@@ -1,25 +1,53 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe, uploadRecipeImage } from '../api';
+import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe, uploadRecipeImage, updateBakeLog, getCookbooks, createCookbook, addRecipesToCookbook, getRecipeCookbooks } from '../api';
 import type { BakeEntry } from '../types';
 import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
 import BakedModal from '../components/BakedModal';
 import CookbookModal from '../components/CookbookModal';
 import { scaleAmount } from '../utils/scaleAmount';
+import { estimateCost, totalCost, costCoverage, hasUserOverride, setUserOverride, resetUserOverride, findEntryKey, getAllPriceEntries } from '../utils/ingredientCost';
+import type { PackageUnit } from '../utils/ingredientCost';
 import NutritionPanel from '../components/NutritionPanel';
 import BakingMode from '../components/BakingMode';
 
-type Tab = 'ingredients' | 'instructions' | 'nutrition';
+type Tab = 'ingredients' | 'instructions' | 'nutrition' | 'cost';
 
 function formatBakeDate(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function BakeHistory({ entries }: { entries: BakeEntry[] }) {
-  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (log: BakeEntry[]) => void }) {
+  const sorted = [...entries].map((e, origIdx) => ({ ...e, origIdx })).sort((a, b) => b.date.localeCompare(a.date));
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editDate, setEditDate] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  function startEdit(origIdx: number, entry: BakeEntry) {
+    setEditingIdx(origIdx);
+    setEditDate(entry.date);
+    setEditNotes(entry.notes ?? '');
+  }
+
+  async function saveEdit() {
+    if (editingIdx === null) return;
+    setSaving(true);
+    const updated = entries.map((e, i) =>
+      i === editingIdx ? { date: editDate, notes: editNotes || null } : e
+    );
+    onUpdate(updated);
+    setEditingIdx(null);
+    setSaving(false);
+  }
+
+  function deleteEntry(origIdx: number) {
+    onUpdate(entries.filter((_, i) => i !== origIdx));
+  }
+
   return (
     <div className="mt-5 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
       <div className="flex items-center gap-2 mb-3">
@@ -34,19 +62,93 @@ function BakeHistory({ entries }: { entries: BakeEntry[] }) {
         </span>
       </div>
       <div className="space-y-2">
-        {sorted.map((entry, i) => (
-          <div key={i} className="flex items-start gap-3 py-2 px-3 rounded-xl" style={{ background: 'var(--bg-subtle)' }}>
-            <div className="shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style={{ background: 'var(--accent)' }} />
-            <div className="flex-1 min-w-0">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
-                {formatBakeDate(entry.date)}
-              </span>
-              {entry.notes && (
-                <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
-                  {entry.notes}
-                </p>
-              )}
-            </div>
+        {sorted.map(({ origIdx, ...entry }) => (
+          <div key={origIdx}>
+            {editingIdx === origIdx ? (
+              <div className="py-2.5 px-3 rounded-xl space-y-2" style={{ background: 'var(--bg-subtle)', border: '1.5px solid var(--accent)' }}>
+                <input
+                  type="date"
+                  value={editDate}
+                  onChange={e => setEditDate(e.target.value)}
+                  style={{
+                    width: '100%', fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+                    color: 'var(--text)', background: 'var(--surface)',
+                    border: '1px solid var(--border-strong)', borderRadius: '6px',
+                    padding: '5px 8px', outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+                <textarea
+                  value={editNotes}
+                  onChange={e => setEditNotes(e.target.value)}
+                  placeholder="Notes (optional)"
+                  rows={2}
+                  style={{
+                    width: '100%', fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+                    color: 'var(--text)', background: 'var(--surface)',
+                    border: '1px solid var(--border-strong)', borderRadius: '6px',
+                    padding: '5px 8px', outline: 'none', resize: 'none', boxSizing: 'border-box',
+                  }}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={saveEdit}
+                    disabled={saving || !editDate}
+                    style={{
+                      flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600,
+                      color: '#fff', background: 'var(--accent)', border: 'none',
+                      borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
+                      opacity: saving || !editDate ? 0.6 : 1,
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingIdx(null)}
+                    style={{
+                      fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+                      color: 'var(--text-muted)', background: 'transparent', border: 'none',
+                      borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3 py-2 px-3 rounded-xl group" style={{ background: 'var(--bg-subtle)' }}>
+                <div className="shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style={{ background: 'var(--accent)' }} />
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
+                    {formatBakeDate(entry.date)}
+                  </span>
+                  {entry.notes && (
+                    <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
+                      {entry.notes}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  <button
+                    onClick={() => startEdit(origIdx, entry)}
+                    title="Edit"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => deleteEntry(origIdx)}
+                    title="Delete"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -71,6 +173,8 @@ export default function RecipeDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [tab, setTab] = useState<Tab>('ingredients');
   const [scale, setScale] = useState(1);
+  const [scaleInput, setScaleInput] = useState('1');
+  const [customCatInput, setCustomCatInput] = useState('');
   const [showBaked, setShowBaked] = useState(false);
   const [showBaking, setShowBaking] = useState(false);
   const [showCookbook, setShowCookbook] = useState(false);
@@ -95,12 +199,26 @@ export default function RecipeDetailPage() {
   const [, setBannerDismissed] = useState(false);
   const [addingToList, setAddingToList] = useState<Set<string>>(new Set());
   const [addingAll, setAddingAll] = useState(false);
+  const [queuing, setQueuing] = useState(false);
+  const [isQueued, setIsQueued] = useState(false);
+
+  // Cost tab price editing
+  const [editingPriceKey, setEditingPriceKey] = useState<string | null>(null);
+  const [priceForm, setPriceForm] = useState<{ price: string; amount: string; unit: PackageUnit }>({ price: '', amount: '', unit: 'oz' });
+  const [priceVersion, setPriceVersion] = useState(0);
 
   useEffect(() => {
     if (!id) return;
     getRecipe(id)
       .then(setRecipe)
       .finally(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    getRecipeCookbooks(id).then(books => {
+      setIsQueued(books.some(b => b.name.toLowerCase() === 'queued'));
+    }).catch(() => {});
   }, [id]);
 
   useEffect(() => {
@@ -111,8 +229,39 @@ export default function RecipeDetailPage() {
     setBannerDismissed(false);
   }, [id]);
 
+  async function handleQueue() {
+    if (!recipe || queuing) return;
+    setQueuing(true);
+    try {
+      const books = await getCookbooks();
+      let queued = books.find(b => b.name.toLowerCase() === 'queued');
+      if (!queued) queued = await createCookbook('Queued');
+      await addRecipesToCookbook(queued.id, [recipe.id]);
+      setIsQueued(true);
+    } finally {
+      setQueuing(false);
+    }
+  }
+
   function adjustScale(delta: number) {
-    setScale(s => Math.max(0.5, Math.min(10, parseFloat((s + delta).toFixed(2)))));
+    setScale(s => {
+      const next = Math.max(0.5, Math.min(10, parseFloat((s + delta).toFixed(2))));
+      setScaleInput(String(next));
+      return next;
+    });
+  }
+
+  function handleScaleInput(val: string) {
+    setScaleInput(val);
+    const n = parseFloat(val);
+    if (!isNaN(n) && n >= 0.25 && n <= 20) setScale(n);
+  }
+
+  function commitScaleInput() {
+    const n = parseFloat(scaleInput);
+    if (isNaN(n) || n < 0.25) { setScale(0.25); setScaleInput('0.25'); }
+    else if (n > 20) { setScale(20); setScaleInput('20'); }
+    else { const rounded = parseFloat(n.toFixed(2)); setScale(rounded); setScaleInput(String(rounded)); }
   }
 
   function matchPantry(name: string): PantryItem | null {
@@ -207,6 +356,8 @@ export default function RecipeDetailPage() {
       image_url: recipe.image_url ?? null,
       ai_category: recipe.ai_category ?? null,
     });
+    const PRESETS = ['Cookies', 'Cakes', 'Bars'];
+    setCustomCatInput(recipe.ai_category && !PRESETS.includes(recipe.ai_category) ? recipe.ai_category : '');
     setIsEditing(true);
   }
 
@@ -563,8 +714,48 @@ export default function RecipeDetailPage() {
             background: 'var(--surface)',
             border: '1px solid var(--border)',
             boxShadow: 'var(--shadow-sm)',
+            position: 'relative',
           }}
         >
+          {/* Queue button — top-right of card */}
+          <button
+            onClick={handleQueue}
+            disabled={queuing}
+            title={isQueued ? 'In Queued cookbook' : 'Add to Queued'}
+            className="flex items-center justify-center rounded-full transition-all duration-200"
+            style={{
+              position: 'absolute', top: '14px', right: '14px',
+              width: '2rem', height: '2rem',
+              background: isQueued ? 'var(--accent-dim)' : 'transparent',
+              border: `1.5px solid ${isQueued ? 'var(--accent)' : 'var(--border-strong)'}`,
+              color: isQueued ? 'var(--accent)' : 'var(--text-muted)',
+              cursor: queuing ? 'wait' : 'pointer',
+            }}
+            onMouseEnter={e => {
+              if (!isQueued) {
+                e.currentTarget.style.borderColor = 'var(--accent)';
+                e.currentTarget.style.color = 'var(--accent)';
+                e.currentTarget.style.background = 'var(--accent-dim)';
+              }
+            }}
+            onMouseLeave={e => {
+              if (!isQueued) {
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
+                e.currentTarget.style.color = 'var(--text-muted)';
+                e.currentTarget.style.background = 'transparent';
+              }
+            }}
+          >
+            {isQueued ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/>
+              </svg>
+            ) : (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/>
+              </svg>
+            )}
+          </button>
           {/* Description */}
           {isEditing && draft ? (
             <textarea
@@ -681,74 +872,6 @@ export default function RecipeDetailPage() {
             </>
           ) : null}
 
-          {/* Category badge */}
-          {(recipe.ai_category || isEditing) && (
-            <div className="flex items-center gap-2 mb-5">
-              {isEditing ? (
-                <div className="flex flex-wrap gap-2 items-center">
-                  {['Cookies', 'Muffins', 'Cakes', 'Breads', 'Pastries', 'Other'].map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => setDraft(d => d ? { ...d, ai_category: cat } : d)}
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: '999px',
-                        border: '1.5px solid',
-                        borderColor: draft?.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
-                        background: draft?.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
-                        color: draft?.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.75rem',
-                        fontWeight: draft?.ai_category === cat ? 600 : 400,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault();
-                      const input = (e.currentTarget.elements.namedItem('custom') as HTMLInputElement);
-                      const val = input.value.trim();
-                      if (val) { setDraft(d => d ? { ...d, ai_category: val } : d); input.value = ''; }
-                    }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-                  >
-                    <input
-                      name="custom"
-                      placeholder="Custom…"
-                      defaultValue={draft?.ai_category && !['Cookies','Muffins','Cakes','Breads','Pastries','Other'].includes(draft.ai_category) ? draft.ai_category : ''}
-                      style={{
-                        padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)',
-                        fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
-                        background: 'var(--bg-subtle)', outline: 'none', width: '90px',
-                      }}
-                      onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
-                      onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
-                    />
-                    <button type="submit" style={{ padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                      Set
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  padding: '3px 10px', borderRadius: '999px',
-                  background: 'var(--accent-dim)', border: '1px solid var(--accent)',
-                  color: 'var(--accent)', fontFamily: 'var(--font-body)',
-                  fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
-                }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
-                    <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
-                  </svg>
-                  {recipe.ai_category}
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Pantry banner */}
           {hasMissingOrLow && (
             <div
@@ -805,8 +928,8 @@ export default function RecipeDetailPage() {
               </button>
             )}
 
-            {/* Mark as Baked + Add to Cookbook */}
-            <div className="flex flex-col sm:flex-row gap-2">
+            {/* Baked + Cookbook — always side by side */}
+            <div className="flex flex-row gap-2">
               <button
                 onClick={() => setShowBaked(true)}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-all duration-200"
@@ -857,7 +980,8 @@ export default function RecipeDetailPage() {
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6L9 17l-5-5"/>
                     </svg>
-                    Mark as Baked
+                    <span className="sm:hidden">Baked</span>
+                    <span className="hidden sm:inline">Mark as Baked</span>
                   </>
                 )}
               </button>
@@ -887,14 +1011,92 @@ export default function RecipeDetailPage() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                 </svg>
-                Add to Cookbook
+                <span className="sm:hidden">Cookbook</span>
+                <span className="hidden sm:inline">Add to Cookbook</span>
               </button>
             </div>
           </div>
 
+          {/* Category badge */}
+          {(recipe.ai_category || isEditing) && (
+            <div className="flex items-center gap-2 mt-4">
+              {isEditing ? (
+                <div className="flex flex-wrap gap-2 items-center">
+                  {['Cookies', 'Cakes', 'Bars'].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => { setDraft(d => d ? { ...d, ai_category: cat } : d); setCustomCatInput(''); }}
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: '999px',
+                        border: '1.5px solid',
+                        borderColor: draft?.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
+                        background: draft?.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
+                        color: draft?.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.75rem',
+                        fontWeight: draft?.ai_category === cat ? 600 : 400,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const val = customCatInput.trim();
+                      if (val) setDraft(d => d ? { ...d, ai_category: val } : d);
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <input
+                      placeholder="Custom…"
+                      value={customCatInput}
+                      onChange={e => {
+                        setCustomCatInput(e.target.value);
+                        if (e.target.value.trim()) setDraft(d => d ? { ...d, ai_category: e.target.value.trim() } : d);
+                      }}
+                      style={{
+                        padding: '4px 10px', borderRadius: '999px', border: '1.5px solid',
+                        borderColor: draft?.ai_category && !['Cookies','Cakes','Bars'].includes(draft.ai_category) && customCatInput ? 'var(--accent)' : 'var(--border-strong)',
+                        fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
+                        background: 'var(--bg-subtle)', outline: 'none', width: '90px',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                      onBlur={e => { e.target.style.borderColor = draft?.ai_category && !['Cookies','Cakes','Bars'].includes(draft.ai_category) && customCatInput ? 'var(--accent)' : 'var(--border-strong)'; }}
+                    />
+                    <button type="submit" style={{ padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                      Set
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '5px',
+                  padding: '3px 10px', borderRadius: '999px',
+                  background: 'var(--accent-dim)', border: '1px solid var(--accent)',
+                  color: 'var(--accent)', fontFamily: 'var(--font-body)',
+                  fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+                }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
+                    <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+                  </svg>
+                  {recipe.ai_category}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Bake history */}
           {(recipe.bake_log?.length ?? 0) > 0 && (
-            <BakeHistory entries={recipe.bake_log!} />
+            <BakeHistory
+              entries={recipe.bake_log!}
+              onUpdate={async (log) => {
+                const updated = await updateBakeLog(recipe.id, log);
+                setRecipe(updated);
+              }}
+            />
           )}
         </div>
 
@@ -903,7 +1105,7 @@ export default function RecipeDetailPage() {
         <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
           <div className="flex items-end justify-between">
             <div className="flex gap-0">
-              {(['ingredients', 'instructions', 'nutrition'] as Tab[]).map(t => (
+              {(['ingredients', 'instructions', 'nutrition', 'cost'] as Tab[]).map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
@@ -973,7 +1175,16 @@ export default function RecipeDetailPage() {
                           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                         >−</button>
                         <div style={{ width: '1px', height: '1rem', background: 'var(--border-strong)' }} />
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text)', minWidth: '34px', textAlign: 'center', userSelect: 'none', padding: '0 3px' }}>{scale}×</span>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={scaleInput}
+                          onChange={e => handleScaleInput(e.target.value)}
+                          onBlur={commitScaleInput}
+                          onKeyDown={e => e.key === 'Enter' && (e.currentTarget.blur())}
+                          style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text)', width: '38px', textAlign: 'center', padding: '0 2px', background: 'transparent', border: 'none', outline: 'none' }}
+                        />
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', paddingRight: '3px', userSelect: 'none' }}>×</span>
                         <div style={{ width: '1px', height: '1rem', background: 'var(--border-strong)' }} />
                         <button
                           onClick={() => adjustScale(0.5)}
@@ -1262,6 +1473,241 @@ export default function RecipeDetailPage() {
             scale={scale}
           />
         )}
+
+        {/* Cost tab */}
+        {tab === 'cost' && (() => {
+          // priceVersion is read here so React re-renders after a price save
+          void priceVersion;
+          const batchTotal = totalCost(recipe.ingredient_groups, scale);
+          const yieldNum = recipe.yield ? parseFloat(recipe.yield.replace(/[^\d.]/g, '')) : null;
+          const perItem = batchTotal != null && yieldNum && yieldNum > 0 ? batchTotal / (yieldNum * scale) : null;
+          const coverage = costCoverage(recipe.ingredient_groups, scale);
+          const unpriced = coverage.total - coverage.priced;
+
+          return (
+            <div className="animate-fade-up space-y-6">
+              {/* Totals */}
+              <div className="flex gap-3">
+                <div className="flex-1 rounded-2xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border-strong)' }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>Batch cost</p>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--text)' }}>
+                    {batchTotal != null ? `~$${batchTotal.toFixed(2)}` : '—'}
+                  </p>
+                  {scale !== 1 && <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>{scale}× scale</p>}
+                </div>
+                {perItem != null && (
+                  <div className="flex-1 rounded-2xl p-4" style={{ background: 'var(--accent-dim)', border: '1px solid var(--accent)' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '4px' }}>Per item</p>
+                    <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)' }}>
+                      ~${perItem.toFixed(2)}
+                    </p>
+                    {recipe.yield && <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--accent)', opacity: 0.75, marginTop: '2px' }}>{recipe.yield}</p>}
+                  </div>
+                )}
+              </div>
+
+              {/* Missing count banner */}
+              {unpriced > 0 && (
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                    {unpriced} of {coverage.total} ingredient{unpriced !== 1 ? 's' : ''} couldn&apos;t be priced — the total is a partial estimate.
+                  </p>
+                </div>
+              )}
+
+              {/* Per-ingredient breakdown */}
+              {recipe.ingredient_groups.map((group, gi) => (
+                <div key={gi}>
+                  {group.group_name && (
+                    <div className="flex items-center gap-3 mb-3">
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)' }}>{group.group_name}</span>
+                      <div style={{ flex: 1, height: '1px', background: 'var(--border-strong)' }} />
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    {group.ingredients.map((ing, ii) => {
+                      const { cost, display } = estimateCost(ing.amount, ing.unit, ing.name, scale);
+                      const entryKey = findEntryKey(ing.name);
+                      const isEditing = editingPriceKey !== null && editingPriceKey === entryKey;
+                      const isOverridden = entryKey != null && hasUserOverride(entryKey);
+
+                      return (
+                        <div key={ii} style={{ borderBottom: '1px solid var(--border)' }}>
+                          {/* Main row */}
+                          <div className="flex items-center justify-between gap-3 py-2 group">
+                            <div style={{ flex: 1 }}>
+                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text)' }}>
+                                {[scaleAmount(ing.amount, scale, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ')}
+                              </span>
+                              {ing.notes && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}> ({ing.notes})</span>}
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {isOverridden && (
+                                <span style={{
+                                  fontFamily: 'var(--font-body)', fontSize: '0.625rem', fontWeight: 700,
+                                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                                  color: 'var(--accent)', background: 'var(--accent-dim)',
+                                  borderRadius: '4px', padding: '1px 5px',
+                                }}>
+                                  custom
+                                </span>
+                              )}
+                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 600, color: cost != null ? 'var(--text)' : 'var(--text-muted)' }}>
+                                {cost != null ? `~${display}` : display}
+                              </span>
+                              {entryKey != null && (
+                                <button
+                                  onClick={() => {
+                                    if (isEditing) {
+                                      setEditingPriceKey(null);
+                                    } else {
+                                      const entries = getAllPriceEntries();
+                                      const found = entries.find(e => e.key === entryKey);
+                                      if (found) {
+                                        setPriceForm({
+                                          price: String(found.packagePrice),
+                                          amount: String(found.packageAmount),
+                                          unit: found.packageUnit,
+                                        });
+                                      }
+                                      setEditingPriceKey(entryKey);
+                                    }
+                                  }}
+                                  title="Edit price"
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: isEditing ? 'var(--accent)' : 'var(--text-muted)', padding: '2px 3px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}
+                                >
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Inline edit form */}
+                          {isEditing && entryKey != null && (
+                            <div className="mb-2 px-3 py-2.5 rounded-xl space-y-2" style={{ background: 'var(--bg-subtle)', border: '1.5px solid var(--accent)' }}>
+                              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent)', margin: 0 }}>
+                                Package price
+                              </p>
+                              <div className="flex gap-2 items-center">
+                                <div className="flex items-center gap-1" style={{ background: 'var(--surface)', border: '1px solid var(--border-strong)', borderRadius: '6px', padding: '5px 8px', flex: '0 0 auto', width: '90px' }}>
+                                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>$</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={priceForm.price}
+                                    onChange={e => setPriceForm(f => ({ ...f, price: e.target.value }))}
+                                    placeholder="3.49"
+                                    style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text)', background: 'none', border: 'none', outline: 'none' }}
+                                  />
+                                </div>
+                                <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>for</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  value={priceForm.amount}
+                                  onChange={e => setPriceForm(f => ({ ...f, amount: e.target.value }))}
+                                  placeholder="12"
+                                  style={{
+                                    flex: '0 0 auto', width: '70px',
+                                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+                                    color: 'var(--text)', background: 'var(--surface)',
+                                    border: '1px solid var(--border-strong)', borderRadius: '6px',
+                                    padding: '5px 8px', outline: 'none',
+                                  }}
+                                />
+                                <select
+                                  value={priceForm.unit}
+                                  onChange={e => setPriceForm(f => ({ ...f, unit: e.target.value as PackageUnit }))}
+                                  style={{
+                                    flex: 1,
+                                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+                                    color: 'var(--text)', background: 'var(--surface)',
+                                    border: '1px solid var(--border-strong)', borderRadius: '6px',
+                                    padding: '5px 8px', outline: 'none',
+                                  }}
+                                >
+                                  <option value="oz">oz</option>
+                                  <option value="lb">lb</option>
+                                  <option value="g">g</option>
+                                  <option value="cup">cup</option>
+                                  <option value="tbsp">tbsp</option>
+                                  <option value="tsp">tsp</option>
+                                  <option value="floz">fl oz</option>
+                                  <option value="piece">piece</option>
+                                </select>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    const p = parseFloat(priceForm.price);
+                                    const a = parseFloat(priceForm.amount);
+                                    if (!isNaN(p) && !isNaN(a) && a > 0) {
+                                      setUserOverride(entryKey, { packagePrice: p, packageAmount: a, packageUnit: priceForm.unit });
+                                      setPriceVersion(v => v + 1);
+                                    }
+                                    setEditingPriceKey(null);
+                                  }}
+                                  disabled={!priceForm.price || !priceForm.amount || parseFloat(priceForm.amount) <= 0}
+                                  style={{
+                                    flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600,
+                                    color: '#fff', background: 'var(--accent)', border: 'none',
+                                    borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
+                                    opacity: (!priceForm.price || !priceForm.amount || parseFloat(priceForm.amount) <= 0) ? 0.5 : 1,
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                {isOverridden && (
+                                  <button
+                                    onClick={() => {
+                                      resetUserOverride(entryKey);
+                                      setPriceVersion(v => v + 1);
+                                      setEditingPriceKey(null);
+                                    }}
+                                    style={{
+                                      fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600,
+                                      color: 'var(--text-muted)', background: 'none',
+                                      border: '1px solid var(--border-strong)',
+                                      borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
+                                    }}
+                                  >
+                                    Reset
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => setEditingPriceKey(null)}
+                                  style={{
+                                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem',
+                                    color: 'var(--text-muted)', background: 'none', border: 'none',
+                                    borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', color: 'var(--text-muted)', textAlign: 'center', paddingTop: '4px' }}>
+                Estimated prices based on Trader Joe&apos;s / Tom Thumb averages. Click the pencil icon on any ingredient to enter your own package price.
+              </p>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Delete confirmation modal */}
@@ -1322,6 +1768,7 @@ export default function RecipeDetailPage() {
       {showBaking && (
         <BakingMode
           recipe={recipe}
+          scale={scale}
           onClose={() => setShowBaking(false)}
           onRate={() => setShowBaked(true)}
         />
