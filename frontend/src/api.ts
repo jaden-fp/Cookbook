@@ -270,7 +270,7 @@ export async function lookupIngredientPrice(name: string): Promise<import('./uti
   return res.json();
 }
 
-export async function aiSearchRecipes(query: string, recipes: { id: string; title: string; description?: string | null; ai_category?: string | null; tags?: string[] }[]): Promise<string[]> {
+export async function aiSearchRecipes(query: string, recipes: { id: string; title: string; description?: string | null; ai_category?: string | null; tags?: string[]; ingredients?: string[] }[]): Promise<string[]> {
   const res = await fetch(`${BASE}/ai-search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
