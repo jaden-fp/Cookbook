@@ -50,7 +50,6 @@ export default function App() {
             <Route path="/recipes" element={<AllRecipesPage />} />
             <Route path="/recipes/:id" element={<RecipeDetailPage />} />
             <Route path="/pantry" element={<PantryPage />} />
-            <Route path="/shopping" element={<ShoppingListPage />} />
           </Routes>
           <FAB />
           <FloatingTimer />
