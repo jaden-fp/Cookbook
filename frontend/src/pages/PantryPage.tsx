@@ -85,6 +85,12 @@ export default function PantryPage() {
   const [items, setItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Tab
+  const [tab, setTab] = useState<'pantry' | 'shopping'>('pantry');
+
+  // Shopping list: track which items are being checked off
+  const [shoppingChecking, setShoppingChecking] = useState<Set<string>>(new Set());
+
   // Filter
   const [filter, setFilter] = useState<Filter>('all');
 
