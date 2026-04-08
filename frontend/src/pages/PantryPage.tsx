@@ -209,6 +209,19 @@ export default function PantryPage() {
     }
   }
 
+  const handleShoppingCheck = useCallback(async (item: PantryItem) => {
+    if (shoppingChecking.has(item.id)) return;
+    setShoppingChecking(prev => new Set([...prev, item.id]));
+    setItems(prev => prev.map(p => p.id === item.id ? { ...p, status: 'in-stock' as Status } : p));
+    try {
+      await updatePantryItem(item.id, { status: 'in-stock' });
+    } catch {
+      setItems(prev => prev.map(p => p.id === item.id ? item : p));
+    } finally {
+      setShoppingChecking(prev => { const s = new Set(prev); s.delete(item.id); return s; });
+    }
+  }, [shoppingChecking]);
+
   async function handleDelete(item: PantryItem) {
     setItems(prev => prev.filter(p => p.id !== item.id));
     try {
