@@ -2,11 +2,47 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import RecipeTile from '../components/RecipeTile';
-import { getRecipes } from '../api';
-import type { Recipe } from '../types';
+import { getRecipes, getPantryItems } from '../api';
+import type { Recipe, PantryItem } from '../types';
 
 type SortOption = 'az' | 'newest' | 'oldest' | 'top-rated';
 const SORT_LABELS: Record<SortOption, string> = { az: 'A → Z', newest: 'Newest', oldest: 'Oldest', 'top-rated': 'Top rated' };
+
+type FilterOption = 'all' | 'ready' | 'out' | 'rated' | 'unrated';
+const FILTER_LABELS: Record<FilterOption, string> = {
+  all: 'Filter', ready: 'Ready to bake', out: 'Missing ingredients', rated: 'Rated', unrated: 'Unrated',
+};
+
+function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
+  const escaped = pantryItemName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}\\b`).test(ingredientName.toLowerCase());
+}
+
+function recipeHasAnyPantryMatch(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
+  return pantryItems.some(item => names.some(n => pantryMatch(n, item.name)));
+}
+
+function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
+  for (const item of pantryItems) {
+    if (names.some(n => pantryMatch(n, item.name))) {
+      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
+      if (s === 'out') return true;
+    }
+  }
+  return false;
+}
+
+function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: PantryItem[]): Recipe[] {
+  switch (filter) {
+    case 'ready':   return recipes.filter(r => recipeHasAnyPantryMatch(r, pantryItems) && !recipeHasOutOfStock(r, pantryItems));
+    case 'out':     return recipes.filter(r => recipeHasOutOfStock(r, pantryItems));
+    case 'rated':   return recipes.filter(r => r.rating != null);
+    case 'unrated': return recipes.filter(r => r.rating == null);
+    default:        return recipes;
+  }
+}
 
 function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
   const r = [...recipes];
@@ -20,36 +56,43 @@ function sortRecipes(recipes: Recipe[], sort: SortOption): Recipe[] {
 export default function SmartCookbookDetailPage() {
   const { category } = useParams<{ category: string }>();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortOption>('newest');
+  const [filter, setFilter] = useState<FilterOption>('all');
   const [showSort, setShowSort] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const sortBtnRef = useRef<HTMLButtonElement>(null);
   const sortMenuRef = useRef<HTMLDivElement>(null);
+  const filterBtnRef = useRef<HTMLButtonElement>(null);
+  const filterMenuRef = useRef<HTMLDivElement>(null);
   const [sortPos, setSortPos] = useState({ top: 0, right: 0 });
+  const [filterPos, setFilterPos] = useState({ top: 0, right: 0 });
 
   const decodedCategory = category ? decodeURIComponent(category) : '';
 
   useEffect(() => {
-    getRecipes()
-      .then(all => setRecipes(
+    Promise.all([getRecipes(), getPantryItems()]).then(([all, pantry]) => {
+      setRecipes(
         decodedCategory === 'Favs'
           ? all.filter(r => r.rating === 5)
           : all.filter(r => r.ai_category === decodedCategory)
-      ))
-      .finally(() => setLoading(false));
+      );
+      setPantryItems(pantry);
+    }).finally(() => setLoading(false));
   }, [decodedCategory]);
 
   useEffect(() => {
-    if (!showSort) return;
+    if (!showSort && !showFilter) return;
     const handler = (e: MouseEvent) => {
       if (sortMenuRef.current && !sortMenuRef.current.contains(e.target as Node) &&
-          sortBtnRef.current && !sortBtnRef.current.contains(e.target as Node)) {
-        setShowSort(false);
-      }
+          sortBtnRef.current && !sortBtnRef.current.contains(e.target as Node)) setShowSort(false);
+      if (filterMenuRef.current && !filterMenuRef.current.contains(e.target as Node) &&
+          filterBtnRef.current && !filterBtnRef.current.contains(e.target as Node)) setShowFilter(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [showSort]);
+  }, [showSort, showFilter]);
 
   if (loading) {
     return (
@@ -102,35 +145,59 @@ export default function SmartCookbookDetailPage() {
 
       <div className="flex items-center justify-between" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', marginBottom: '28px' }}>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-          {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
+          {(() => {
+            const filtered = applyFilter(recipes, filter, pantryItems);
+            return `${filtered.length}${filtered.length !== recipes.length ? ` of ${recipes.length}` : ''} ${recipes.length === 1 ? 'recipe' : 'recipes'}`;
+          })()}
         </p>
-        {recipes.length > 1 && (
-          <button
-            ref={sortBtnRef}
-            onClick={() => {
-              const rect = sortBtnRef.current?.getBoundingClientRect();
-              if (rect) setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right });
-              setShowSort(v => !v);
-            }}
+        <div className="flex items-center gap-2">
+          {/* Filter */}
+          <button ref={filterBtnRef}
+            onClick={() => { const rect = filterBtnRef.current?.getBoundingClientRect(); if (rect) setFilterPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right }); setShowFilter(v => !v); }}
             className="sort-btn"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: filter !== 'all' ? 600 : 500, color: filter !== 'all' ? 'var(--accent)' : 'var(--text)', background: filter !== 'all' ? 'var(--accent-dim)' : 'var(--surface)', border: filter !== 'all' ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
           >
-            {SORT_LABELS[sort]}
-            <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}>
-              <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            {filter === 'all' ? 'Filter' : FILTER_LABELS[filter]}
+            {filter !== 'all' && (
+              <span onClick={e => { e.stopPropagation(); setFilter('all'); }} style={{ marginLeft: '2px', display: 'flex', alignItems: 'center', color: 'var(--accent)', cursor: 'pointer' }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+            )}
           </button>
-        )}
-        {showSort && createPortal(
-          <div ref={sortMenuRef} style={{ position: 'absolute', top: sortPos.top, right: sortPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '120px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
-            {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
-              <button key={opt} onClick={() => { setSort(opt); setShowSort(false); }}
-                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === sort ? 'var(--accent-dim)' : 'transparent', color: opt === sort ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
-              >{SORT_LABELS[opt]}</button>
-            ))}
-          </div>,
-          document.body
-        )}
+          {showFilter && createPortal(
+            <div ref={filterMenuRef} style={{ position: 'absolute', top: filterPos.top, right: filterPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '160px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+              {(['all', 'ready', 'out', 'rated', 'unrated'] as FilterOption[]).map(opt => (
+                <button key={opt} onClick={() => { setFilter(opt); setShowFilter(false); }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === filter ? 'var(--accent-dim)' : 'transparent', color: opt === filter ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === filter ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
+                >{FILTER_LABELS[opt]}</button>
+              ))}
+            </div>,
+            document.body
+          )}
+
+          {/* Sort */}
+          {recipes.length > 1 && (
+            <button ref={sortBtnRef}
+              onClick={() => { const rect = sortBtnRef.current?.getBoundingClientRect(); if (rect) setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right }); setShowSort(v => !v); }}
+              className="sort-btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+            >
+              {SORT_LABELS[sort]}
+              <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}><path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+          )}
+          {showSort && createPortal(
+            <div ref={sortMenuRef} style={{ position: 'absolute', top: sortPos.top, right: sortPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '120px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+              {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
+                <button key={opt} onClick={() => { setSort(opt); setShowSort(false); }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === sort ? 'var(--accent-dim)' : 'transparent', color: opt === sort ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
+                >{SORT_LABELS[opt]}</button>
+              ))}
+            </div>,
+            document.body
+          )}
+        </div>
       </div>
 
       {recipes.length === 0 ? (
@@ -142,7 +209,7 @@ export default function SmartCookbookDetailPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
-          {sortRecipes(recipes, sort).map((r, i) => (
+          {sortRecipes(applyFilter(recipes, filter, pantryItems), sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
               <RecipeTile recipe={r} />
             </div>

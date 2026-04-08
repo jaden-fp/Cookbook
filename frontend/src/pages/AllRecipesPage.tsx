@@ -9,15 +9,22 @@ import { getRecipes, importRecipe, getPantryItems } from '../api';
 import { useFAB } from '../context/FABContext';
 import type { Recipe, PantryItem } from '../types';
 
+function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
+  const escaped = pantryItemName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}\\b`).test(ingredientName.toLowerCase());
+}
+
+/** Returns true if any recipe ingredient has a matching pantry item. */
+function recipeHasAnyPantryMatch(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
+  return pantryItems.some(item => names.some(n => pantryMatch(n, item.name)));
+}
+
 /** Returns true if any pantry-tracked ingredient is explicitly marked "out". */
 function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const ingredientNames = recipe.ingredient_groups.flatMap(g =>
-    g.ingredients.map(i => i.name.toLowerCase())
-  );
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
   for (const item of pantryItems) {
-    const escaped = item.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const re = new RegExp(`\\b${escaped}\\b`);
-    if (ingredientNames.some(n => re.test(n))) {
+    if (names.some(n => pantryMatch(n, item.name))) {
       const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
       if (s === 'out') return true;
     }
@@ -40,7 +47,8 @@ const FILTER_LABELS: Record<FilterOption, string> = {
 
 function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: PantryItem[]): Recipe[] {
   switch (filter) {
-    case 'ready':   return recipes.filter(r => !recipeHasOutOfStock(r, pantryItems));
+    // "Ready": must have at least one pantry match, and none are "out"
+    case 'ready':   return recipes.filter(r => recipeHasAnyPantryMatch(r, pantryItems) && !recipeHasOutOfStock(r, pantryItems));
     case 'out':     return recipes.filter(r => recipeHasOutOfStock(r, pantryItems));
     case 'rated':   return recipes.filter(r => r.rating != null);
     case 'unrated': return recipes.filter(r => r.rating == null);
@@ -440,7 +448,7 @@ export default function AllRecipesPage() {
             );
             return displayed.map((r, i) => (
               <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
-                <RecipeTile recipe={r} hasOutOfStock={recipeHasOutOfStock(r, pantryItems)} />
+                <RecipeTile recipe={r} />
               </div>
             ));
           })()}

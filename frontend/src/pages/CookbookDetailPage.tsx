@@ -35,11 +35,20 @@ const FILTER_LABELS: Record<FilterOption, string> = {
   all: 'Filter', ready: 'Ready to bake', out: 'Missing ingredients', rated: 'Rated', unrated: 'Unrated',
 };
 
+function pantryMatch(ingredientName: string, pantryItemName: string): boolean {
+  const escaped = pantryItemName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}\\b`).test(ingredientName.toLowerCase());
+}
+
+function recipeHasAnyPantryMatch(recipe: Recipe, pantryItems: PantryItem[]): boolean {
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
+  return pantryItems.some(item => names.some(n => pantryMatch(n, item.name)));
+}
+
 function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name.toLowerCase()));
+  const names = recipe.ingredient_groups.flatMap(g => g.ingredients.map(i => i.name));
   for (const item of pantryItems) {
-    const escaped = item.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    if (names.some(n => new RegExp(`\\b${escaped}\\b`).test(n))) {
+    if (names.some(n => pantryMatch(n, item.name))) {
       const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
       if (s === 'out') return true;
     }
@@ -49,7 +58,7 @@ function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean
 
 function applyFilter(recipes: Recipe[], filter: FilterOption, pantryItems: PantryItem[]): Recipe[] {
   switch (filter) {
-    case 'ready':   return recipes.filter(r => !recipeHasOutOfStock(r, pantryItems));
+    case 'ready':   return recipes.filter(r => recipeHasAnyPantryMatch(r, pantryItems) && !recipeHasOutOfStock(r, pantryItems));
     case 'out':     return recipes.filter(r => recipeHasOutOfStock(r, pantryItems));
     case 'rated':   return recipes.filter(r => r.rating != null);
     case 'unrated': return recipes.filter(r => r.rating == null);
@@ -469,7 +478,7 @@ export default function CookbookDetailPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {sortRecipes(applyFilter(recipes, filter, pantryItems), sort).map((r, i) => (
             <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
-              <RecipeTile recipe={r} hasOutOfStock={recipeHasOutOfStock(r, pantryItems)} />
+              <RecipeTile recipe={r} />
             </div>
           ))}
         </div>

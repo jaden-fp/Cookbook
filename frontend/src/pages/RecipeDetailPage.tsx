@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe, uploadRecipeImage, updateBakeLog, getCookbooks, createCookbook, addRecipesToCookbook, getRecipeCookbooks } from '../api';
+import { getRecipe, getPantryItems, addPantryItem, updatePantryItem, deleteRecipe, updateRecipe, updateBakeLog, getCookbooks, createCookbook, addRecipesToCookbook, getRecipeCookbooks, setRecipeCookbooks, lookupIngredientPrice } from '../api';
 import type { BakeEntry } from '../types';
 import type { Recipe, PantryItem } from '../types';
 import StarDisplay from '../components/StarDisplay';
 import BakedModal from '../components/BakedModal';
 import CookbookModal from '../components/CookbookModal';
-import { scaleAmount } from '../utils/scaleAmount';
-import { estimateCost, totalCost, costCoverage, hasUserOverride, setUserOverride, resetUserOverride, findEntryKey, getAllPriceEntries } from '../utils/ingredientCost';
-import type { PackageUnit } from '../utils/ingredientCost';
+import { scaleAmount, splitCompound } from '../utils/scaleAmount';
+import { estimateCost, totalCost, costCoverage, hasUserOverride, setUserOverride, resetUserOverride, findEntryKey, getAllPriceEntries, getAIPrice, setAIPrice } from '../utils/ingredientCost';
+import type { PackageUnit, AIPrice } from '../utils/ingredientCost';
 import NutritionPanel from '../components/NutritionPanel';
 import BakingMode from '../components/BakingMode';
 
@@ -206,6 +206,8 @@ export default function RecipeDetailPage() {
   const [editingPriceKey, setEditingPriceKey] = useState<string | null>(null);
   const [priceForm, setPriceForm] = useState<{ price: string; amount: string; unit: PackageUnit }>({ price: '', amount: '', unit: 'oz' });
   const [priceVersion, setPriceVersion] = useState(0);
+  const [aiPrices, setAiPrices] = useState<Record<string, AIPrice>>({});
+  const [fetchingAI, setFetchingAI] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -229,15 +231,79 @@ export default function RecipeDetailPage() {
     setBannerDismissed(false);
   }, [id]);
 
+  // Fetch AI prices for unmatched ingredients when cost tab opens
+  useEffect(() => {
+    if (tab !== 'cost' || !recipe) return;
+
+    const allIngredients = recipe.ingredient_groups.flatMap(g => g.ingredients);
+    const unmatched = allIngredients.filter(ing => {
+      const { cost } = estimateCost(ing.amount, ing.unit, ing.name);
+      return cost === null;
+    });
+    if (!unmatched.length) return;
+
+    // Load from localStorage cache first
+    const fromCache: Record<string, AIPrice> = {};
+    const needsFetch: string[] = [];
+    const seen = new Set<string>();
+
+    for (const ing of unmatched) {
+      const key = ing.name.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const cached = getAIPrice(ing.name);
+      if (cached) {
+        fromCache[key] = cached;
+      } else {
+        needsFetch.push(ing.name);
+      }
+    }
+
+    if (Object.keys(fromCache).length) {
+      setAiPrices(prev => ({ ...prev, ...fromCache }));
+    }
+    if (!needsFetch.length) return;
+
+    setFetchingAI(true);
+    Promise.all(
+      needsFetch.map(async name => {
+        const result = await lookupIngredientPrice(name);
+        if (result) {
+          setAIPrice(name, result);
+          return [name.toLowerCase(), result] as const;
+        }
+        return null;
+      })
+    ).then(results => {
+      const newPrices: Record<string, AIPrice> = {};
+      for (const r of results) {
+        if (r) newPrices[r[0]] = r[1];
+      }
+      setAiPrices(prev => ({ ...prev, ...newPrices }));
+    }).finally(() => setFetchingAI(false));
+  }, [tab, recipe?.id]);
+
   async function handleQueue() {
     if (!recipe || queuing) return;
     setQueuing(true);
     try {
-      const books = await getCookbooks();
-      let queued = books.find(b => b.name.toLowerCase() === 'queued');
-      if (!queued) queued = await createCookbook('Queued');
-      await addRecipesToCookbook(queued.id, [recipe.id]);
-      setIsQueued(true);
+      if (isQueued) {
+        // Remove from Queued cookbook
+        const currentBooks = await getRecipeCookbooks(recipe.id);
+        const queuedBook = currentBooks.find(b => b.name.toLowerCase() === 'queued');
+        if (queuedBook) {
+          const remaining = currentBooks.filter(b => b.id !== queuedBook.id).map(b => b.id);
+          await setRecipeCookbooks(recipe.id, remaining);
+        }
+        setIsQueued(false);
+      } else {
+        // Add to Queued cookbook (create if doesn't exist)
+        const allBooks = await getCookbooks();
+        let queued = allBooks.find(b => b.name.toLowerCase() === 'queued');
+        if (!queued) queued = await createCookbook('Queued');
+        await addRecipesToCookbook(queued.id, [recipe.id]);
+        setIsQueued(true);
+      }
     } finally {
       setQueuing(false);
     }
@@ -361,37 +427,6 @@ export default function RecipeDetailPage() {
     setIsEditing(true);
   }
 
-  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file || !id) return;
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-    img.onload = () => {
-      const MAX = 1200;
-      let { width, height } = img;
-      if (width > MAX || height > MAX) {
-        const ratio = Math.min(MAX / width, MAX / height);
-        width = Math.round(width * ratio);
-        height = Math.round(height * ratio);
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
-      URL.revokeObjectURL(objectUrl);
-      // Show local preview immediately while uploading
-      setDraft(d => d ? { ...d, image_url: dataUrl } : d);
-      // Upload to Firebase Storage and replace preview with permanent URL
-      uploadRecipeImage(id, dataUrl).then(permanentUrl => {
-        setDraft(d => d ? { ...d, image_url: permanentUrl } : d);
-        setRecipe(r => r ? { ...r, image_url: permanentUrl } : r);
-      }).catch(err => {
-        console.error('Image upload failed:', err.message);
-      });
-    };
-    img.src = objectUrl;
-  }
 
   function cancelEdit() {
     setIsEditing(false);
@@ -478,35 +513,6 @@ export default function RecipeDetailPage() {
           />
         )}
 
-        {/* Image upload overlay — editing only */}
-        {isEditing && (
-          <label
-            className="absolute inset-0 flex items-center justify-center cursor-pointer"
-            style={{ background: 'rgba(0,0,0,0.35)', zIndex: 5 }}
-            title="Change image"
-          >
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={handleImageUpload}
-            />
-            <div className="flex flex-col items-center gap-2">
-              <div
-                className="flex items-center justify-center rounded-full"
-                style={{ width: '3rem', height: '3rem', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', border: '1.5px solid rgba(255,255,255,0.4)' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                  <circle cx="12" cy="13" r="4"/>
-                </svg>
-              </div>
-              <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.75rem', fontFamily: 'var(--font-body)', fontWeight: 500 }}>
-                Change photo
-              </span>
-            </div>
-          </label>
-        )}
 
         {/* Bottom gradient */}
         <div
@@ -782,6 +788,7 @@ export default function RecipeDetailPage() {
                 fontSize: '0.9375rem',
                 lineHeight: 1.75,
                 opacity: 0.85,
+                paddingRight: '2.5rem',
               }}
             >
               {recipe.description}
@@ -1017,77 +1024,6 @@ export default function RecipeDetailPage() {
             </div>
           </div>
 
-          {/* Category badge */}
-          {(recipe.ai_category || isEditing) && (
-            <div className="flex items-center gap-2 mt-4">
-              {isEditing ? (
-                <div className="flex flex-wrap gap-2 items-center">
-                  {['Cookies', 'Cakes', 'Bars'].map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => { setDraft(d => d ? { ...d, ai_category: cat } : d); setCustomCatInput(''); }}
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: '999px',
-                        border: '1.5px solid',
-                        borderColor: draft?.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
-                        background: draft?.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
-                        color: draft?.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.75rem',
-                        fontWeight: draft?.ai_category === cat ? 600 : 400,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault();
-                      const val = customCatInput.trim();
-                      if (val) setDraft(d => d ? { ...d, ai_category: val } : d);
-                    }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-                  >
-                    <input
-                      placeholder="Custom…"
-                      value={customCatInput}
-                      onChange={e => {
-                        setCustomCatInput(e.target.value);
-                        if (e.target.value.trim()) setDraft(d => d ? { ...d, ai_category: e.target.value.trim() } : d);
-                      }}
-                      style={{
-                        padding: '4px 10px', borderRadius: '999px', border: '1.5px solid',
-                        borderColor: draft?.ai_category && !['Cookies','Cakes','Bars'].includes(draft.ai_category) && customCatInput ? 'var(--accent)' : 'var(--border-strong)',
-                        fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
-                        background: 'var(--bg-subtle)', outline: 'none', width: '90px',
-                      }}
-                      onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
-                      onBlur={e => { e.target.style.borderColor = draft?.ai_category && !['Cookies','Cakes','Bars'].includes(draft.ai_category) && customCatInput ? 'var(--accent)' : 'var(--border-strong)'; }}
-                    />
-                    <button type="submit" style={{ padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                      Set
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  padding: '3px 10px', borderRadius: '999px',
-                  background: 'var(--accent-dim)', border: '1px solid var(--accent)',
-                  color: 'var(--accent)', fontFamily: 'var(--font-body)',
-                  fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
-                }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
-                    <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
-                  </svg>
-                  {recipe.ai_category}
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Bake history */}
           {(recipe.bake_log?.length ?? 0) > 0 && (
             <BakeHistory
@@ -1104,12 +1040,12 @@ export default function RecipeDetailPage() {
         {/* Tabs + Scale (inline on desktop, stacked on mobile) */}
         <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
           <div className="flex items-end justify-between">
-            <div className="flex gap-0">
+            <div className="flex gap-0 flex-1">
               {(['ingredients', 'instructions', 'nutrition', 'cost'] as Tab[]).map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className="relative px-5 py-3 text-sm font-medium capitalize transition-colors duration-200 -mb-px"
+                  className="relative flex-1 text-center py-3 font-medium capitalize transition-colors duration-200 -mb-px px-1 sm:px-5 text-xs sm:text-sm"
                   style={{
                     fontFamily: 'var(--font-body)',
                     color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
@@ -1305,13 +1241,19 @@ export default function RecipeDetailPage() {
                             title={pantryItems.length > 0 ? status : undefined}
                           />
                           <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)' }}>
-                            <span
-                              key={`${scale}-${gi}-${ii}`}
-                              className="font-semibold animate-amount"
-                            >
-                              {[scaleAmount(ing.amount, scale, ing.unit), ing.unit].filter(Boolean).join(' ')}
-                            </span>{' '}
-                            {ing.name}
+                            {(() => {
+                              const comps = splitCompound(ing.amount, ing.unit, ing.name);
+                              const parts = comps ?? [{ amount: ing.amount, unit: ing.unit, name: ing.name }];
+                              return parts.map((c, ci) => (
+                                <span key={ci}>
+                                  {ci > 0 && ' + '}
+                                  <span key={`${scale}-${gi}-${ii}-${ci}`} className="font-semibold animate-amount">
+                                    {[scaleAmount(c.amount, scale, c.unit), c.unit].filter(Boolean).join(' ')}
+                                  </span>{' '}
+                                  {c.name}
+                                </span>
+                              ));
+                            })()}
                             {ing.notes && ing.notes.trim() && (
                               <span
                                 className="ml-1"
@@ -1478,10 +1420,10 @@ export default function RecipeDetailPage() {
         {tab === 'cost' && (() => {
           // priceVersion is read here so React re-renders after a price save
           void priceVersion;
-          const batchTotal = totalCost(recipe.ingredient_groups, scale);
+          const batchTotal = totalCost(recipe.ingredient_groups, scale, aiPrices);
           const yieldNum = recipe.yield ? parseFloat(recipe.yield.replace(/[^\d.]/g, '')) : null;
           const perItem = batchTotal != null && yieldNum && yieldNum > 0 ? batchTotal / (yieldNum * scale) : null;
-          const coverage = costCoverage(recipe.ingredient_groups, scale);
+          const coverage = costCoverage(recipe.ingredient_groups, scale, aiPrices);
           const unpriced = coverage.total - coverage.priced;
 
           return (
@@ -1506,14 +1448,23 @@ export default function RecipeDetailPage() {
                 )}
               </div>
 
-              {/* Missing count banner */}
-              {unpriced > 0 && (
+              {/* Status banner */}
+              {fetchingAI ? (
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, animation: 'spin 1s linear infinite' }}>
+                    <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                  </svg>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                    Estimating prices for unrecognized ingredients…
+                  </p>
+                </div>
+              ) : unpriced > 0 && (
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                    {unpriced} of {coverage.total} ingredient{unpriced !== 1 ? 's' : ''} couldn&apos;t be priced — the total is a partial estimate.
+                    {unpriced} ingredient{unpriced !== 1 ? 's' : ''} still couldn&apos;t be priced — click the pencil to add manually.
                   </p>
                 </div>
               )}
@@ -1529,10 +1480,36 @@ export default function RecipeDetailPage() {
                   )}
                   <div className="space-y-2">
                     {group.ingredients.map((ing, ii) => {
-                      const { cost, display } = estimateCost(ing.amount, ing.unit, ing.name, scale);
-                      const entryKey = findEntryKey(ing.name);
-                      const isEditing = editingPriceKey !== null && editingPriceKey === entryKey;
+                      // Handle compound ingredients (e.g. "large eggs + 1 egg yolk")
+                      const comps = splitCompound(ing.amount, ing.unit, ing.name);
+                      let cost: number | null;
+                      let display: string;
+                      if (comps) {
+                        let sum = 0; let hasAny = false;
+                        for (const c of comps) {
+                          const ai = aiPrices[c.name.toLowerCase()];
+                          const r = estimateCost(c.amount, c.unit, c.name, scale, ai);
+                          if (r.cost != null) { sum += r.cost; hasAny = true; }
+                        }
+                        cost = hasAny ? sum : null;
+                        display = cost == null ? '—' : cost < 0.01 ? '< $0.01' : `$${cost.toFixed(2)}`;
+                      } else {
+                        const aiPrice = aiPrices[ing.name.toLowerCase()];
+                        ({ cost, display } = estimateCost(ing.amount, ing.unit, ing.name, scale, aiPrice));
+                      }
+                      const aiPrice = comps ? null : aiPrices[ing.name.toLowerCase()];
+                      const entryKey = comps ? findEntryKey(comps[0].name) : findEntryKey(ing.name);
+                      // AI-estimated items use 'ai::name' as their edit key
+                      const aiEditKey = `ai::${ing.name}`;
+                      const editKey = entryKey ?? (aiPrice ? aiEditKey : null);
+                      const isEditing = editingPriceKey !== null && editingPriceKey === editKey;
                       const isOverridden = entryKey != null && hasUserOverride(entryKey);
+                      const isAIEstimated = cost != null && entryKey == null && !!aiPrice;
+
+                      // Scaled display string (handles compound)
+                      const ingDisplayStr = comps
+                        ? comps.map(c => [scaleAmount(c.amount, scale, c.unit), c.unit, c.name].filter(Boolean).join(' ')).join(' + ')
+                        : [scaleAmount(ing.amount, scale, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ');
 
                       return (
                         <div key={ii} style={{ borderBottom: '1px solid var(--border)' }}>
@@ -1540,7 +1517,7 @@ export default function RecipeDetailPage() {
                           <div className="flex items-center justify-between gap-3 py-2 group">
                             <div style={{ flex: 1 }}>
                               <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text)' }}>
-                                {[scaleAmount(ing.amount, scale, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ')}
+                                {ingDisplayStr}
                               </span>
                               {ing.notes && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}> ({ing.notes})</span>}
                             </div>
@@ -1555,25 +1532,41 @@ export default function RecipeDetailPage() {
                                   custom
                                 </span>
                               )}
+                              {isAIEstimated && !isOverridden && (
+                                <span style={{
+                                  fontFamily: 'var(--font-body)', fontSize: '0.625rem', fontWeight: 700,
+                                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                                  color: 'var(--text-muted)', background: 'var(--bg-subtle)',
+                                  border: '1px solid var(--border-strong)',
+                                  borderRadius: '4px', padding: '1px 5px',
+                                }}>
+                                  AI est.
+                                </span>
+                              )}
+                              {cost === null && !fetchingAI && (
+                                <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.625rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>no data</span>
+                              )}
                               <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 600, color: cost != null ? 'var(--text)' : 'var(--text-muted)' }}>
-                                {cost != null ? `~${display}` : display}
+                                {cost != null ? `~${display}` : fetchingAI && !aiPrice ? '…' : display}
                               </span>
-                              {entryKey != null && (
+                              {(editKey != null || cost === null) && (
                                 <button
                                   onClick={() => {
                                     if (isEditing) {
                                       setEditingPriceKey(null);
-                                    } else {
+                                    } else if (entryKey != null) {
                                       const entries = getAllPriceEntries();
                                       const found = entries.find(e => e.key === entryKey);
-                                      if (found) {
-                                        setPriceForm({
-                                          price: String(found.packagePrice),
-                                          amount: String(found.packageAmount),
-                                          unit: found.packageUnit,
-                                        });
-                                      }
+                                      if (found) setPriceForm({ price: String(found.packagePrice), amount: String(found.packageAmount), unit: found.packageUnit });
                                       setEditingPriceKey(entryKey);
+                                    } else {
+                                      // AI-estimated or unpriced — pre-fill from AI data if available
+                                      setPriceForm({
+                                        price: aiPrice ? String(aiPrice.packagePrice) : '',
+                                        amount: aiPrice ? String(aiPrice.packageAmount) : '',
+                                        unit: (aiPrice?.packageUnit as PackageUnit) ?? 'oz',
+                                      });
+                                      setEditingPriceKey(aiEditKey);
                                     }
                                   }}
                                   title="Edit price"
@@ -1589,7 +1582,7 @@ export default function RecipeDetailPage() {
                           </div>
 
                           {/* Inline edit form */}
-                          {isEditing && entryKey != null && (
+                          {isEditing && (
                             <div className="mb-2 px-3 py-2.5 rounded-xl space-y-2" style={{ background: 'var(--bg-subtle)', border: '1.5px solid var(--accent)' }}>
                               <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent)', margin: 0 }}>
                                 Package price
@@ -1650,8 +1643,16 @@ export default function RecipeDetailPage() {
                                     const p = parseFloat(priceForm.price);
                                     const a = parseFloat(priceForm.amount);
                                     if (!isNaN(p) && !isNaN(a) && a > 0) {
-                                      setUserOverride(entryKey, { packagePrice: p, packageAmount: a, packageUnit: priceForm.unit });
-                                      setPriceVersion(v => v + 1);
+                                      if (entryKey != null) {
+                                        setUserOverride(entryKey, { packagePrice: p, packageAmount: a, packageUnit: priceForm.unit });
+                                        setPriceVersion(v => v + 1);
+                                      } else {
+                                        // Save as AI price (overwrites AI estimate)
+                                        const updated: AIPrice = { packagePrice: p, packageAmount: a, packageUnit: priceForm.unit };
+                                        setAIPrice(ing.name, updated);
+                                        setAiPrices(prev => ({ ...prev, [ing.name.toLowerCase()]: updated }));
+                                        setPriceVersion(v => v + 1);
+                                      }
                                     }
                                     setEditingPriceKey(null);
                                   }}
@@ -1665,7 +1666,7 @@ export default function RecipeDetailPage() {
                                 >
                                   Save
                                 </button>
-                                {isOverridden && (
+                                {isOverridden && entryKey != null && (
                                   <button
                                     onClick={() => {
                                       resetUserOverride(entryKey);
@@ -1708,6 +1709,65 @@ export default function RecipeDetailPage() {
             </div>
           );
         })()}
+
+        {/* Category badge — always at very bottom of page content */}
+        {recipe.ai_category && !isEditing && (
+          <div className="flex items-center gap-2 pt-5 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '5px',
+              padding: '3px 10px', borderRadius: '999px',
+              background: 'var(--accent-dim)', border: '1px solid var(--accent)',
+              color: 'var(--accent)', fontFamily: 'var(--font-body)',
+              fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+            }}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
+                <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+              </svg>
+              {recipe.ai_category}
+            </span>
+          </div>
+        )}
+        {isEditing && (
+          <div className="flex flex-wrap gap-2 items-center pt-5 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
+            {['Cookies', 'Cakes', 'Bars'].map(cat => (
+              <button
+                key={cat}
+                onClick={() => { setDraft(d => d ? { ...d, ai_category: cat } : d); setCustomCatInput(''); }}
+                style={{
+                  padding: '4px 12px', borderRadius: '999px', border: '1.5px solid',
+                  borderColor: draft?.ai_category === cat ? 'var(--accent)' : 'var(--border-strong)',
+                  background: draft?.ai_category === cat ? 'var(--accent-dim)' : 'transparent',
+                  color: draft?.ai_category === cat ? 'var(--accent)' : 'var(--text-muted)',
+                  fontFamily: 'var(--font-body)', fontSize: '0.75rem',
+                  fontWeight: draft?.ai_category === cat ? 600 : 400, cursor: 'pointer',
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+            <form
+              onSubmit={e => { e.preventDefault(); const val = customCatInput.trim(); if (val) setDraft(d => d ? { ...d, ai_category: val } : d); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <input
+                placeholder="Custom…"
+                value={customCatInput}
+                onChange={e => { setCustomCatInput(e.target.value); if (e.target.value.trim()) setDraft(d => d ? { ...d, ai_category: e.target.value.trim() } : d); }}
+                style={{
+                  padding: '4px 10px', borderRadius: '999px', border: '1.5px solid',
+                  borderColor: draft?.ai_category && !['Cookies','Cakes','Bars'].includes(draft.ai_category) && customCatInput ? 'var(--accent)' : 'var(--border-strong)',
+                  fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
+                  background: 'var(--bg-subtle)', outline: 'none', width: '90px',
+                }}
+                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
+                onBlur={e => { e.target.style.borderColor = draft?.ai_category && !['Cookies','Cakes','Bars'].includes(draft.ai_category) && customCatInput ? 'var(--accent)' : 'var(--border-strong)'; }}
+              />
+              <button type="submit" style={{ padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                Set
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Delete confirmation modal */}
@@ -1826,7 +1886,12 @@ export default function RecipeDetailPage() {
                       <span
                         style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text)' }}
                       >
-                        {[scaleAmount(ing.amount, 1, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ')}
+                        {(() => {
+                          const c = splitCompound(ing.amount, ing.unit, ing.name);
+                          return c
+                            ? c.map(p => [scaleAmount(p.amount, 1, p.unit), p.unit, p.name].filter(Boolean).join(' ')).join(' + ')
+                            : [scaleAmount(ing.amount, 1, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ');
+                        })()}
                       </span>
                       {status !== 'in-stock' && (
                         <button
