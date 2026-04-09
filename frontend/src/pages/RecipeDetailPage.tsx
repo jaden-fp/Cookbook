@@ -1406,7 +1406,7 @@ export default function RecipeDetailPage() {
             {/* Pantry legend */}
             {pantryItems.length > 0 && (
               <div className="flex items-center gap-4 pt-2">
-                {([['in-stock', 'In stock'], ['low', 'Low / on list'], ['missing', 'Not in pantry']] as [IngStatus, string][]).map(([s, label]) => (
+                {([['in-stock', 'In stock'], ['missing', 'Not in pantry']] as [IngStatus, string][]).map(([s, label]) => (
                   <div key={s} className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: STATUS_DOT[s] }} />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>{label}</span>
