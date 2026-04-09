@@ -103,20 +103,35 @@ export function findPantryMatch(ingredientName: string, pantryItems: PantryItem[
   return pantryItems.find(item => pantryMatch(ingredientName, item.name)) ?? null;
 }
 
-export type IngStatus = 'in-stock' | 'low' | 'missing';
+export type IngStatus = 'in-stock' | 'missing';
 
 /**
  * Returns the status of a single ingredient against the current pantry.
- * - 'missing': no pantry item covers this ingredient
- * - 'low': pantry item exists but is marked low, out, or needs purchase
+ * - 'missing': no pantry item covers this ingredient, or it's out/low stock
  * - 'in-stock': pantry item exists and is available
+ *
+ * Water is always in-stock. Egg yolks/whites are in-stock if eggs are in pantry.
  */
 export function getIngredientStatus(ingredientName: string, pantryItems: PantryItem[]): IngStatus {
+  const normalized = normIngredient(ingredientName);
+
+  // Always available ingredients
+  if (ALWAYS_AVAILABLE.has(normalized)) return 'in-stock';
+
   if (!pantryItems.length) return 'missing';
+
+  // Egg derivatives — covered if eggs are in pantry (and in-stock)
+  if (EGG_DERIVATIVES.has(normalized)) {
+    const eggsItem = hasEggsInPantry(pantryItems);
+    if (!eggsItem) return 'missing';
+    const s = eggsItem.status || (eggsItem.needs_purchase ? 'out' : 'in-stock');
+    return (s === 'out' || s === 'low') ? 'missing' : 'in-stock';
+  }
+
   const match = findPantryMatch(ingredientName, pantryItems);
   if (!match) return 'missing';
   const s = match.status || (match.needs_purchase ? 'out' : 'in-stock');
-  if (s === 'out' || s === 'low') return 'low';
+  if (s === 'out' || s === 'low') return 'missing';
   return 'in-stock';
 }
 
