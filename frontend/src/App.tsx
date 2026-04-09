@@ -34,7 +34,6 @@ function MobileLogo() {
 export default function App() {
   return (
     <BrowserRouter>
-      <TimerProvider>
       <FABProvider>
         <div className="min-h-screen" style={{ background: 'var(--bg)', position: 'relative' }}>
           <NavBar />
@@ -50,11 +49,9 @@ export default function App() {
             <Route path="/pantry" element={<PantryPage />} />
           </Routes>
           <FAB />
-          <FloatingTimer />
           <BottomNav />
         </div>
       </FABProvider>
-      </TimerProvider>
     </BrowserRouter>
   );
 }
