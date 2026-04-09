@@ -526,8 +526,7 @@ export default function AllRecipesPage() {
               ? recipes.filter(r => aiResultIds.includes(r.id)).sort((a, b) => aiResultIds.indexOf(a.id) - aiResultIds.indexOf(b.id))
               : (search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes);
             const filtered = aiResultIds ? base : applyFilter(base, filter, pantryItems);
-            const tagFiltered = activeTag ? filtered.filter(r => r.tags?.includes(activeTag)) : filtered;
-            const displayed = aiResultIds ? tagFiltered : sortRecipes(tagFiltered, sort, pantryItems);
+            const displayed = aiResultIds ? filtered : sortRecipes(filtered, sort, pantryItems);
             if (displayed.length === 0) return (
               <div className="col-span-2 sm:col-span-3 text-center py-16">
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>No results</p>
