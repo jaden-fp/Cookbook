@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Recipe, PantryItem } from '../types';
-import { recipeCoverage } from '../utils/pantryMatch';
+import { recipeCoverage, recipeHasOutOfStock } from '../utils/pantryMatch';
 
 function parseMinutes(timeStr: string): number {
   if (!timeStr) return 0;
