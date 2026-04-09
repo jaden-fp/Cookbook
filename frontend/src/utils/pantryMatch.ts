@@ -13,6 +13,36 @@ const PANTRY_QUALIFIERS = new Set([
 // Scraper artifacts that end up as ingredient names but aren't real ingredients
 const GHOST_INGREDIENT_RE = /^(room temperature|as needed|to taste|for serving|for topping|for garnish|to coat|for dusting|at room temperature)$/i;
 
+// Always considered in-stock regardless of pantry
+const ALWAYS_AVAILABLE = new Set(['water', 'ice water', 'cold water', 'warm water', 'hot water', 'boiling water']);
+
+// Egg-derived ingredients — covered if pantry has eggs
+const EGG_DERIVATIVES = new Set(['egg yolk', 'egg yolks', 'egg white', 'egg whites', 'yolk', 'yolks']);
+
+function hasEggsInPantry(pantryItems: PantryItem[]): PantryItem | undefined {
+  return pantryItems.find(item => {
+    const n = normIngredient(item.name);
+    return n === 'egg' || n === 'eggs' || n === 'large egg' || n === 'large eggs';
+  });
+}
+
+/** Returns true if an ingredient should be excluded from coverage calculations (optional). */
+function isOptionalIngredient(ing: { optional?: boolean; name: string; notes: string | null }): boolean {
+  if (ing.optional) return true;
+  const combined = (ing.name + ' ' + (ing.notes ?? '')).toLowerCase();
+  return combined.includes('(optional)') || /\boptional\b/.test(combined);
+}
+
+/** Returns true if an ingredient name is always covered (water, egg derivatives if eggs present). */
+function ingredientIsCovered(ingName: string, pantryItems: PantryItem[]): boolean {
+  const normalized = normIngredient(ingName);
+  if (ALWAYS_AVAILABLE.has(normalized)) return true;
+  if (EGG_DERIVATIVES.has(normalized)) {
+    return !!hasEggsInPantry(pantryItems);
+  }
+  return pantryItems.some(item => pantryMatch(ingName, item.name));
+}
+
 function normIngredient(s: string): string {
   return s.toLowerCase().split(',')[0].replace(/\([^)]*\)/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
 }
