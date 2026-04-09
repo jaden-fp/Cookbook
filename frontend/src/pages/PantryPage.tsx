@@ -366,7 +366,6 @@ export default function PantryPage() {
                     </div>
                     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
                       {groupItems.map((item, idx) => {
-                        const isOut = getStatus(item) === 'out';
                         const isChecking = shoppingChecking.has(item.id);
                         return (
                           <div key={item.id} className="flex items-center gap-3" style={{
@@ -379,7 +378,7 @@ export default function PantryPage() {
                               disabled={isChecking}
                               style={{
                                 width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
-                                border: `2px solid ${isOut ? '#e53935' : '#ff9800'}`,
+                                border: '2px solid #e53935',
                                 background: 'transparent', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                               }}
@@ -390,9 +389,8 @@ export default function PantryPage() {
                             <span style={{
                               flexShrink: 0, fontSize: '0.7rem', fontWeight: 700,
                               fontFamily: 'var(--font-body)', padding: '3px 8px', borderRadius: '999px',
-                              background: isOut ? 'rgba(229,57,53,0.10)' : 'rgba(255,152,0,0.10)',
-                              color: isOut ? '#e53935' : '#ff9800',
-                            }}>{isOut ? 'Out' : 'Low'}</span>
+                              background: 'rgba(229,57,53,0.10)', color: '#e53935',
+                            }}>Out</span>
                           </div>
                         );
                       })}
