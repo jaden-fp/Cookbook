@@ -135,35 +135,48 @@ export function getIngredientStatus(ingredientName: string, pantryItems: PantryI
   return 'in-stock';
 }
 
-/** Returns true if every non-optional, non-ghost ingredient has a pantry entry. */
+/** Returns true if every required, non-ghost ingredient has a pantry entry that is in-stock. */
 export function recipeAllIngredientsCovered(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups
-    .flatMap(g => g.ingredients.filter(i => !i.optional).map(i => i.name.trim()))
-    .filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
+  const ings = recipe.ingredient_groups
+    .flatMap(g => g.ingredients.filter(i => !isOptionalIngredient(i)));
+  const names = ings.map(i => i.name.trim()).filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
   if (names.length === 0) return false;
-  return names.every(name => pantryItems.some(item => pantryMatch(name, item.name)));
+  return names.every(name => ingredientIsCovered(name, pantryItems));
 }
 
 /** Returns coverage percentage and list of missing ingredient names. */
 export function recipeCoverage(recipe: Recipe, pantryItems: PantryItem[]): { pct: number; missing: string[] } {
-  const names = recipe.ingredient_groups
-    .flatMap(g => g.ingredients.filter(i => !i.optional).map(i => i.name.trim()))
-    .filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
+  const ings = recipe.ingredient_groups
+    .flatMap(g => g.ingredients.filter(i => !isOptionalIngredient(i)));
+  const names = ings.map(i => i.name.trim()).filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
   if (names.length === 0) return { pct: 0, missing: [] };
-  const missing = names.filter(name => !pantryItems.some(item => pantryMatch(name, item.name)));
+  const missing = names.filter(name => !ingredientIsCovered(name, pantryItems));
   const pct = Math.round(((names.length - missing.length) / names.length) * 100);
   return { pct, missing };
 }
 
-/** Returns true if any pantry-tracked ingredient for this recipe is marked out. */
+/** Returns true if any required pantry-tracked ingredient for this recipe is marked out or low. */
 export function recipeHasOutOfStock(recipe: Recipe, pantryItems: PantryItem[]): boolean {
-  const names = recipe.ingredient_groups
-    .flatMap(g => g.ingredients.filter(i => !i.optional).map(i => i.name.trim()))
-    .filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
-  for (const item of pantryItems) {
-    if (names.some(n => pantryMatch(n, item.name))) {
-      const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
-      if (s === 'out') return true;
+  const ings = recipe.ingredient_groups
+    .flatMap(g => g.ingredients.filter(i => !isOptionalIngredient(i)));
+  const names = ings.map(i => i.name.trim()).filter(n => n.length > 0 && !GHOST_INGREDIENT_RE.test(n));
+  for (const name of names) {
+    // Always-available and egg derivatives have their own logic
+    const normalized = normIngredient(name);
+    if (ALWAYS_AVAILABLE.has(normalized)) continue;
+    if (EGG_DERIVATIVES.has(normalized)) {
+      const eggsItem = hasEggsInPantry(pantryItems);
+      if (eggsItem) {
+        const s = eggsItem.status || (eggsItem.needs_purchase ? 'out' : 'in-stock');
+        if (s === 'out' || s === 'low') return true;
+      }
+      continue;
+    }
+    for (const item of pantryItems) {
+      if (pantryMatch(name, item.name)) {
+        const s = item.status || (item.needs_purchase ? 'out' : 'in-stock');
+        if (s === 'out' || s === 'low') return true;
+      }
     }
   }
   return false;
