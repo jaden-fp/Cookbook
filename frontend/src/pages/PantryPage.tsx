@@ -546,7 +546,7 @@ export default function PantryPage() {
         >
           <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.9375rem' }}>
             {filter !== 'all'
-              ? `No ${filter === 'low' ? 'low stock' : 'out of stock'} items.`
+              ? 'No out of stock items.'
               : 'Your pantry is empty — add some ingredients above!'}
           </p>
         </div>
