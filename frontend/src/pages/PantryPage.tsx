@@ -233,18 +233,15 @@ export default function PantryPage() {
   // ── Derived data ──────────────────────────────────────────────────────────────
 
   const filteredItems = items.filter(item => {
-    const s = getStatus(item);
-    if (filter === 'low') return s === 'low';
-    if (filter === 'out') return s === 'out';
+    if (filter === 'out') return getStatus(item) === 'out';
     return true;
   });
 
   const groups = groupByCategory(filteredItems).filter(g => g.items.length > 0);
 
-  const lowCount = items.filter(i => getStatus(i) === 'low').length;
   const outCount = items.filter(i => getStatus(i) === 'out').length;
-  const shoppingCount = lowCount + outCount;
-  const shoppingItems = items.filter(i => { const s = getStatus(i); return s === 'low' || s === 'out'; });
+  const shoppingCount = outCount;
+  const shoppingItems = items.filter(i => getStatus(i) === 'out');
   const shoppingGroups = groupByCategory(shoppingItems).filter(g => g.items.length > 0);
 
   // ── Skeleton ──────────────────────────────────────────────────────────────────
