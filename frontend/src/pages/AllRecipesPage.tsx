@@ -491,33 +491,6 @@ export default function AllRecipesPage() {
         )}
       </div>
 
-      {/* Tag filter chips */}
-      {!loading && (() => {
-        const allTags = [...new Set(recipes.flatMap(r => r.tags ?? []))].sort();
-        if (!allTags.length) return null;
-        return (
-          <div className="flex gap-2 flex-wrap mb-6 animate-fade-up">
-            {allTags.map(tag => {
-              const active = activeTag === tag;
-              return (
-                <button key={tag} onClick={() => setActiveTag(active ? null : tag)}
-                  style={{
-                    padding: '4px 12px', borderRadius: '999px', border: '1.5px solid',
-                    borderColor: active ? 'var(--accent)' : 'var(--border-strong)',
-                    background: active ? 'var(--accent-dim)' : 'var(--surface)',
-                    color: active ? 'var(--accent)' : 'var(--text-muted)',
-                    fontFamily: 'var(--font-body)', fontSize: '0.75rem',
-                    fontWeight: active ? 700 : 400, cursor: 'pointer', transition: 'all 0.15s',
-                  }}
-                >
-                  {tag}
-                </button>
-              );
-            })}
-          </div>
-        );
-      })()}
-
       {/* Grid */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
