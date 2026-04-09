@@ -43,9 +43,9 @@ function groupByCategory(items: PantryItem[]): { category: string; items: Pantry
     map.get(cat)!.push(item);
   }
 
-  const STATUS_PRIORITY: Record<Status, number> = { out: 0, low: 1, 'in-stock': 2 };
+  const STATUS_PRIORITY: Record<Status, number> = { out: 0, 'in-stock': 1 };
 
-  // Sort each group: out first, then low, then in-stock; alphabetically within each tier
+  // Sort each group: out first, then in-stock; alphabetically within each tier
   for (const arr of map.values()) {
     arr.sort((a, b) => {
       const pa = STATUS_PRIORITY[getStatus(a)];
