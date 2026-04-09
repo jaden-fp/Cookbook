@@ -344,7 +344,7 @@ export default function PantryPage() {
             <div className="py-20 text-center rounded-2xl" style={{ border: '1.5px dashed var(--border-strong)' }}>
               <p style={{ fontSize: '2rem', marginBottom: '12px' }}>✓</p>
               <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text)' }}>All stocked up!</p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '4px' }}>No items are low or out of stock.</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '4px' }}>No items are out of stock.</p>
             </div>
           ) : (
             <>
