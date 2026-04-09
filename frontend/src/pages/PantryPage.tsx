@@ -7,7 +7,7 @@ import type { PantryItem } from '../types';
 type Status = 'in-stock' | 'out';
 
 function getStatus(item: PantryItem): Status {
-  if (item.status === 'out' || item.needs_purchase) return 'out';
+  if (item.status === 'out' || item.status === 'low' || item.needs_purchase) return 'out';
   return 'in-stock';
 }
 
