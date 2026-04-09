@@ -1800,34 +1800,21 @@ export default function RecipeDetailPage() {
           );
         })()}
 
-        {/* Category badge + tags — always at very bottom of page content */}
-        {(recipe.ai_category || (recipe.tags?.length ?? 0) > 0) && !isEditing && (
+        {/* Category badge — always at very bottom of page content */}
+        {recipe.ai_category && !isEditing && (
           <div className="flex flex-wrap items-center gap-2 pt-5 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
-            {recipe.ai_category && (
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px',
-                padding: '3px 10px', borderRadius: '999px',
-                background: 'var(--accent-dim)', border: '1px solid var(--accent)',
-                color: 'var(--accent)', fontFamily: 'var(--font-body)',
-                fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
-              }}>
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
-                  <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
-                </svg>
-                {recipe.ai_category}
-              </span>
-            )}
-            {recipe.tags?.map(tag => (
-              <span key={tag} style={{
-                display: 'inline-flex', alignItems: 'center',
-                padding: '3px 10px', borderRadius: '999px',
-                background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)',
-                color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
-                fontSize: '0.7rem', fontWeight: 500,
-              }}>
-                {tag}
-              </span>
-            ))}
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '5px',
+              padding: '3px 10px', borderRadius: '999px',
+              background: 'var(--accent-dim)', border: '1px solid var(--accent)',
+              color: 'var(--accent)', fontFamily: 'var(--font-body)',
+              fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+            }}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)">
+                <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
+              </svg>
+              {recipe.ai_category}
+            </span>
           </div>
         )}
         {isEditing && (
