@@ -63,7 +63,6 @@ export default function AllRecipesPage() {
   const [filter, setFilter] = useState<FilterOption>(
     () => (localStorage.getItem('recipes-filter') as FilterOption) ?? 'all'
   );
-  const [activeTag, setActiveTag] = useState<string | null>(null);
   const [showImportSheet, setShowImportSheet] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
