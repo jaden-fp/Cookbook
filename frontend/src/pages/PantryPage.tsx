@@ -496,7 +496,6 @@ export default function PantryPage() {
         {(
           [
             { key: 'all' as Filter, label: 'All', count: items.length },
-            { key: 'low' as Filter, label: 'Low Stock', count: lowCount },
             { key: 'out' as Filter, label: 'Out of Stock', count: outCount },
           ] as const
         ).map(({ key, label, count }) => {
