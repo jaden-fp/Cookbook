@@ -221,7 +221,6 @@ export default function RecipeDetailPage() {
   const [scale, setScale] = useState(1);
   const [scaleInput, setScaleInput] = useState('1');
   const [customCatInput, setCustomCatInput] = useState('');
-  const [tagInput, setTagInput] = useState('');
   const [showBaked, setShowBaked] = useState(false);
   const [showBaking, setShowBaking] = useState(false);
   const [showCookbook, setShowCookbook] = useState(false);
