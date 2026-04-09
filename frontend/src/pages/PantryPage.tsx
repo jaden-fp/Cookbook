@@ -70,7 +70,7 @@ function groupByCategory(items: PantryItem[]): { category: string; items: Pantry
 
 // ─── Filter type ───────────────────────────────────────────────────────────────
 
-type Filter = 'all' | 'low' | 'out';
+type Filter = 'all' | 'out';
 
 // ─── Optimistic placeholder ID prefix ─────────────────────────────────────────
 
