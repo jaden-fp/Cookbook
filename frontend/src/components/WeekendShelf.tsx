@@ -104,7 +104,7 @@ export default function WeekendShelf({ shelfIds, allRecipes, pantryItems, onRemo
 
             {/* Text */}
             <div style={{ padding: '8px 10px 10px' }}>
-              <p className="line-clamp-2 leading-snug" style={{
+              <p className="leading-snug" style={{
                 fontFamily: 'var(--font-display)', fontSize: '0.8125rem',
                 fontWeight: 500, color: 'var(--text)', letterSpacing: '-0.01em',
               }}>
