@@ -4,23 +4,21 @@ import type { PantryItem } from '../types';
 
 // ─── Status helpers ────────────────────────────────────────────────────────────
 
-type Status = 'in-stock' | 'low' | 'out';
+type Status = 'in-stock' | 'out';
 
 function getStatus(item: PantryItem): Status {
-  if (item.status) return item.status;
-  return item.needs_purchase ? 'out' : 'in-stock';
+  if (item.status === 'out' || item.needs_purchase) return 'out';
+  return 'in-stock';
 }
 
-const STATUS_CYCLE: Status[] = ['in-stock', 'low', 'out'];
+const STATUS_CYCLE: Status[] = ['in-stock', 'out'];
 
 function nextStatus(s: Status): Status {
-  const i = STATUS_CYCLE.indexOf(s);
-  return STATUS_CYCLE[(i + 1) % STATUS_CYCLE.length];
+  return s === 'in-stock' ? 'out' : 'in-stock';
 }
 
 const STATUS_META: Record<Status, { label: string; dot: string; color: string; bg: string }> = {
   'in-stock': { label: 'In Stock', dot: '#4caf50', color: '#4caf50', bg: 'rgba(76,175,80,0.12)' },
-  'low':      { label: 'Low',      dot: '#ff9800', color: '#ff9800', bg: 'rgba(255,152,0,0.12)' },
   'out':      { label: 'Out',      dot: '#e53935', color: '#e53935', bg: 'rgba(229,57,53,0.12)' },
 };
 
