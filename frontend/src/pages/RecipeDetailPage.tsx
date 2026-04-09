@@ -1961,15 +1961,15 @@ export default function RecipeDetailPage() {
               <div className="space-y-1">
                 {allIngredients.map((ing, i) => {
                   const status = getIngStatus(ing.name);
-                  const icon = status === 'in-stock' ? '✓' : status === 'low' ? '~' : '−';
-                  const iconColor = status === 'in-stock' ? '#6B9E6B' : status === 'low' ? 'var(--teal)' : '#E03E3E';
+                  const icon = status === 'in-stock' ? '✓' : '−';
+                  const iconColor = status === 'in-stock' ? '#6B9E6B' : '#E03E3E';
                   const isAdding = addingToList.has(ing.name);
                   return (
                     <div
                       key={i}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
                       style={{
-                        background: status === 'missing' ? 'rgba(224,62,62,0.05)' : status === 'low' ? 'var(--teal-lt)' : 'transparent',
+                        background: status === 'missing' ? 'rgba(224,62,62,0.05)' : 'transparent',
                       }}
                     >
                       <span className="text-sm font-bold shrink-0 w-4 text-center" style={{ color: iconColor }}>{icon}</span>
