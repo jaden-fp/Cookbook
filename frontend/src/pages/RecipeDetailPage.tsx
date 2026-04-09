@@ -191,12 +191,24 @@ function BakeHistory({ entries, onUpdate }: { entries: BakeEntry[]; onUpdate: (l
 }
 // IngStatus imported from ../utils/pantryMatch
 
-
 const STATUS_DOT: Record<IngStatus, string> = {
   'in-stock': '#6B9E6B',
-  'low': '#00C4B4',
   'missing': '#E8293A',
 };
+
+/** Strip metric unit suffix from combined unit strings like "cups g" → "cups". */
+function cleanUnit(unit: string): string {
+  return unit.replace(/\s+(g|ml|grams?|milliliters?)$/i, '').trim();
+}
+
+/** Remove metric measurements from notes, preserving other content like "room temp". */
+function cleanNotes(notes: string): string {
+  return notes
+    .replace(/\d+\.?\d*\s*(g|ml|grams?|milliliters?)\s*[,;]?\s*/gi, '')
+    .trim()
+    .replace(/^[,;]\s*/, '')
+    .trim();
+}
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
