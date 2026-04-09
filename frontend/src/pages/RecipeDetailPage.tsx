@@ -1328,24 +1328,30 @@ export default function RecipeDetailPage() {
                             {(() => {
                               const comps = splitCompound(ing.amount, ing.unit, ing.name);
                               const parts = comps ?? [{ amount: ing.amount, unit: ing.unit, name: ing.name }];
-                              return parts.map((c, ci) => (
-                                <span key={ci}>
-                                  {ci > 0 && ' + '}
-                                  <span key={`${scale}-${gi}-${ii}-${ci}`} className="font-semibold animate-amount">
-                                    {[scaleAmount(c.amount, scale, c.unit), c.unit].filter(Boolean).join(' ')}
-                                  </span>{' '}
-                                  {c.name}
-                                </span>
-                              ));
+                              return parts.map((c, ci) => {
+                                const unit = cleanUnit(c.unit);
+                                return (
+                                  <span key={ci}>
+                                    {ci > 0 && ' + '}
+                                    <span key={`${scale}-${gi}-${ii}-${ci}`} className="font-semibold animate-amount">
+                                      {[scaleAmount(c.amount, scale, unit), unit].filter(Boolean).join(' ')}
+                                    </span>{' '}
+                                    {c.name}
+                                  </span>
+                                );
+                              });
                             })()}
-                            {ing.notes && ing.notes.trim() && (
-                              <span
-                                className="ml-1"
-                                style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}
-                              >
-                                ({ing.notes.trim()})
-                              </span>
-                            )}
+                            {(() => {
+                              const raw = ing.notes?.trim() ?? '';
+                              if (!raw) return null;
+                              const cleaned = cleanNotes(raw);
+                              if (!cleaned) return null;
+                              return (
+                                <span className="ml-1" style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}>
+                                  ({cleaned})
+                                </span>
+                              );
+                            })()}
                           </span>
                         </li>
                       );
