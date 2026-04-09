@@ -1858,56 +1858,6 @@ export default function RecipeDetailPage() {
             </form>
           </div>
         )}
-        {isEditing && (
-          <div className="pt-4 mt-1">
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tags</p>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {(draft?.tags ?? []).map(tag => (
-                <span key={tag} style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  padding: '3px 8px 3px 10px', borderRadius: '999px',
-                  background: 'var(--bg-subtle)', border: '1px solid var(--border-strong)',
-                  color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.75rem',
-                }}>
-                  {tag}
-                  <button
-                    onClick={() => setDraft(d => d ? { ...d, tags: d.tags.filter(t => t !== tag) } : d)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0', display: 'flex', alignItems: 'center' }}
-                  >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
-                </span>
-              ))}
-            </div>
-            <form
-              onSubmit={e => {
-                e.preventDefault();
-                const val = tagInput.trim().toLowerCase();
-                if (val && !draft?.tags.includes(val)) {
-                  setDraft(d => d ? { ...d, tags: [...d.tags, val] } : d);
-                }
-                setTagInput('');
-              }}
-              style={{ display: 'flex', gap: '6px' }}
-            >
-              <input
-                placeholder="Add tag…"
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-                style={{
-                  padding: '4px 10px', borderRadius: '999px', border: '1.5px solid var(--border-strong)',
-                  fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text)',
-                  background: 'var(--bg-subtle)', outline: 'none', width: '110px',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
-                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; }}
-              />
-              <button type="submit" style={{ padding: '4px 12px', borderRadius: '999px', border: '1.5px solid var(--border-strong)', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                Add
-              </button>
-            </form>
-          </div>
-        )}
       </div>
 
       {/* Delete confirmation modal */}
