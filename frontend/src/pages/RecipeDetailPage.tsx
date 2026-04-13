@@ -511,7 +511,6 @@ export default function RecipeDetailPage() {
     });
     const PRESETS = ['Cookies', 'Cakes', 'Bars'];
     setCustomCatInput(recipe.ai_category && !PRESETS.includes(recipe.ai_category) ? recipe.ai_category : '');
-    setTagInput('');
     setIsEditing(true);
   }
 
