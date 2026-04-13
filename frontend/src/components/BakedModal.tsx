@@ -120,12 +120,10 @@ export default function BakedModal({ recipe, pantryItems = [], onClose, onSave }
                   className="flex items-center gap-3 w-full text-left transition-colors duration-100"
                   style={{
                     padding: '11px 14px',
-                    borderBottom: idx === matchedPantryItems.length - 1 ? 'none' : '1px solid var(--border)',
+                    border: 'none',
+                    borderBottom: idx < matchedPantryItems.length - 1 ? '1px solid var(--border)' : 'none',
                     background: checked ? 'var(--accent-dim)' : 'transparent',
-                    border: 'none', cursor: 'pointer',
-                    borderBottomStyle: idx === matchedPantryItems.length - 1 ? undefined : 'solid',
-                    borderBottomWidth: idx === matchedPantryItems.length - 1 ? undefined : '1px',
-                    borderBottomColor: 'var(--border)',
+                    cursor: 'pointer',
                   }}
                 >
                   <span style={{
