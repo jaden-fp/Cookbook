@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getRecipes, getPantryItems, getShelf, importRecipe } from '../api';
+import { Link } from 'react-router-dom';
+import { getRecipes, getPantryItems, getShelf } from '../api';
 import type { Recipe, PantryItem } from '../types';
 import { recipeCoverage } from '../utils/pantryMatch';
 import WeekendShelf from '../components/WeekendShelf';
 import RecipeTile from '../components/RecipeTile';
-import RecipeImportLoader from '../components/RecipeImportLoader';
+import BottomSheet from '../components/BottomSheet';
+import ImportBar from '../components/ImportBar';
 
 const URL_RE = /^https?:\/\/.+/i;
 
