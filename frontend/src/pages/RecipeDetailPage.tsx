@@ -12,7 +12,7 @@ import { estimateCost, totalCost, costCoverage, hasUserOverride, setUserOverride
 import type { PackageUnit, AIPrice } from '../utils/ingredientCost';
 import NutritionPanel from '../components/NutritionPanel';
 import BakingMode from '../components/BakingMode';
-import { findPantryMatch, getIngredientStatus, type IngStatus } from '../utils/pantryMatch';
+import { findPantryMatch, getIngredientStatus, isOptionalIngredient, type IngStatus } from '../utils/pantryMatch';
 
 type Tab = 'ingredients' | 'instructions' | 'nutrition' | 'cost';
 
