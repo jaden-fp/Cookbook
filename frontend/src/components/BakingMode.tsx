@@ -215,6 +215,7 @@ export default function BakingMode({ recipe, scale, onClose, onRate }: Props) {
   const [showIngredients, setShowIngredients] = useState(true);
   const [finished, setFinished] = useState(false);
   const [stepKey, setStepKey] = useState(0);
+  const [checkedIngredients, setCheckedIngredients] = useState<Set<string>>(new Set());
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStartX = useRef<number | null>(null);
