@@ -148,7 +148,7 @@ export default function HomePage() {
 
       {/* Recent bakes */}
       {recentBakes.length > 0 && (
-        <section className="animate-fade-up delay-2">
+        <section className="mb-12 animate-fade-up delay-2">
           <div className="flex items-center justify-between mb-4">
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.375rem', fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.01em' }}>
               Recently Baked
@@ -156,6 +156,27 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
             {recentBakes.map((r, i) => (
+              <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
+                <RecipeTile recipe={r} pantryItems={pantryItems} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Haven't made in a while */}
+      {staleRecipes.length > 0 && (
+        <section className="animate-fade-up delay-3">
+          <div className="flex items-center justify-between mb-4">
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.375rem', fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.01em' }}>
+              Make It Again
+            </h2>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+              Not baked in 60+ days
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
+            {staleRecipes.map((r, i) => (
               <div key={r.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
                 <RecipeTile recipe={r} pantryItems={pantryItems} />
               </div>
