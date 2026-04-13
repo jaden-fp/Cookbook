@@ -577,7 +577,8 @@ export default function AllRecipesPage() {
             const base = aiResultIds
               ? recipes.filter(r => aiResultIds.includes(r.id)).sort((a, b) => aiResultIds.indexOf(a.id) - aiResultIds.indexOf(b.id))
               : (search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes);
-            const filtered = aiResultIds ? base : applyFilter(base, filter, pantryItems);
+            const catFiltered = (!aiResultIds && selectedCategory) ? base.filter(r => r.ai_category === selectedCategory) : base;
+            const filtered = aiResultIds ? catFiltered : applyFilter(catFiltered, filter, pantryItems);
             const displayed = aiResultIds ? filtered : sortRecipes(filtered, sort, pantryItems);
             if (displayed.length === 0) return (
               <div className="col-span-2 sm:col-span-3 text-center py-16">
