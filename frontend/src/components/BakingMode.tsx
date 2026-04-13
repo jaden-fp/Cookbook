@@ -644,7 +644,7 @@ export default function BakingMode({ recipe, scale, onClose, onRate }: Props) {
         )}
 
         {/* Ingredients for this step */}
-        {relatedIngredients.length > 0 && (
+        {stepMatches.length > 0 && (
           <div className="mt-5">
             <button
               onClick={() => setShowIngredients(v => !v)}
@@ -664,22 +664,57 @@ export default function BakingMode({ recipe, scale, onClose, onRate }: Props) {
               >
                 <path d="M2 3.5l3 3 3-3"/>
               </svg>
-              Ingredients ({relatedIngredients.length})
+              Ingredients ({stepMatches.length})
             </button>
 
             {showIngredients && (
               <div
-                className="rounded-2xl p-4 space-y-2"
+                className="rounded-2xl p-4 space-y-1"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                {relatedIngredients.map((ing, i) => (
-                  <div key={i} className="flex items-baseline gap-2.5">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-2" style={{ background: 'var(--accent)' }} />
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text)', lineHeight: 1.5 }}>
-                      {ing}
-                    </span>
-                  </div>
-                ))}
+                {stepMatches.map((match, i) => {
+                  const checked = checkedIngredients.has(match.name);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setCheckedIngredients(prev => {
+                        const next = new Set(prev);
+                        if (next.has(match.name)) next.delete(match.name);
+                        else next.add(match.name);
+                        return next;
+                      })}
+                      className="flex items-center gap-3 w-full text-left py-1.5 rounded-xl transition-colors duration-150"
+                      style={{
+                        background: 'none', border: 'none', cursor: 'pointer', padding: '6px 4px',
+                      }}
+                    >
+                      {/* Checkbox */}
+                      <span style={{
+                        width: '18px', height: '18px', flexShrink: 0,
+                        borderRadius: '5px',
+                        border: `2px solid ${checked ? 'var(--accent)' : 'var(--border-strong)'}`,
+                        background: checked ? 'var(--accent)' : 'transparent',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.15s ease',
+                      }}>
+                        {checked && (
+                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2 6l3 3 5-5"/>
+                          </svg>
+                        )}
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
+                        color: checked ? 'var(--text-muted)' : 'var(--text)',
+                        lineHeight: 1.5,
+                        textDecoration: checked ? 'line-through' : 'none',
+                        transition: 'color 0.15s, text-decoration 0.15s',
+                      }}>
+                        {match.display}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
