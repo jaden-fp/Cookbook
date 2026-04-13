@@ -8,20 +8,12 @@ import RecipeTile from '../components/RecipeTile';
 import BottomSheet from '../components/BottomSheet';
 import ImportBar from '../components/ImportBar';
 
-const URL_RE = /^https?:\/\/.+/i;
-
 export default function HomePage() {
-  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [shelfIds, setShelfIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [smartInput, setSmartInput] = useState('');
-  const [smartFocused, setSmartFocused] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const [importError, setImportError] = useState<string | null>(null);
-
-  const isUrl = URL_RE.test(smartInput.trim());
+  const [showImport, setShowImport] = useState(false);
 
   useEffect(() => {
     Promise.all([getRecipes(), getPantryItems(), getShelf()]).then(([r, p, s]) => {
@@ -30,28 +22,6 @@ export default function HomePage() {
       setShelfIds(s);
     }).finally(() => setLoading(false));
   }, []);
-
-  async function handleSmartSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const val = smartInput.trim();
-    if (!val) return;
-    if (isUrl) {
-      if (importing) return;
-      setImporting(true);
-      setImportError(null);
-      try {
-        const recipe = await importRecipe(val);
-        setSmartInput('');
-        navigate(`/recipes/${recipe.id}`);
-      } catch (err) {
-        setImportError(err instanceof Error ? err.message : 'Import failed');
-      } finally {
-        setImporting(false);
-      }
-    } else {
-      navigate(`/recipes?q=${encodeURIComponent(val)}`);
-    }
-  }
 
   // Top picks: highest coverage, not already on shelf, limit 6
   const topPicks = [...recipes]
