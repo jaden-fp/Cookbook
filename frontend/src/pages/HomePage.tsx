@@ -54,7 +54,6 @@ export default function HomePage() {
           <div className="skeleton h-14 w-40 rounded-lg mb-3" />
           <div className="skeleton h-1 w-10 rounded" />
         </div>
-        <div className="skeleton h-9 w-32 rounded-full mb-8 sm:hidden" />
         <div className="skeleton h-40 rounded-2xl mb-10" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           {Array.from({ length: 6 }).map((_, i) => (
