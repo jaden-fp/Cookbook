@@ -364,195 +364,161 @@ export default function AllRecipesPage() {
         <ImportBar onSuccess={() => getRecipes().then(setRecipes)} />
       </BottomSheet>
 
-      {/* Recipe count — above the border */}
+      {/* Recipe count — desktop: above border */}
       {!loading && (
-        <p className="animate-fade-up delay-2" style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, marginBottom: '10px' }}>
-          {(() => {
-            const base = search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes;
-            const catFiltered = selectedCategory ? base.filter(r => r.ai_category === selectedCategory) : base;
-            const filtered = applyFilter(catFiltered, filter, pantryItems);
-            return `${filtered.length}${filtered.length !== recipes.length ? ` of ${recipes.length}` : ''} ${recipes.length === 1 ? 'recipe' : 'recipes'}`;
-          })()}
+        <p className="hidden sm:block animate-fade-up delay-2" style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, marginBottom: '10px' }}>
+          {countText}
         </p>
       )}
 
-      {/* Divider + category pills + sort/filter row */}
-      <div className="mb-8 animate-fade-up delay-2"
-        style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}
-      >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        {/* Left: category pills */}
-        <div className="flex flex-wrap items-center gap-2">
-          {!loading && recipes.some(r => r.ai_category) &&
-            Array.from(new Set(recipes.map(r => r.ai_category).filter(Boolean) as string[]))
-              .sort()
-              .map(cat => {
-                const color = CATEGORY_COLORS[cat] ?? DEFAULT_CAT_COLOR;
-                const active = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(active ? null : cat)}
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.75rem',
-                      fontWeight: active ? 700 : 500,
-                      background: active ? color.bg : 'var(--surface)',
-                      color: active ? color.text : 'var(--text-muted)',
-                      border: `1.5px solid ${active ? color.border : 'var(--border-strong)'}`,
-                      borderRadius: '999px',
-                      padding: '3px 11px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {cat}
-                  </button>
-                );
-              })
-          }
-        </div>
-
-        {!loading && recipes.length > 0 && (
-          <div className="flex items-center gap-2">
-
-            {/* AI search toggle */}
-            <button
-              onClick={() => { setAiMode(v => !v); if (aiMode) { setAiQuery(''); setAiResultIds(null); } }}
-              className="sort-btn"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px',
-                fontFamily: 'var(--font-body)', fontWeight: aiMode ? 600 : 500,
-                color: aiMode ? 'var(--accent)' : 'var(--text)',
-                background: aiMode ? 'var(--accent-dim)' : 'var(--surface)',
-                border: aiMode ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
-                borderRadius: '999px', cursor: 'pointer', outline: 'none',
-              }}
-            >
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/>
-              </svg>
-              Ask AI
-            </button>
-
-            {/* Filter button */}
-            <div style={{ position: 'relative' }}>
+      {/* Mobile: count + action buttons on same row */}
+      {!loading && (
+        <div className="flex items-center justify-between mb-2 sm:hidden animate-fade-up delay-2">
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+            {countText}
+          </p>
+          {recipes.length > 0 && (
+            <div className="flex items-center gap-2">
               <button
-                ref={filterBtnRef}
-                onClick={() => {
-                  const rect = filterBtnRef.current?.getBoundingClientRect();
-                  if (rect) setFilterPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right });
-                  setShowFilter(v => !v);
-                }}
+                onClick={() => { setAiMode(v => !v); if (aiMode) { setAiQuery(''); setAiResultIds(null); } }}
                 className="sort-btn"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  fontFamily: 'var(--font-body)', fontWeight: filter !== 'all' ? 600 : 500,
-                  color: filter !== 'all' ? 'var(--accent)' : 'var(--text)',
-                  background: filter !== 'all' ? 'var(--accent-dim)' : 'var(--surface)',
-                  border: filter !== 'all' ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
-                  borderRadius: '999px', cursor: 'pointer', outline: 'none',
-                }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: aiMode ? 600 : 500, color: aiMode ? 'var(--accent)' : 'var(--text)', background: aiMode ? 'var(--accent-dim)' : 'var(--surface)', border: aiMode ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                </svg>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/></svg>
+                Ask AI
+              </button>
+              <button
+                onClick={(e) => { const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setFilterPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right }); setShowFilter(v => !v); }}
+                className="sort-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: filter !== 'all' ? 600 : 500, color: filter !== 'all' ? 'var(--accent)' : 'var(--text)', background: filter !== 'all' ? 'var(--accent-dim)' : 'var(--surface)', border: filter !== 'all' ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                 {filter === 'all' ? 'Filter' : FILTER_LABELS[filter]}
                 {filter !== 'all' && (
-                  <span
-                    onClick={e => { e.stopPropagation(); setFilter('all'); localStorage.setItem('recipes-filter', 'all'); }}
-                    style={{ marginLeft: '2px', display: 'flex', alignItems: 'center', color: 'var(--accent)', cursor: 'pointer' }}
-                  >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
+                  <span onClick={e => { e.stopPropagation(); setFilter('all'); localStorage.setItem('recipes-filter', 'all'); }} style={{ marginLeft: '2px', display: 'flex', alignItems: 'center', color: 'var(--accent)', cursor: 'pointer' }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </span>
                 )}
               </button>
-              {showFilter && createPortal(
-                <div ref={filterRef}
-                  style={{
-                    position: 'absolute', top: filterPos.top, right: filterPos.right, zIndex: 9999,
-                    background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
-                    borderRadius: '10px', overflow: 'hidden', minWidth: '160px',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                  }}
-                >
-                  {(['all', 'ready', 'out', 'rated', 'unrated', 'stale'] as FilterOption[]).map(opt => (
-                    <button key={opt}
-                      onClick={() => { setFilter(opt); localStorage.setItem('recipes-filter', opt); setShowFilter(false); }}
-                      style={{
-                        display: 'block', width: '100%', textAlign: 'left',
-                        padding: '8px 14px', border: 'none',
-                        background: opt === filter ? 'var(--accent-dim)' : 'transparent',
-                        color: opt === filter ? 'var(--accent)' : 'var(--text)',
-                        fontFamily: 'var(--font-body)', fontWeight: opt === filter ? 600 : 400,
-                        fontSize: '0.8125rem', cursor: 'pointer',
-                      }}
-                    >
-                      {FILTER_LABELS[opt]}
-                    </button>
-                  ))}
-                </div>,
-                document.body
-              )}
-            </div>
-
-            {/* Sort button */}
-            <div ref={sortRef} style={{ position: 'relative' }}>
               <button
-                ref={sortBtnRef}
-                onClick={() => {
-                  const rect = sortBtnRef.current?.getBoundingClientRect();
-                  if (rect) setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right });
-                  setShowSort(v => !v);
-                }}
+                onClick={(e) => { const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right }); setShowSort(v => !v); }}
                 className="sort-btn"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  fontFamily: 'var(--font-body)', fontWeight: 500,
-                  color: 'var(--text)', background: 'var(--surface)',
-                  border: '1.5px solid var(--border-strong)',
-                  borderRadius: '999px', cursor: 'pointer', outline: 'none',
-                }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
               >
                 {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated', coverage: 'What can I make' }[sort]}
-                <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}>
-                  <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}><path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
-              {showSort && createPortal(
-                <div ref={sortRef}
-                  style={{
-                    position: 'absolute', top: sortPos.top, right: sortPos.right, zIndex: 9999,
-                    background: 'var(--surface)', border: '1.5px solid var(--border-strong)',
-                    borderRadius: '10px', overflow: 'hidden', minWidth: '120px',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                  }}
-                >
-                  {(['az', 'newest', 'oldest', 'rating', 'coverage'] as SortOption[]).map(opt => (
-                    <button key={opt}
-                      onClick={() => { setSort(opt); localStorage.setItem('recipes-sort', opt); setShowSort(false); }}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Divider + category pills + desktop sort/filter (portals shared with mobile) */}
+      <div className="mb-8 animate-fade-up delay-2"
+        style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}
+      >
+        <div className="flex flex-wrap sm:flex-nowrap sm:items-center sm:justify-between gap-2">
+          {/* Category pills */}
+          <div className="flex flex-wrap items-center gap-2">
+            {!loading && recipes.some(r => r.ai_category) &&
+              Array.from(new Set(recipes.map(r => r.ai_category).filter(Boolean) as string[]))
+                .sort()
+                .map(cat => {
+                  const color = CATEGORY_COLORS[cat] ?? DEFAULT_CAT_COLOR;
+                  const active = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(active ? null : cat)}
                       style={{
-                        display: 'block', width: '100%', textAlign: 'left',
-                        padding: '8px 14px', border: 'none',
-                        background: opt === sort ? 'var(--accent-dim)' : 'transparent',
-                        color: opt === sort ? 'var(--accent)' : 'var(--text)',
-                        fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400,
-                        fontSize: '0.8125rem', cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.75rem',
+                        fontWeight: active ? 700 : 500,
+                        background: active ? color.bg : 'var(--surface)',
+                        color: active ? color.text : 'var(--text-muted)',
+                        border: `1.5px solid ${active ? color.border : 'var(--border-strong)'}`,
+                        borderRadius: '999px',
+                        padding: '3px 11px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
                       }}
                     >
-                      {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated', coverage: 'What can I make' }[opt]}
+                      {cat}
                     </button>
-                  ))}
-                </div>,
-                document.body
-              )}
-            </div>
-
+                  );
+                })
+            }
           </div>
-        )}
-      </div>
+
+          {/* Desktop action buttons — portals render to body so also serve mobile triggers */}
+          {!loading && recipes.length > 0 && (
+            <div className="hidden sm:flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => { setAiMode(v => !v); if (aiMode) { setAiQuery(''); setAiResultIds(null); } }}
+                className="sort-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: aiMode ? 600 : 500, color: aiMode ? 'var(--accent)' : 'var(--text)', background: aiMode ? 'var(--accent-dim)' : 'var(--surface)', border: aiMode ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+              >
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 13 8 18 9C13 10 12 16 12 16C12 16 11 10 6 9C11 8 12 2 12 2Z"/></svg>
+                Ask AI
+              </button>
+
+              <div style={{ position: 'relative' }}>
+                <button
+                  ref={filterBtnRef}
+                  onClick={(e) => { const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setFilterPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right }); setShowFilter(v => !v); }}
+                  className="sort-btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: filter !== 'all' ? 600 : 500, color: filter !== 'all' ? 'var(--accent)' : 'var(--text)', background: filter !== 'all' ? 'var(--accent-dim)' : 'var(--surface)', border: filter !== 'all' ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                  {filter === 'all' ? 'Filter' : FILTER_LABELS[filter]}
+                  {filter !== 'all' && (
+                    <span onClick={e => { e.stopPropagation(); setFilter('all'); localStorage.setItem('recipes-filter', 'all'); }} style={{ marginLeft: '2px', display: 'flex', alignItems: 'center', color: 'var(--accent)', cursor: 'pointer' }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </span>
+                  )}
+                </button>
+                {showFilter && createPortal(
+                  <div ref={filterRef} style={{ position: 'absolute', top: filterPos.top, right: filterPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '160px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+                    {(['all', 'ready', 'out', 'rated', 'unrated', 'stale'] as FilterOption[]).map(opt => (
+                      <button key={opt}
+                        onClick={() => { setFilter(opt); localStorage.setItem('recipes-filter', opt); setShowFilter(false); }}
+                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === filter ? 'var(--accent-dim)' : 'transparent', color: opt === filter ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === filter ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
+                      >
+                        {FILTER_LABELS[opt]}
+                      </button>
+                    ))}
+                  </div>,
+                  document.body
+                )}
+              </div>
+
+              <div ref={sortRef} style={{ position: 'relative' }}>
+                <button
+                  ref={sortBtnRef}
+                  onClick={(e) => { const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setSortPos({ top: rect.bottom + window.scrollY + 4, right: window.innerWidth - rect.right }); setShowSort(v => !v); }}
+                  className="sort-btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-body)', fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '999px', cursor: 'pointer', outline: 'none' }}
+                >
+                  {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated', coverage: 'What can I make' }[sort]}
+                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" style={{ color: 'var(--text-muted)' }}><path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+                {showSort && createPortal(
+                  <div ref={sortRef} style={{ position: 'absolute', top: sortPos.top, right: sortPos.right, zIndex: 9999, background: 'var(--surface)', border: '1.5px solid var(--border-strong)', borderRadius: '10px', overflow: 'hidden', minWidth: '120px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+                    {(['az', 'newest', 'oldest', 'rating', 'coverage'] as SortOption[]).map(opt => (
+                      <button key={opt}
+                        onClick={() => { setSort(opt); localStorage.setItem('recipes-sort', opt); setShowSort(false); }}
+                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px', border: 'none', background: opt === sort ? 'var(--accent-dim)' : 'transparent', color: opt === sort ? 'var(--accent)' : 'var(--text)', fontFamily: 'var(--font-body)', fontWeight: opt === sort ? 600 : 400, fontSize: '0.8125rem', cursor: 'pointer' }}
+                      >
+                        {{ az: 'A → Z', newest: 'Newest first', oldest: 'Oldest first', rating: 'Top rated', coverage: 'What can I make' }[opt]}
+                      </button>
+                    ))}
+                  </div>,
+                  document.body
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Grid */}
