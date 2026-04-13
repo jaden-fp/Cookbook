@@ -1352,11 +1352,12 @@ export default function RecipeDetailPage() {
                               const parts = comps ?? [{ amount: ing.amount, unit: ing.unit, name: ing.name }];
                               return parts.map((c, ci) => {
                                 const unit = cleanUnit(c.unit);
+                                const amount = cleanAmount(c.amount);
                                 return (
                                   <span key={ci}>
                                     {ci > 0 && ' + '}
                                     <span key={`${scale}-${gi}-${ii}-${ci}`} className="font-semibold animate-amount">
-                                      {[scaleAmount(c.amount, scale, unit), unit].filter(Boolean).join(' ')}
+                                      {[scaleAmount(amount, scale, unit), unit].filter(Boolean).join(' ')}
                                     </span>{' '}
                                     {c.name}
                                   </span>
