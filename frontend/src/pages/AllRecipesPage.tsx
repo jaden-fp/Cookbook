@@ -357,20 +357,24 @@ export default function AllRecipesPage() {
         <ImportBar onSuccess={() => getRecipes().then(setRecipes)} />
       </BottomSheet>
 
-      {/* Divider + sort/filter row */}
+      {/* Recipe count — above the border */}
+      {!loading && (
+        <p className="animate-fade-up delay-2" style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, marginBottom: '10px' }}>
+          {(() => {
+            const base = search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes;
+            const catFiltered = selectedCategory ? base.filter(r => r.ai_category === selectedCategory) : base;
+            const filtered = applyFilter(catFiltered, filter, pantryItems);
+            return `${filtered.length}${filtered.length !== recipes.length ? ` of ${recipes.length}` : ''} ${recipes.length === 1 ? 'recipe' : 'recipes'}`;
+          })()}
+        </p>
+      )}
+
+      {/* Divider + category pills + sort/filter row */}
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
-        style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
+        style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}
       >
-        {/* Left: count + category pills */}
+        {/* Left: category pills */}
         <div className="flex flex-wrap items-center gap-2">
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400, flexShrink: 0 }}>
-            {loading ? '' : (() => {
-              const base = search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes;
-              const catFiltered = selectedCategory ? base.filter(r => r.ai_category === selectedCategory) : base;
-              const filtered = applyFilter(catFiltered, filter, pantryItems);
-              return `${filtered.length}${filtered.length !== recipes.length ? ` of ${recipes.length}` : ''} ${recipes.length === 1 ? 'recipe' : 'recipes'}`;
-            })()}
-          </p>
           {!loading && recipes.some(r => r.ai_category) &&
             Array.from(new Set(recipes.map(r => r.ai_category).filter(Boolean) as string[]))
               .sort()
