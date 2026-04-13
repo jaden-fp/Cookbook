@@ -232,12 +232,7 @@ export default function PantryPage() {
 
   // ── Derived data ──────────────────────────────────────────────────────────────
 
-  const filteredItems = items.filter(item => {
-    if (filter === 'out') return getStatus(item) === 'out';
-    return true;
-  });
-
-  const groups = groupByCategory(filteredItems).filter(g => g.items.length > 0);
+  const groups = groupByCategory(items).filter(g => g.items.length > 0);
 
   const outCount = items.filter(i => getStatus(i) === 'out').length;
   const shoppingCount = outCount;
