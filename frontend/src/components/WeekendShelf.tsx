@@ -32,9 +32,9 @@ export default function WeekendShelf({ shelfIds, allRecipes, pantryItems, onRemo
   }
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${shelfRecipes.length}, 1fr)`, gap: '1rem' }}>
       {shelfRecipes.map(recipe => (
-        <div key={recipe.id} className="group/card relative shrink-0" style={{ width: '280px' }}>
+        <div key={recipe.id} className="group/card relative" style={{ minWidth: 0 }}>
           <RecipeTile recipe={recipe} pantryItems={pantryItems} />
           {/* Remove button — top-left so it doesn't overlap the rating badge (top-right) */}
           <button
