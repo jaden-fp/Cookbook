@@ -196,15 +196,37 @@ const STATUS_DOT: Record<IngStatus, string> = {
   'missing': '#E8293A',
 };
 
-/** Strip metric unit suffix from combined unit strings like "cups g" → "cups". */
+const METRIC_UNITS = '(g|ml|grams?|milliliters?|kg|kilograms?|liters?|l)';
+const METRIC_UNIT_RE = new RegExp(METRIC_UNITS, 'i');
+
+/**
+ * Strip metric unit from combined unit strings.
+ * Handles: "cups g", "cups/ml", "cups / grams", "grams" (standalone), etc.
+ * If the whole unit is metric, returns empty string (we have no imperial fallback).
+ */
 function cleanUnit(unit: string): string {
-  return unit.replace(/\s+(g|ml|grams?|milliliters?)$/i, '').trim();
+  const s = unit
+    .replace(new RegExp(`\\s*[/|]\\s*${METRIC_UNITS}\\s*$`, 'i'), '')  // "cups/g" → "cups"
+    .replace(new RegExp(`\\s+${METRIC_UNITS}\\s*$`, 'i'), '')            // "cups g" → "cups"
+    .trim();
+  // If what remains is itself a pure metric unit, drop it entirely
+  if (METRIC_UNIT_RE.test(s) && !s.match(/cup|tbsp|tsp|oz|lb|pound|tablespoon|teaspoon/i)) return '';
+  return s;
+}
+
+/** Remove metric measurements from an amount string like "1 cup (240ml)" → "1 cup". */
+function cleanAmount(amount: string): string {
+  return amount
+    .replace(new RegExp(`\\s*[/(]\\s*\\d+\\.?\\d*\\s*${METRIC_UNITS}\\s*\\)?\\s*`, 'gi'), '')
+    .replace(/\s*\(\s*\)\s*/, '')  // remove empty parens left behind
+    .trim();
 }
 
 /** Remove metric measurements from notes, preserving other content like "room temp". */
 function cleanNotes(notes: string): string {
   return notes
-    .replace(/\d+\.?\d*\s*(g|ml|grams?|milliliters?)\s*[,;]?\s*/gi, '')
+    .replace(new RegExp(`\\d+\\.?\\d*\\s*${METRIC_UNITS}\\s*[,;]?\\s*`, 'gi'), '')
+    .replace(/\(\s*\)/, '')        // remove empty parens
     .trim()
     .replace(/^[,;]\s*/, '')
     .trim();
