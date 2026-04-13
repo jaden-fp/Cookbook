@@ -29,7 +29,7 @@ interface Props {
 export default function RecipeTile({ recipe, pantryItems }: Props) {
   const coverage = pantryItems ? recipeCoverage(recipe, pantryItems) : null;
   const hasOut = pantryItems ? recipeHasOutOfStock(recipe, pantryItems) : false;
-  const isReady = coverage?.pct === 100 && !hasOut;
+  const isReady = coverage?.pct === 100;
   return (
     <Link
       to={`/recipes/${recipe.id}`}
