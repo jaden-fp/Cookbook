@@ -19,14 +19,22 @@ router.post('/import', async (req, res) => {
         extract: {
           prompt: `Extract the full recipe from this page.
 
+UNIT SYSTEM RULE — critical:
+- Use ONLY imperial measurements (cups, tablespoons, teaspoons, oz, lbs, fluid oz).
+- If the recipe provides both imperial and metric (grams, milliliters, kg, liters), extract ONLY the imperial measurement. Do not put grams or milliliters in any field.
+- If the recipe provides ONLY metric with no imperial equivalent, keep the metric value as-is.
+
 INGREDIENT PARSING RULES — follow exactly:
 - "amount" = only the numeric quantity (e.g. "1/2", "2", "1 1/4", "3/4"). Never include the unit or ingredient name here.
-- "unit" = only the measurement unit (e.g. "cup", "tablespoon", "teaspoon", "oz", "g"). Leave empty string "" if there is no unit.
+- "unit" = only the measurement unit (e.g. "cup", "tablespoon", "teaspoon", "oz"). Leave empty string "" if there is no unit. Never put grams or ml here when an imperial unit is also given.
 - "name" = only the ingredient name, lowercase, no quantity or unit (e.g. "unsalted butter", "light brown sugar", "all-purpose flour").
-- "notes" = any parenthetical or descriptive note about the ingredient (e.g. "room temperature", "packed", "roughly chopped"). Set to null if none.
+- "notes" = any parenthetical or descriptive note about the ingredient (e.g. "room temperature", "packed", "roughly chopped"). Set to null if none. Do NOT include metric measurements like "240g" or "250ml" in notes.
 
-EXAMPLE: "1/2 cup + 2 tablespoons unsalted butter, softened"
+EXAMPLE: "1/2 cup (120ml) + 2 tablespoons unsalted butter, softened"
 → amount: "1/2 cup + 2 tablespoons", unit: "", name: "unsalted butter", notes: "softened"
+
+EXAMPLE: "2 cups (250g) all-purpose flour"
+→ amount: "2", unit: "cups", name: "all-purpose flour", notes: null
 
 EXAMPLE: "2 large eggs, room temperature"
 → amount: "2", unit: "", name: "large eggs", notes: "room temperature"
