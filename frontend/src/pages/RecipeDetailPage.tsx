@@ -1988,7 +1988,7 @@ export default function RecipeDetailPage() {
         />
       )}
       {showBaked && (
-        <BakedModal recipe={recipe} onClose={() => setShowBaked(false)} onSave={setRecipe} />
+        <BakedModal recipe={recipe} pantryItems={pantryItems} onClose={() => setShowBaked(false)} onSave={setRecipe} />
       )}
       {showCookbook && (
         <CookbookModal recipeId={recipe.id} onClose={() => setShowCookbook(false)} />
