@@ -172,6 +172,13 @@ export default function AllRecipesPage() {
     return () => setAction(null);
   }, [setAction]);
 
+  const countText = loading ? '' : (() => {
+    const base = search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes;
+    const catFiltered = selectedCategory ? base.filter(r => r.ai_category === selectedCategory) : base;
+    const filtered = applyFilter(catFiltered, filter, pantryItems);
+    return `${filtered.length}${filtered.length !== recipes.length ? ` of ${recipes.length}` : ''} ${recipes.length === 1 ? 'recipe' : 'recipes'}`;
+  })();
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-3 sm:pt-24 pb-32 sm:pb-16">
 
