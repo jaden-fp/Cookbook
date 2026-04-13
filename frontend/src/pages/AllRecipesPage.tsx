@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ImportBar from '../components/ImportBar';
 import RecipeImportLoader from '../components/RecipeImportLoader';
 import BottomSheet from '../components/BottomSheet';
