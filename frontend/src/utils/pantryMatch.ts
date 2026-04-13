@@ -27,7 +27,7 @@ function hasEggsInPantry(pantryItems: PantryItem[]): PantryItem | undefined {
 }
 
 /** Returns true if an ingredient should be excluded from coverage calculations (optional). */
-export function isOptionalIngredient(ing: { optional?: boolean; name: string; notes: string | null }): boolean {
+export function isOptionalIngredient(ing: { optional?: boolean; name: string; notes?: string | null }): boolean {
   if (ing.optional) return true;
   const combined = (ing.name + ' ' + (ing.notes ?? '')).toLowerCase();
   return combined.includes('(optional)') || /\boptional\b/.test(combined);
