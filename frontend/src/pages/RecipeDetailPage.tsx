@@ -1385,7 +1385,7 @@ export default function RecipeDetailPage() {
                                 </span>
                               );
                             })()}
-                            {ing.optional && !ing.notes?.toLowerCase().includes('optional') && (
+                            {isOptionalIngredient(ing) && (
                               <span className="ml-1" style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.875rem' }}>
                                 (optional)
                               </span>
