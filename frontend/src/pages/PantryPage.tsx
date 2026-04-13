@@ -90,7 +90,6 @@ export default function PantryPage() {
   const [shoppingChecking, setShoppingChecking] = useState<Set<string>>(new Set());
 
   // Filter
-  const [filter, setFilter] = useState<Filter>('all');
 
   // Add form
   const [newName, setNewName] = useState('');
