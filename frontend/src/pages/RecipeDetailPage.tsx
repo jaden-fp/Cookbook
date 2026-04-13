@@ -868,6 +868,16 @@ export default function RecipeDetailPage() {
               </svg>
             )}
           </button>
+          {/* Rating — always visible, display-only */}
+          {recipe.rating != null && !isEditing && (
+            <div className="flex items-center gap-2 mb-4">
+              <StarDisplay rating={recipe.rating} size="md" />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                {recipe.rating}/5
+              </span>
+            </div>
+          )}
+
           {/* Description */}
           {isEditing && draft ? (
             <textarea
