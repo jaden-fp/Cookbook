@@ -46,6 +46,21 @@ export default function HomePage() {
     })
     .slice(0, 6);
 
+  // Haven't made in a while: baked at least once, but not in the last 60 days
+  const STALE_MS = 60 * 24 * 60 * 60 * 1000;
+  const staleRecipes = [...recipes]
+    .filter(r => {
+      if (!(r.bake_log?.length)) return false;
+      const latest = Math.max(...r.bake_log.map(e => new Date(e.date).getTime()));
+      return Date.now() - latest >= STALE_MS;
+    })
+    .sort((a, b) => {
+      const latestA = Math.max(...(a.bake_log ?? []).map(e => new Date(e.date).getTime()));
+      const latestB = Math.max(...(b.bake_log ?? []).map(e => new Date(e.date).getTime()));
+      return latestA - latestB; // oldest first — most overdue at top
+    })
+    .slice(0, 6);
+
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 pt-4 sm:pt-24 pb-32 sm:pb-16">
