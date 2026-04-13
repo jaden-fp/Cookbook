@@ -695,7 +695,7 @@ export function estimateCost(amount: string, unit: string, name: string, scale =
   if (qty === null || qty === 0) return { cost: null, display: '—' };
 
   const scaledQty = qty * scale;
-  const unitLower = unit.toLowerCase().trim();
+  const unitLower = effectiveUnit.toLowerCase().trim();
 
   // Use database entry if found, otherwise fall back to AI price
   const derived = entry
