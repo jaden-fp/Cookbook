@@ -284,7 +284,7 @@ export default function AllRecipesPage() {
             width: '100%', fontFamily: 'var(--font-body)', fontSize: '0.9rem',
             color: 'var(--text)', background: 'var(--surface)',
             border: '1.5px solid var(--border-strong)', borderRadius: '999px',
-            padding: '10px 16px 10px 38px', outline: 'none', boxSizing: 'border-box',
+            padding: '7px 16px 7px 38px', outline: 'none', boxSizing: 'border-box',
           }}
         />
         {mobileSearch && (
