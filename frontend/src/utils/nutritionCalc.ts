@@ -253,9 +253,10 @@ export function calcNutrition(
   let total: NutrientPer100g = { ...ZERO };
 
   for (const ing of allIngredients) {
+    const { displayAmount, displayUnit, calcAmount, calcUnit } = resolveIngredient(ing.amount, ing.unit);
     const entry = findIngredient(ing.name);
     const grams = entry
-      ? toGrams(parseAmount(ing.amount) * scale, normaliseUnit(ing.unit), entry)
+      ? toGrams(parseAmount(calcAmount) * scale, normaliseUnit(calcUnit), entry)
       : 0;
 
     const matched = entry !== null && grams > 0;
@@ -268,13 +269,13 @@ export function calcNutrition(
     total = addNutrition(total, contrib);
 
     breakdown.push({
-      name: [ing.amount, ing.unit, ing.name].filter(Boolean).join(' '),
+      name: [displayAmount, displayUnit, ing.name].filter(Boolean).join(' '),
       grams,
       matched,
       nutrition: contrib,
       ingredientName: ing.name,
-      amount: parseAmount(ing.amount) * scale,
-      unit: normaliseUnit(ing.unit),
+      amount: parseAmount(calcAmount) * scale,
+      unit: normaliseUnit(calcUnit),
     });
   }
 
