@@ -15,6 +15,12 @@ export default function HomePage() {
   const [shelfIds, setShelfIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showImport, setShowImport] = useState(false);
+  const { setAction } = useFAB();
+
+  useEffect(() => {
+    setAction(() => setShowImport(true));
+    return () => setAction(null);
+  }, [setAction]);
 
   useEffect(() => {
     Promise.all([getRecipes(), getPantryItems(), getShelf()]).then(([r, p, s]) => {
