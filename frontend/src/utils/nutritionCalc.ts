@@ -161,6 +161,38 @@ export function findIngredient(rawName: string): IngredientEntry | null {
   return best && best.score >= 30 ? best.entry : null;
 }
 
+// ── Metric/imperial resolution ────────────────────────────────────────────
+
+const METRIC_ONLY_RE = /^(g|ml|grams?|milliliters?|kg|kilograms?|l|liters?)$/i;
+const EMBEDDED_UNIT_RE = /\s+(cups?|tbsp|tsp|tablespoons?|teaspoons?|oz|lbs?|pounds?|pieces?|sticks?)\s*$/i;
+
+/**
+ * When an ingredient is stored as { amount: "1 3/4 cups", unit: "g", name: "flour" }
+ * (imported with metric unit appended), extract the real volume/imperial unit from
+ * the amount string and return clean values for both display and calculation.
+ */
+function resolveIngredient(rawAmount: string, rawUnit: string): {
+  displayAmount: string;
+  displayUnit: string;
+  calcAmount: string;
+  calcUnit: string;
+} {
+  if (METRIC_ONLY_RE.test(rawUnit.trim())) {
+    const m = rawAmount.match(EMBEDDED_UNIT_RE);
+    if (m) {
+      return {
+        displayAmount: rawAmount,                         // "1 3/4 cups" — keep for display
+        displayUnit: '',                                  // don't double-print the unit
+        calcAmount: rawAmount.slice(0, m.index).trim(),  // "1 3/4" — numeric part only
+        calcUnit: m[1],                                   // "cups"
+      };
+    }
+    // Pure metric unit with no imperial embedded — drop unit from display
+    return { displayAmount: rawAmount, displayUnit: '', calcAmount: rawAmount, calcUnit: rawUnit };
+  }
+  return { displayAmount: rawAmount, displayUnit: rawUnit, calcAmount: rawAmount, calcUnit: rawUnit };
+}
+
 // ── Per-ingredient calculation ─────────────────────────────────────────────
 
 export interface IngredientNutrition {
