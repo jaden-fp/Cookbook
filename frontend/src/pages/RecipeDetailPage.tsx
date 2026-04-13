@@ -222,6 +222,25 @@ function cleanAmount(amount: string): string {
     .trim();
 }
 
+const METRIC_ONLY_RE = /^(g|ml|grams?|milliliters?|kg|kilograms?|l|liters?)$/i;
+const EMBEDDED_IMPERIAL_RE = /\s+(cups?|tbsp|tsp|tablespoons?|teaspoons?|oz|lbs?|pounds?)\s*$/i;
+
+/**
+ * When an ingredient is stored as { amount: "1 3/4 cups", unit: "g" } (metric unit appended
+ * during import), extract the real imperial/volume unit from the amount string.
+ * Returns the resolved { amount, unit } for display and scaling.
+ */
+function resolveAmountUnit(rawAmount: string, rawUnit: string): { amount: string; unit: string } {
+  if (METRIC_ONLY_RE.test(rawUnit.trim())) {
+    const m = rawAmount.match(EMBEDDED_IMPERIAL_RE);
+    if (m) {
+      return { amount: rawAmount.slice(0, m.index).trim(), unit: m[1] };
+    }
+    return { amount: rawAmount, unit: '' };
+  }
+  return { amount: rawAmount, unit: rawUnit };
+}
+
 /** Remove metric measurements and "optional" text from notes. */
 function cleanNotes(notes: string): string {
   return notes
