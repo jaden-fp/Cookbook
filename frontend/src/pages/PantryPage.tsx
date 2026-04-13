@@ -483,65 +483,14 @@ export default function PantryPage() {
         )}
       </div>
 
-      {/* ── Filter chips ── */}
-      <div className="flex items-center gap-2 mb-8 animate-fade-up delay-2 flex-wrap">
-        {(
-          [
-            { key: 'all' as Filter, label: 'All', count: items.length },
-            { key: 'out' as Filter, label: 'Out of Stock', count: outCount },
-          ] as const
-        ).map(({ key, label, count }) => {
-          const active = filter === key;
-          return (
-            <button
-              key={key}
-              onClick={() => setFilter(key)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '6px 14px',
-                borderRadius: '999px',
-                border: active ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
-                background: active ? 'var(--accent-dim)' : 'var(--surface)',
-                color: active ? 'var(--accent)' : 'var(--text-muted)',
-                fontFamily: 'var(--font-body)',
-                fontWeight: active ? 700 : 500,
-                fontSize: '0.8125rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {label}
-              {count > 0 && (
-                <span style={{
-                  fontSize: '0.7rem',
-                  fontWeight: 700,
-                  padding: '1px 5px',
-                  borderRadius: '999px',
-                  background: active ? 'var(--accent)' : 'var(--bg-subtle)',
-                  color: active ? '#fff' : 'var(--text-muted)',
-                  lineHeight: 1.5,
-                }}>
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
       {/* ── Category groups ── */}
       {groups.length === 0 ? (
         <div
-          className="py-14 text-center rounded-2xl animate-fade-up delay-3"
+          className="py-14 text-center rounded-2xl animate-fade-up delay-2"
           style={{ border: '1.5px dashed var(--border-strong)' }}
         >
           <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.9375rem' }}>
-            {filter !== 'all'
-              ? 'No out of stock items.'
-              : 'Your pantry is empty — add some ingredients above!'}
+            Your pantry is empty — add some ingredients above!
           </p>
         </div>
       ) : (
