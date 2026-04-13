@@ -1173,7 +1173,7 @@ export default function RecipeDetailPage() {
 
 
         {/* Tabs + Scale (inline on desktop, stacked on mobile) */}
-        <div className="mb-6 animate-fade-up delay-2" style={{ borderBottom: '1.5px solid var(--border-strong)' }}>
+        <div className="sticky top-0 sm:top-[72px] z-30 mb-6 -mx-4 sm:-mx-6 px-4 sm:px-6" style={{ borderBottom: '1.5px solid var(--border-strong)', background: 'var(--bg)' }}>
           <div className="flex items-end justify-between">
             <div className="flex gap-0 flex-1">
               {(['ingredients', 'instructions', 'nutrition', 'cost'] as Tab[]).map(t => (
