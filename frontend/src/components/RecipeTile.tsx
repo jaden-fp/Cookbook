@@ -75,7 +75,7 @@ export default function RecipeTile({ recipe, pantryItems }: Props) {
 
         {/* Rating badge — number + star */}
         {recipe.rating != null && (
-          <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1"
+          <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1"
             style={{
               background: 'rgba(255,255,255,0.72)',
               backdropFilter: 'blur(8px)',
