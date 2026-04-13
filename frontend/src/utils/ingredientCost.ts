@@ -668,13 +668,24 @@ function parseAmount(s: string): number | null {
 
 // ── Main exports ──────────────────────────────────────────────────────────────
 
+const COST_METRIC_ONLY_RE = /^(g|ml|grams?|milliliters?|kg|kilograms?|l|liters?)$/i;
+const COST_EMBEDDED_UNIT_RE = /\s+(cups?|tbsp|tsp|tablespoons?|teaspoons?|oz|lbs?|pounds?)\s*$/i;
+
 export function estimateCost(amount: string, unit: string, name: string, scale = 1, aiPrice?: AIPrice | null): CostResult {
   const entry = findEntry(name);
   if (!entry && !aiPrice) return { cost: null, display: '—' };
 
-  // Strip unit from amount if accidentally embedded
+  // Resolve embedded imperial unit: { amount: "1 3/4 cups", unit: "g" } → { amount: "1 3/4", unit: "cups" }
   let cleanAmount = amount.trim();
-  if (unit) {
+  let effectiveUnit = unit;
+  if (COST_METRIC_ONLY_RE.test(unit.trim())) {
+    const m = cleanAmount.match(COST_EMBEDDED_UNIT_RE);
+    if (m) {
+      effectiveUnit = m[1];
+      cleanAmount = cleanAmount.slice(0, m.index).trim();
+    }
+  } else if (unit) {
+    // Strip unit from amount if accidentally embedded (original logic)
     const tl = cleanAmount.toLowerCase();
     const ul = unit.toLowerCase();
     if (tl.endsWith(ul) && tl.length > ul.length) cleanAmount = cleanAmount.slice(0, -unit.length).trim();
