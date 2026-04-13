@@ -370,9 +370,10 @@ export default function AllRecipesPage() {
       )}
 
       {/* Divider + category pills + sort/filter row */}
-      <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
+      <div className="mb-8 animate-fade-up delay-2"
         style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}
       >
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Left: category pills */}
         <div className="flex flex-wrap items-center gap-2">
           {!loading && recipes.some(r => r.ai_category) &&
