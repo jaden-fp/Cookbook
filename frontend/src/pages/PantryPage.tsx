@@ -11,8 +11,6 @@ function getStatus(item: PantryItem): Status {
   return 'in-stock';
 }
 
-const STATUS_CYCLE: Status[] = ['in-stock', 'out'];
-
 function nextStatus(s: Status): Status {
   return s === 'in-stock' ? 'out' : 'in-stock';
 }
