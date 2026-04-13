@@ -251,6 +251,28 @@ export default function BakingMode({ recipe, scale, onClose, onRate }: Props) {
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  // Keep screen awake while baking
+  useEffect(() => {
+    let wakeLock: WakeLockSentinel | null = null;
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+        }
+      } catch { /* not supported or permission denied */ }
+    }
+    requestWakeLock();
+    // Re-acquire on visibility change (lock is released when tab hides)
+    function onVisibility() {
+      if (document.visibilityState === 'visible') requestWakeLock();
+    }
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      wakeLock?.release().catch(() => {});
+    };
+  }, []);
+
   useEffect(() => {
     if (!timer?.running) return;
     intervalRef.current = setInterval(() => {
