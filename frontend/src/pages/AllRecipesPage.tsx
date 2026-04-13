@@ -357,6 +357,38 @@ export default function AllRecipesPage() {
         <ImportBar onSuccess={() => getRecipes().then(setRecipes)} />
       </BottomSheet>
 
+      {/* Category tabs */}
+      {!loading && recipes.some(r => r.ai_category) && (
+        <div className="flex flex-wrap gap-2 mb-6 animate-fade-up delay-2">
+          {Array.from(new Set(recipes.map(r => r.ai_category).filter(Boolean) as string[]))
+            .sort()
+            .map(cat => {
+              const color = CATEGORY_COLORS[cat] ?? DEFAULT_CAT_COLOR;
+              const active = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(active ? null : cat)}
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.8125rem',
+                    fontWeight: active ? 700 : 500,
+                    background: active ? color.bg : 'var(--surface)',
+                    color: active ? color.text : 'var(--text-muted)',
+                    border: `1.5px solid ${active ? color.border : 'var(--border-strong)'}`,
+                    borderRadius: '999px',
+                    padding: '5px 14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+        </div>
+      )}
+
       {/* Divider + sort/filter row */}
       <div className="flex items-center justify-between mb-8 animate-fade-up delay-2"
         style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}
@@ -364,7 +396,8 @@ export default function AllRecipesPage() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 400 }}>
           {loading ? '' : (() => {
             const base = search ? recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())) : recipes;
-            const filtered = applyFilter(base, filter, pantryItems);
+            const catFiltered = selectedCategory ? base.filter(r => r.ai_category === selectedCategory) : base;
+            const filtered = applyFilter(catFiltered, filter, pantryItems);
             return `${filtered.length}${filtered.length !== recipes.length ? ` of ${recipes.length}` : ''} ${recipes.length === 1 ? 'recipe' : 'recipes'}`;
           })()}
         </p>
