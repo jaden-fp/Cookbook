@@ -234,7 +234,6 @@ export default function BakingMode({ recipe, scale, onClose, onRate }: Props) {
     stepIngredients(steps[i], recipe, scale, usedIngredients).forEach(m => usedIngredients.add(m.name));
   }
   const stepMatches = stepIngredients(currentStep, recipe, scale, usedIngredients);
-  const relatedIngredients = stepMatches.map(m => m.display);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
