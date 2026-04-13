@@ -1654,10 +1654,16 @@ export default function RecipeDetailPage() {
                       const isOverridden = entryKey != null && hasUserOverride(entryKey);
                       const isAIEstimated = cost != null && entryKey == null && !!aiPrice;
 
-                      // Scaled display string (handles compound)
+                      // Scaled display string (handles compound + embedded-unit cleanup)
                       const ingDisplayStr = comps
-                        ? comps.map(c => [scaleAmount(c.amount, scale, c.unit), c.unit, c.name].filter(Boolean).join(' ')).join(' + ')
-                        : [scaleAmount(ing.amount, scale, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ');
+                        ? comps.map(c => {
+                            const { amount: ra, unit: ru } = resolveAmountUnit(c.amount, c.unit);
+                            return [scaleAmount(ra, scale, ru), ru, c.name].filter(Boolean).join(' ');
+                          }).join(' + ')
+                        : (() => {
+                            const { amount: ra, unit: ru } = resolveAmountUnit(ing.amount, ing.unit);
+                            return [scaleAmount(ra, scale, ru), ru, ing.name].filter(Boolean).join(' ');
+                          })();
 
                       return (
                         <div key={ii} style={{ borderBottom: '1px solid var(--border)' }}>
