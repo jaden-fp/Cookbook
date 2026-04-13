@@ -7,6 +7,7 @@ import WeekendShelf from '../components/WeekendShelf';
 import RecipeTile from '../components/RecipeTile';
 import BottomSheet from '../components/BottomSheet';
 import ImportBar from '../components/ImportBar';
+import { useFAB } from '../context/FABContext';
 
 export default function HomePage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
