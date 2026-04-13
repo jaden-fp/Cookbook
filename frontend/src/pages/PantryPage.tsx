@@ -66,10 +66,6 @@ function groupByCategory(items: PantryItem[]): { category: string; items: Pantry
   return [...knownGroups, ...unknownGroups];
 }
 
-// ─── Filter type ───────────────────────────────────────────────────────────────
-
-type Filter = 'all' | 'out';
-
 // ─── Optimistic placeholder ID prefix ─────────────────────────────────────────
 
 let _tempId = 0;
