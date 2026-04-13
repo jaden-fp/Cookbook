@@ -85,82 +85,28 @@ export default function HomePage() {
         <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
-      {/* Smart search / import bar */}
-      {importing && <RecipeImportLoader url={smartInput} />}
-      <form onSubmit={handleSmartSubmit} className="mb-10 animate-fade-up">
-        <div style={{
-          display: 'flex', alignItems: 'stretch', overflow: 'hidden',
-          borderRadius: '999px',
-          border: smartFocused ? '1.5px solid var(--accent)' : '1.5px solid var(--border-strong)',
-          boxShadow: smartFocused ? '0 0 0 3px var(--accent-dim), var(--shadow-md)' : 'var(--shadow-sm)',
-          transition: 'border-color 0.2s, box-shadow 0.2s',
-          background: 'var(--surface)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '16px', color: 'var(--text-muted)', flexShrink: 0 }}>
-            {isUrl ? (
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-              </svg>
-            ) : (
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            )}
-          </div>
-          <input
-            type={isUrl ? 'url' : 'search'}
-            value={smartInput}
-            onChange={e => { setSmartInput(e.target.value); setImportError(null); }}
-            onFocus={() => setSmartFocused(true)}
-            onBlur={() => setSmartFocused(false)}
-            placeholder="Search recipes or paste a URL to import…"
-            disabled={importing}
-            style={{
-              flex: 1, background: 'transparent', border: 'none', outline: 'none',
-              fontFamily: 'var(--font-body)', fontSize: '0.9375rem',
-              color: 'var(--text)', padding: '0.75rem 0.75rem 0.75rem 10px',
-            }}
-          />
-          {smartInput && !isUrl && (
-            <button type="button" onClick={() => setSmartInput('')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0 10px', display: 'flex', alignItems: 'center' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          )}
-          {isUrl && (
-            <button type="submit" disabled={importing}
-              style={{
-                background: 'var(--accent)', color: '#fff',
-                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.875rem',
-                border: 'none', borderRadius: '999px', margin: '4px',
-                padding: '0 1.5rem', cursor: importing ? 'not-allowed' : 'pointer',
-                opacity: importing ? 0.7 : 1, whiteSpace: 'nowrap',
-                display: 'flex', alignItems: 'center', gap: '6px',
-              }}>
-              {importing ? <><span className="import-dots shrink-0"><span/><span/><span/></span>Importing</> : 'Import Recipe'}
-            </button>
-          )}
-          {!isUrl && smartInput && (
-            <button type="submit"
-              style={{
-                background: 'var(--accent)', color: '#fff',
-                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.875rem',
-                border: 'none', borderRadius: '999px', margin: '4px',
-                padding: '0 1.25rem', cursor: 'pointer', whiteSpace: 'nowrap',
-              }}>
-              Search
-            </button>
-          )}
-        </div>
-        {importError && (
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--danger)', marginTop: '6px', paddingLeft: '16px' }}>
-            {importError}
-          </p>
-        )}
-      </form>
+      {/* Mobile-only import button */}
+      <div className="sm:hidden mb-6 animate-fade-up">
+        <button
+          onClick={() => setShowImport(true)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.875rem',
+            color: 'var(--accent)', background: 'var(--accent-dim)',
+            border: '1.5px solid var(--accent)', borderRadius: '999px',
+            padding: '8px 16px', cursor: 'pointer',
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          Import Recipe
+        </button>
+      </div>
+      <BottomSheet open={showImport} onClose={() => setShowImport(false)} title="Import Recipe">
+        <ImportBar onSuccess={() => { getRecipes().then(setRecipes); setShowImport(false); }} />
+      </BottomSheet>
 
       {/* Weekend shelf */}
       <section className="mb-12 animate-fade-up">
