@@ -222,11 +222,12 @@ function cleanAmount(amount: string): string {
     .trim();
 }
 
-/** Remove metric measurements from notes, preserving other content like "room temp". */
+/** Remove metric measurements and "optional" text from notes. */
 function cleanNotes(notes: string): string {
   return notes
     .replace(new RegExp(`\\d+\\.?\\d*\\s*${METRIC_UNITS}\\s*[,;]?\\s*`, 'gi'), '')
-    .replace(/\(\s*\)/, '')        // remove empty parens
+    .replace(/,?\s*\boptional\b\s*/gi, '')   // strip "optional" word (shown as badge instead)
+    .replace(/\(\s*\)/, '')                   // remove empty parens
     .trim()
     .replace(/^[,;]\s*/, '')
     .trim();
