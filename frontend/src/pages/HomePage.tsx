@@ -92,25 +92,6 @@ export default function HomePage() {
         <div style={{ width: '40px', height: '3px', background: 'var(--accent)', borderRadius: '2px' }} />
       </div>
 
-      {/* Mobile-only import button */}
-      <div className="sm:hidden mb-6 animate-fade-up">
-        <button
-          onClick={() => setShowImport(true)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.875rem',
-            color: 'var(--accent)', background: 'var(--accent-dim)',
-            border: '1.5px solid var(--accent)', borderRadius: '999px',
-            padding: '8px 16px', cursor: 'pointer',
-          }}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-          </svg>
-          Import Recipe
-        </button>
-      </div>
       <BottomSheet open={showImport} onClose={() => setShowImport(false)} title="Import Recipe">
         <ImportBar onSuccess={() => { getRecipes().then(setRecipes); setShowImport(false); }} />
       </BottomSheet>
