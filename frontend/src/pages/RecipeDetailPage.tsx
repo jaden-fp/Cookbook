@@ -1380,8 +1380,9 @@ export default function RecipeDetailPage() {
                               const comps = splitCompound(ing.amount, ing.unit, ing.name);
                               const parts = comps ?? [{ amount: ing.amount, unit: ing.unit, name: ing.name }];
                               return parts.map((c, ci) => {
-                                const unit = cleanUnit(c.unit);
-                                const amount = cleanAmount(c.amount);
+                                const { amount: ra, unit: ru } = resolveAmountUnit(c.amount, c.unit);
+                                const unit = cleanUnit(ru);
+                                const amount = cleanAmount(ra);
                                 return (
                                   <span key={ci}>
                                     {ci > 0 && ' + '}
