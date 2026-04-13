@@ -2042,9 +2042,14 @@ export default function RecipeDetailPage() {
                       >
                         {(() => {
                           const c = splitCompound(ing.amount, ing.unit, ing.name);
-                          return c
-                            ? c.map(p => [scaleAmount(p.amount, 1, p.unit), p.unit, p.name].filter(Boolean).join(' ')).join(' + ')
-                            : [scaleAmount(ing.amount, 1, ing.unit), ing.unit, ing.name].filter(Boolean).join(' ');
+                          if (c) {
+                            return c.map(p => {
+                              const { amount: ra, unit: ru } = resolveAmountUnit(p.amount, p.unit);
+                              return [scaleAmount(ra, 1, ru), ru, p.name].filter(Boolean).join(' ');
+                            }).join(' + ');
+                          }
+                          const { amount: ra, unit: ru } = resolveAmountUnit(ing.amount, ing.unit);
+                          return [scaleAmount(ra, 1, ru), ru, ing.name].filter(Boolean).join(' ');
                         })()}
                       </span>
                       {status !== 'in-stock' && (
