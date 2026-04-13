@@ -52,8 +52,25 @@ function sortRecipes(recipes: Recipe[], sort: SortOption, pantryItems: PantryIte
   }
 }
 
+const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  'Cookies':   { bg: 'rgba(240,80,80,0.10)',   text: '#c94040', border: 'rgba(240,80,80,0.35)'   },
+  'Cakes':     { bg: 'rgba(160,80,240,0.10)',  text: '#8040c0', border: 'rgba(160,80,240,0.35)'  },
+  'Bars':      { bg: 'rgba(255,150,30,0.10)',  text: '#c07010', border: 'rgba(255,150,30,0.35)'  },
+  'Brownies':  { bg: 'rgba(110,60,20,0.12)',   text: '#6b3a10', border: 'rgba(110,60,20,0.35)'   },
+  'Donuts':    { bg: 'rgba(30,190,190,0.10)',  text: '#0a9090', border: 'rgba(30,190,190,0.35)'  },
+  'Bread':     { bg: 'rgba(200,155,90,0.12)',  text: '#956c2a', border: 'rgba(200,155,90,0.35)'  },
+  'Muffins':   { bg: 'rgba(60,180,90,0.10)',   text: '#2a8040', border: 'rgba(60,180,90,0.35)'   },
+  'Pies':      { bg: 'rgba(40,110,220,0.10)',  text: '#2050a0', border: 'rgba(40,110,220,0.35)'  },
+  'Pastries':  { bg: 'rgba(240,100,160,0.10)', text: '#b03060', border: 'rgba(240,100,160,0.35)' },
+  'Scones':    { bg: 'rgba(180,130,80,0.12)',  text: '#7a5020', border: 'rgba(180,130,80,0.35)'  },
+  'Cupcakes':  { bg: 'rgba(240,140,200,0.10)', text: '#b04080', border: 'rgba(240,140,200,0.35)' },
+  'Cheesecake':{ bg: 'rgba(220,200,100,0.12)', text: '#907810', border: 'rgba(220,200,100,0.35)' },
+};
+const DEFAULT_CAT_COLOR = { bg: 'rgba(100,100,120,0.10)', text: '#505060', border: 'rgba(100,100,120,0.30)' };
+
 export default function AllRecipesPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +80,7 @@ export default function AllRecipesPage() {
   const [filter, setFilter] = useState<FilterOption>(
     () => (localStorage.getItem('recipes-filter') as FilterOption) ?? 'all'
   );
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showImportSheet, setShowImportSheet] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -75,12 +93,13 @@ export default function AllRecipesPage() {
   const { setAction } = useFAB();
 
   // Unified smart bar — desktop only (type to search, paste URL to import)
-  const [smartInput, setSmartInput] = useState('');
+  // Initialize from URL ?q= param so home page search navigates here correctly
+  const [smartInput, setSmartInput] = useState(() => searchParams.get('q') ?? '');
   const [smartFocused, setSmartFocused] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   // Mobile-only search
-  const [mobileSearch, setMobileSearch] = useState('');
+  const [mobileSearch, setMobileSearch] = useState(() => searchParams.get('q') ?? '');
 
   // AI search
   const [aiMode, setAiMode] = useState(false);
