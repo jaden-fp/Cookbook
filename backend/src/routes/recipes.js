@@ -70,6 +70,7 @@ Also extract: all instructions as steps, equipment list, prep time, cook time, y
                           unit: { type: 'string' },
                           name: { type: 'string' },
                           notes: { type: ['string', 'null'] },
+                          optional: { type: 'boolean' },
                         },
                       },
                     },
