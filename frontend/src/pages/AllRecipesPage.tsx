@@ -546,6 +546,7 @@ export default function AllRecipesPage() {
           </div>
         )}
       </div>
+      </div>
 
       {/* Grid */}
       {loading ? (
